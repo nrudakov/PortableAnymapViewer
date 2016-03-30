@@ -5,9 +5,59 @@
     xmlns:local="using:Portable_Anymap_Viewer"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:data="using:Portable_Anymap_Viewer.Models"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="75" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="75" />
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="MainHeaderTitle" Margin="10, 10, 10, 10" FontSize="24" Grid.Row="0">Folders</TextBlock>
+        <ListView x:Name="FolderList"
+                  ItemsSource="{x:Bind Folders}"
+                  IsItemClickEnabled="True"
+                  ItemClick="FolderList_ItemClick"
+                  SelectionMode="None"                  
+                  SelectionChanged="foldersListView_SelectionChanged"
+                  Grid.Row="1">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="data:ExplorerItem">
+                    <StackPanel x:Name="FolderItemMainPanel"
+                                Orientation="Horizontal" 
+                                HorizontalAlignment="Stretch">
 
+                        <Image x:Name="FolderItemThumbnail" Source="{x:Bind Thumbnail}" HorizontalAlignment="Center" Width="64" Height="64" />
+                        <StackPanel x:Name="FolderItemSecondaryPanel"
+                                    Margin="0,0,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center">
+                            <TextBlock x:Name="FolderItemName" Text="{x:Bind Name}" HorizontalAlignment="Left" FontSize="16"/>
+                            <TextBlock x:Name="FolderItemPath" Text="{x:Bind Path}" HorizontalAlignment="Left" FontSize="10"/>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
+
+    <Page.BottomAppBar>
+        <CommandBar >
+            <CommandBar.Content>
+                <Grid/>
+            </CommandBar.Content>
+            <AppBarButton x:Name="AddFolder" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
+            <AppBarButton x:Name="RemoveFolders" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
+            <AppBarButton x:Name="SelectFolders" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="About" Label="About"></AppBarButton>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>
