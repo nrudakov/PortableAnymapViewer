@@ -22,29 +22,29 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="pbm">
-            <uap:DisplayName>Portable BitMap</uap:DisplayName>
-            <uap:InfoTip>Portable BitMap</uap:InfoTip>
+          <uap:FileTypeAssociation Name="ppm">
+            <uap:DisplayName>Portable Pixmap</uap:DisplayName>
+            <uap:InfoTip>Portable Pixmap</uap:InfoTip>
             <uap:SupportedFileTypes>
-              <uap:FileType>.pbm</uap:FileType>
+              <uap:FileType>.ppm</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
           <uap:FileTypeAssociation Name="pgm">
-            <uap:DisplayName>Portable GrayMap</uap:DisplayName>
-            <uap:InfoTip>Portable GrayMap</uap:InfoTip>
+            <uap:DisplayName>Portable Graymap</uap:DisplayName>
+            <uap:InfoTip>Portable Graymap</uap:InfoTip>
             <uap:SupportedFileTypes>
               <uap:FileType>.pgm</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="ppm">
-            <uap:DisplayName>Portable PixMap</uap:DisplayName>
-            <uap:InfoTip>Portable PixMap</uap:InfoTip>
+          <uap:FileTypeAssociation Name="pbm">
+            <uap:DisplayName>Portable Bitmap</uap:DisplayName>
+            <uap:InfoTip>Portable Bitmap</uap:InfoTip>
             <uap:SupportedFileTypes>
-              <uap:FileType>.ppm</uap:FileType>
+              <uap:FileType>.pbm</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>

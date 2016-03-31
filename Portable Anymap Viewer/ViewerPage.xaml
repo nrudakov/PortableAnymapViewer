@@ -8,6 +8,12 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="70" />
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="text" Margin="10,10,10,10" FontSize="26" Grid.Row="0"/>
+        <FlipView x:Name="flipView" Margin="10" Grid.Row="1" SelectionChanged="flipView_SelectionChanged"/>
     </Grid>
 </Page>

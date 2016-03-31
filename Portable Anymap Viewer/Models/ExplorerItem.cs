@@ -12,6 +12,8 @@ namespace Portable_Anymap_Viewer.Models
         public BitmapImage Thumbnail { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
+        public string NameType { get; set; }
+        public string DisplayType { get; set; }
         public string Path { get; set; }
         public string Token { get; set; }
         public bool IsFolder { get; set; }
