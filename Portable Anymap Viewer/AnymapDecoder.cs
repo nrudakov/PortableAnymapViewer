@@ -45,9 +45,32 @@ namespace Portable_Anymap_Viewer
                 case '3':
                     break;
                 case '4':
+                    properties = await GetBinaryImageProperties(file, false);
+                    decodedAnymap = new byte[properties.Width * properties.Height * 4];
+                    stream = await file.OpenAsync(FileAccessMode.Read);
+                    size = stream.Size;
+                    dataReader = new DataReader(stream.GetInputStreamAt(properties.StreamPosition));
+
+                    bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
+                    if (properties.BytesPerColor == 1)
+                    {
+                        int resultIndex = 0;
+                        int mod = (int)(properties.Width * properties.Height) % 8;
+                        
+                        // All bytes except last one
+                        for (uint i = 0; i < bytesLoaded - 1; ++i)
+                        {
+                            unpackBytePbm(decodedAnymap, resultIndex, 8, dataReader.ReadByte());
+                        }
+                        // The last byte
+                        unpackBytePbm(decodedAnymap, resultIndex, mod == 0 ? 8 : mod, dataReader.ReadByte());
+                    }
+                    result.Width = (Int32)properties.Width;
+                    result.Height = (Int32)properties.Height;
+                    result.Bytes = decodedAnymap;
                     break;
                 case '5':
-                    properties = await GetBinaryImageProperties(file);
+                    properties = await GetBinaryImageProperties(file, true);
                     decodedAnymap = new byte[properties.Width * properties.Height * 4];
                     stream = await file.OpenAsync(FileAccessMode.Read);
                     size = stream.Size;
@@ -74,7 +97,7 @@ namespace Portable_Anymap_Viewer
                     result.Bytes = decodedAnymap;
                     break;
                 case '6':
-                    properties = await GetBinaryImageProperties(file);
+                    properties = await GetBinaryImageProperties(file, true);
                     decodedAnymap = new byte[properties.Width * properties.Height * 4];
 
                     stream = await file.OpenAsync(FileAccessMode.Read);
@@ -105,8 +128,7 @@ namespace Portable_Anymap_Viewer
             return result;
         }
 
-
-        private async Task<AnymapProperties> GetBinaryImageProperties(StorageFile file)
+        private async Task<AnymapProperties> GetBinaryImageProperties(StorageFile file, bool isContainMaxValue)
         {
             var stream = await file.OpenAsync(FileAccessMode.Read);
             ulong size = stream.Size;
@@ -129,19 +151,19 @@ namespace Portable_Anymap_Viewer
                 for (int i = 0; i < mc.Count; ++i)
                 {
                     imageProperties[imagePropertiesCounter++] = Convert.ToUInt32(mc[i].Value);
-                    if (imagePropertiesCounter == 3)
+                    if (imagePropertiesCounter == (isContainMaxValue ? 3 : 2))
                     {
                         seekPos += (mc[i].Index + mc[i].Length + 1);
                     }
                 }
-                if (imagePropertiesCounter == 3)
+                if (imagePropertiesCounter == (isContainMaxValue ? 3 : 2))
                 {
                     break;
                 }
                 seekPos += str.Length + 1;
             }
 
-            if (imagePropertiesCounter != 3)
+            if (imagePropertiesCounter != (isContainMaxValue ? 3 : 2))
             {
                 AnymapProperties badProperties = new AnymapProperties();
                 badProperties.Width = 0;
@@ -156,10 +178,23 @@ namespace Portable_Anymap_Viewer
             AnymapProperties properties = new AnymapProperties();
             properties.Width = imageProperties[0];
             properties.Height = imageProperties[1];
-            properties.MaxValue = imageProperties[2];
+            properties.MaxValue = (isContainMaxValue ? imageProperties[2] : 255);
             properties.BytesPerColor = (properties.MaxValue < 256) ? (uint)1 : (uint)2;
             properties.StreamPosition = (uint)(seekPos);
             return properties;
         }
+
+        private Action<byte[], int, int, byte> unpackBytePbm = delegate (byte[] arr, int arrPos, int num, byte b)
+        {
+            byte kk = (byte)(0x80 >> num);
+            for (byte k = 0x80; k != kk; k >>= 1)
+            {
+                arr[arrPos] = (byte)(((b & k) == k) ? 255 : 0);
+                arr[arrPos + 1] = arr[arrPos];
+                arr[arrPos + 2] = arr[arrPos];
+                arr[arrPos + 3] = 255;
+                arrPos += 4;
+            }
+        };
     }
 }

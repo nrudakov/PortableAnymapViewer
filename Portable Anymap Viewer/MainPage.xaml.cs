@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -12,6 +13,7 @@ using Windows.Storage.AccessCache;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Pickers;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -30,18 +32,29 @@ namespace Portable_Anymap_Viewer
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public static MainPage Current;
         public MainPage()
         {
             this.InitializeComponent();
+            Current = this;
             Folders = new ObservableCollection<ExplorerItem>();
             SelectedFolders = new List<ExplorerItem>();
             readSavedFolders();
+            //CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+            //Window.Current.SizeChanged += OnWindowSizeChanged;
+            //UpdateFullScreenModeStatus();
+            //Current.AddCustomTitleBar();
         }
+
+        //protected override void OnNavigatedFrom(NavigationEventArgs e)
+        //{
+        //    Window.Current.SizeChanged -= OnWindowSizeChanged;
+        //}
 
         private async void AddFolder_Click(object sender, RoutedEventArgs e)
         {
@@ -61,11 +74,12 @@ namespace Portable_Anymap_Viewer
 
                 ExplorerItem folder = new ExplorerItem();
                 folder.Thumbnail = thumbnailBitmap;
-                folder.Name = storageFolder.DisplayName;
-                folder.Type = storageFolder.DisplayType;
+                folder.Name = storageFolder.Name;
+                folder.Type = null;
+                folder.DisplayName = storageFolder.DisplayName;
+                folder.DisplayType = storageFolder.DisplayType;
                 folder.Path = storageFolder.Path;
                 folder.Token = faToken;
-                folder.IsFolder = true;
                 Folders.Add(folder);
                 saveFolder(faToken);
             }
@@ -88,23 +102,23 @@ namespace Portable_Anymap_Viewer
             IList<string> folders = await FileIO.ReadLinesAsync(await ApplicationData.Current.LocalFolder.CreateFileAsync("FolderTokens.txt", CreationCollisionOption.OpenIfExists),Windows.Storage.Streams.UnicodeEncoding.Utf16LE);
             foreach (string token in folders)
             {
-                    StorageFolder storageFolder = await StorageApplicationPermissions.FutureAccessList.GetFolderAsync(token);
-                    if (storageFolder != null)
-                    {
-                        StorageItemThumbnail thumbnail = await storageFolder.GetThumbnailAsync(ThumbnailMode.SingleItem);
-                        BitmapImage thumbnailBitmap = new BitmapImage();
-                        thumbnailBitmap.SetSource(thumbnail);
+                StorageFolder storageFolder = await StorageApplicationPermissions.FutureAccessList.GetFolderAsync(token);
+                if (storageFolder != null)
+                {
+                    StorageItemThumbnail thumbnail = await storageFolder.GetThumbnailAsync(ThumbnailMode.SingleItem);
+                    BitmapImage thumbnailBitmap = new BitmapImage();
+                    thumbnailBitmap.SetSource(thumbnail);
 
-                        ExplorerItem folder = new ExplorerItem();
-                        folder.Thumbnail = thumbnailBitmap;
-                        folder.Name = storageFolder.DisplayName;
-                        folder.Type = storageFolder.DisplayType;
-                        folder.Path = storageFolder.Path;
-                        folder.Token = token;
-                        folder.IsFolder = true;
-                        Folders.Add(folder);
-                    }
-                
+                    ExplorerItem folder = new ExplorerItem();
+                    folder.Thumbnail = thumbnailBitmap;
+                    folder.Name = storageFolder.Name;
+                    folder.Type = null;
+                    folder.DisplayName = storageFolder.DisplayName;
+                    folder.DisplayType = storageFolder.DisplayType;
+                    folder.Path = storageFolder.Path;
+                    folder.Token = token;
+                    Folders.Add(folder);
+                }
             }
         }
 
@@ -180,5 +194,43 @@ namespace Portable_Anymap_Viewer
             SelectFolders.Label = "Select Folders";
             FolderList.SelectionMode = ListViewSelectionMode.None;
         }
+
+        //void OnWindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
+        //{
+        //    UpdateFullScreenModeStatus();
+        //}
+
+        //void UpdateFullScreenModeStatus()
+        //{
+            
+        //}
+
+        //CustomTitleBar customTitleBar = null;
+
+        //public void AddCustomTitleBar()
+        //{
+        //    if (customTitleBar == null)
+        //    {
+        //        customTitleBar = new CustomTitleBar();
+
+        //        // Make the main page's content a child of the title bar,
+        //        // and make the title bar the new page content.
+        //        UIElement mainContent = this.Content;
+        //        this.Content = null;
+        //        customTitleBar.SetPageContent(mainContent);
+        //        this.Content = customTitleBar;
+        //    }
+        //}
+
+        //public void RemoveCustomTitleBar()
+        //{
+        //    if (customTitleBar != null)
+        //    {
+        //        // Take the title bar's page content and make it
+        //        // the window content.
+        //        this.Content = customTitleBar.SetPageContent(null);
+        //        customTitleBar = null;
+        //    }
+        //}
     }
 }

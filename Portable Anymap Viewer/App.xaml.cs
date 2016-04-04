@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Portable_Anymap_Viewer.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,13 +8,20 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.Storage.AccessCache;
+using Windows.Storage.FileProperties;
+using Windows.Storage.Pickers;
+using Windows.Storage.Search;
 using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace Portable_Anymap_Viewer
@@ -81,6 +89,42 @@ namespace Portable_Anymap_Viewer
             Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
 
             // Обеспечение активности текущего окна
+            Window.Current.Activate();
+        }
+
+        protected override async void OnFileActivated(FileActivatedEventArgs args)
+        {
+            base.OnFileActivated(args);
+            var rootFrame = new Frame();
+            if (args.Files.Count != 1)
+            {
+                MessageDialog dlg = new MessageDialog("The app can handle only one activated file.");
+                await dlg.ShowAsync();
+                rootFrame.Navigate(typeof(MainPage));
+                Window.Current.Content = rootFrame;
+                Window.Current.Activate();
+            }
+            
+            IReadOnlyList<StorageFile> FileList = await args.NeighboringFilesQuery.GetFilesAsync();
+
+            ExplorerItem item = new ExplorerItem();
+            //StorageItemThumbnail thumbnail = await openFileParams.FileList.ElementAt<StorageFile>(0).GetThumbnailAsync(ThumbnailMode.SingleItem);
+            //BitmapImage thumbnailBitmap = new BitmapImage();
+            //thumbnailBitmap.SetSource(thumbnail);
+            item.Thumbnail = null;
+            item.Name = (args.Files.First<IStorageItem>() as StorageFile).Name;
+            item.Type = (args.Files.First<IStorageItem>() as StorageFile).FileType;
+            item.DisplayName = (args.Files.First<IStorageItem>() as StorageFile).DisplayName;
+            item.DisplayType = (args.Files.First<IStorageItem>() as StorageFile).DisplayType;
+            item.Path = (args.Files.First<IStorageItem>() as StorageFile).Path;
+            item.Token = "";
+
+            OpenFileParams openFileParams = new OpenFileParams();
+            openFileParams.ClickedFile = item;
+            openFileParams.FileList = FileList;
+
+            rootFrame.Navigate(typeof(ViewerPage), openFileParams);
+            Window.Current.Content = rootFrame;
             Window.Current.Activate();
         }
 

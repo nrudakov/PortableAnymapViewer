@@ -4,7 +4,7 @@
   <mp:PhoneIdentity PhoneProductId="76ae3a02-337c-4a52-9f8c-27964c753241" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Portable Anymap Viewer</DisplayName>
-    <PublisherDisplayName>Николай</PublisherDisplayName>
+    <PublisherDisplayName>Николай Рудаков</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -53,5 +53,7 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
+    <uap:Capability Name="removableStorage" />
+    <uap:Capability Name="picturesLibrary" />
   </Capabilities>
 </Package>

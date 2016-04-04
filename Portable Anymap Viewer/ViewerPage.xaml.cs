@@ -53,14 +53,14 @@ namespace Portable_Anymap_Viewer
                 WriteableBitmap wbm = new WriteableBitmap(result.Width, result.Height);
                 Image img = new Image();
                 img.Source = wbm;
-                img.Tag = file.DisplayName + file.FileType;
+                img.Tag = file.Name;
                 flipView.Items.Add(img);
                 using (Stream streamWbm = wbm.PixelBuffer.AsStream())
                 {
                     await streamWbm.WriteAsync(result.Bytes, 0, result.Bytes.Length);
                 }
                 wbm.Invalidate();
-                if (file.DisplayName == openFileParams.ClickedFile.Name)
+                if (file.Name == openFileParams.ClickedFile.Name)
                 {
                     flipView.SelectedItem = flipView.Items.ElementAt(fileId);
                 }
