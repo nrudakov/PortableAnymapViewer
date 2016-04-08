@@ -8,6 +8,14 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <SplitView x:Name="EditorSplitView" Margin="0" DisplayMode="Inline" IsPaneOpen="True">
+            <SplitView.Pane>
+                <Image x:Name="EditorImage" Margin="0"/>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <RichEditBox x:Name="EditorText" Margin="0" IsSpellCheckEnabled="False"/>
+            </SplitView.Content>
+        </SplitView>
 
     </Grid>
 </Page>

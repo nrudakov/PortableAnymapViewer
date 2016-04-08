@@ -9,11 +9,46 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="70" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="70" />
         </Grid.RowDefinitions>
-        <TextBlock x:Name="text" Margin="10,10,10,10" FontSize="26" Grid.Row="0"/>
-        <FlipView x:Name="flipView" Margin="10" Grid.Row="1" SelectionChanged="flipView_SelectionChanged"/>
+        <FlipView x:Name="flipView" Margin="0" SelectionChanged="flipView_SelectionChanged" Tapped="flipView_Tapped"/>
+        <StackPanel x:Name="ViewerZoomStack" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 50, 50" Height="50" Width="Auto" Visibility="Collapsed">
+            <StackPanel.Background>
+                <SolidColorBrush Color="Black" Opacity="0.1"/>
+            </StackPanel.Background>
+            <AppBarButton x:Name="ViewerZoomReal" Click="ViewerZoomReal_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71E;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="ViewerZoomOut" Click="ViewerZoomOut_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71F;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="ViewerZoomIn" Click="ViewerZoomIn_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8A3;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </StackPanel>
+
+        <TextBlock x:Name="text" Margin="0" FontSize="26" VerticalAlignment="Top" Visibility="Collapsed">
+        </TextBlock>
+        <CommandBar x:Name="ViewerCommandBar" VerticalAlignment="Bottom" Visibility="Collapsed">
+            <CommandBar.Background>
+                <SolidColorBrush Color="Black" Opacity="0.1"/>
+            </CommandBar.Background>
+            <AppBarButton x:Name="ViewerShare" Label="Share" Click="ViewerShare_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72D;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="ViewerEdit" Icon="Edit" Label="Edit" Click="ViewerEdit_Click"/>
+            <AppBarButton x:Name="ViewerDelete" Icon="Delete" Label="Delete" Click="ViewerDelete_Click"/>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="ViewerAbout" Label="About"></AppBarButton>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
     </Grid>
 </Page>

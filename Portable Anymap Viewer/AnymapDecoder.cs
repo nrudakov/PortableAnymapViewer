@@ -26,6 +26,7 @@ namespace Portable_Anymap_Viewer
             await dataReader.LoadAsync((uint)2);
             string formatType = dataReader.ReadString(2);
             DecodeResult result = new DecodeResult();
+            result.Type = 0;
             result.Width = 0;
             result.Height = 0;
             result.Bytes = null;
@@ -71,6 +72,7 @@ namespace Portable_Anymap_Viewer
                             }
                         }
                     }
+                    result.Type = 1;
                     result.Width = (Int32)properties.Width;
                     result.Height = (Int32)properties.Height;
                     result.Bytes = decodedAnymap;
@@ -108,6 +110,7 @@ namespace Portable_Anymap_Viewer
                             }
                         }
                     }
+                    result.Type = 2;
                     result.Width = (Int32)properties.Width;
                     result.Height = (Int32)properties.Height;
                     result.Bytes = decodedAnymap;
@@ -158,6 +161,7 @@ namespace Portable_Anymap_Viewer
                             }
                         }
                     }
+                    result.Type = 3;
                     result.Width = (Int32)properties.Width;
                     result.Height = (Int32)properties.Height;
                     result.Bytes = decodedAnymap;
@@ -183,6 +187,7 @@ namespace Portable_Anymap_Viewer
                         // The last byte
                         unpackBytePbm(decodedAnymap, resultIndex, mod == 0 ? 8 : mod, dataReader.ReadByte());
                     }
+                    result.Type = 4;
                     result.Width = (Int32)properties.Width;
                     result.Height = (Int32)properties.Height;
                     result.Bytes = decodedAnymap;
@@ -213,6 +218,7 @@ namespace Portable_Anymap_Viewer
                             }
                         }
                     }
+                    result.Type = 5;
                     result.Width = (Int32)properties.Width;
                     result.Height = (Int32)properties.Height;
                     result.Bytes = decodedAnymap;
@@ -244,6 +250,7 @@ namespace Portable_Anymap_Viewer
                             }
                         }
                     }
+                    result.Type = 6;
                     result.Width = (Int32)properties.Width;
                     result.Height = (Int32)properties.Height;
                     result.Bytes = decodedAnymap;

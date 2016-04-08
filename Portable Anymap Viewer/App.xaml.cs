@@ -69,6 +69,7 @@ namespace Portable_Anymap_Viewer
                 rootFrame = new Frame();
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
+                rootFrame.Navigated += RootFrame_Navigated;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
@@ -77,6 +78,13 @@ namespace Portable_Anymap_Viewer
 
                 // Размещение фрейма в текущем окне
                 Window.Current.Content = rootFrame;
+                SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
+
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                    rootFrame.CanGoBack ?
+                    AppViewBackButtonVisibility.Visible :
+                    AppViewBackButtonVisibility.Collapsed;
+
             }
 
             if (rootFrame.Content == null)
@@ -92,10 +100,39 @@ namespace Portable_Anymap_Viewer
             Window.Current.Activate();
         }
 
+        private void RootFrame_Navigated(object sender, NavigationEventArgs e)
+        {
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+            ((Frame)sender).CanGoBack ?
+            AppViewBackButtonVisibility.Visible :
+            AppViewBackButtonVisibility.Collapsed;
+        }
+
         protected override async void OnFileActivated(FileActivatedEventArgs args)
         {
             base.OnFileActivated(args);
-            var rootFrame = new Frame();
+            Frame rootFrame = Window.Current.Content as Frame;
+
+            // Не повторяйте инициализацию приложения, если в окне уже имеется содержимое,
+            // только обеспечьте активность окна
+            if (rootFrame == null)
+            {
+                // Создание фрейма, который станет контекстом навигации, и переход к первой странице
+                rootFrame = new Frame();
+
+                rootFrame.NavigationFailed += OnNavigationFailed;
+                rootFrame.Navigated += RootFrame_Navigated;
+
+                // Размещение фрейма в текущем окне
+                Window.Current.Content = rootFrame;
+                SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
+
+                SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                    rootFrame.CanGoBack ?
+                    AppViewBackButtonVisibility.Visible :
+                    AppViewBackButtonVisibility.Collapsed;
+
+            }
             if (args.Files.Count != 1)
             {
                 MessageDialog dlg = new MessageDialog("The app can handle only one activated file.");
@@ -104,8 +141,13 @@ namespace Portable_Anymap_Viewer
                 Window.Current.Content = rootFrame;
                 Window.Current.Activate();
             }
-            
+
             IReadOnlyList<StorageFile> FileList = await args.NeighboringFilesQuery.GetFilesAsync();
+            //foreach (StorageFile file in FileList)
+            //{
+            //    MessageDialog dlg = new MessageDialog(file.Name);
+            //    await dlg.ShowAsync();
+            //}
 
             ExplorerItem item = new ExplorerItem();
             //StorageItemThumbnail thumbnail = await openFileParams.FileList.ElementAt<StorageFile>(0).GetThumbnailAsync(ThumbnailMode.SingleItem);

@@ -7,10 +7,12 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.System.Profile;
 using Windows.System.Threading;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -35,15 +37,31 @@ namespace Portable_Anymap_Viewer
         {
             this.InitializeComponent();
         }
+        private OpenFileParams openFileParams;
+        private List<int> imageFormats = new List<int>();
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            Frame rootFrame = Window.Current.Content as Frame;
-            OpenFileParams openFileParams = e.Parameter as OpenFileParams;
+            //if (e.NavigationMode == NavigationMode.Back)
+            //{
+
+            //}
+            //else
+            //{
+            if (String.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Desktop"))
+            {
+                ViewerCommandBar.VerticalAlignment = VerticalAlignment.Top;
+                ViewerZoomStack.Visibility = Visibility.Visible;
+            }
+            openFileParams = e.Parameter as OpenFileParams;
             flipView.Visibility = Visibility.Collapsed;
             int fileId = 0;
             foreach (StorageFile file in openFileParams.FileList)
             {
+                if (file.FileType != ".pbm" && file.FileType != ".pgm" && file.FileType != ".ppm")
+                {
+                    continue;
+                }
                 AnymapDecoder anyDecoder = new AnymapDecoder();
                 DecodeResult result = await anyDecoder.decode(file);
                 if (result.Bytes == null)
@@ -51,10 +69,22 @@ namespace Portable_Anymap_Viewer
                     continue;
                 }
                 WriteableBitmap wbm = new WriteableBitmap(result.Width, result.Height);
+
+                CompositeTransform transform = new CompositeTransform();
+                transform.CenterX = result.Width / 2;
+                transform.CenterY = result.Height / 2;
                 Image img = new Image();
                 img.Source = wbm;
+                img.Stretch = Stretch.None;
                 img.Tag = file.Name;
-                flipView.Items.Add(img);
+                img.RenderTransform = transform;
+                
+                ScrollViewer scroll = new ScrollViewer();
+                scroll.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+                scroll.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+                scroll.Content = img;
+                flipView.Items.Add(scroll);
+                imageFormats.Add(result.Type);
                 using (Stream streamWbm = wbm.PixelBuffer.AsStream())
                 {
                     await streamWbm.WriteAsync(result.Bytes, 0, result.Bytes.Length);
@@ -66,18 +96,90 @@ namespace Portable_Anymap_Viewer
                 }
                 ++fileId;
             }
-            FrameworkElement element = flipView.SelectedItem as FrameworkElement;
-            text.Text = element.Tag as string;
+            ScrollViewer element = flipView.SelectedItem as ScrollViewer;
+            text.Text = (element.Content as Image).Tag as string;
             flipView.Visibility = Visibility.Visible;
+            DataTransferManager.GetForCurrentView().DataRequested += ViewerPage_DataRequested;
         }
 
         private void flipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (flipView.Visibility == Visibility.Visible)
             {
-                FrameworkElement element = flipView.SelectedItem as FrameworkElement;
-                text.Text = element.Tag as string;
+                ScrollViewer element = flipView.SelectedItem as ScrollViewer;
+                text.Text = (element.Content as Image).Tag as string;
             }
+        }
+
+        private void ViewerShare_Click(object sender, RoutedEventArgs e)
+        {
+            DataTransferManager.ShowShareUI();
+        }
+
+        private void ViewerEdit_Click(object sender, RoutedEventArgs e)
+        {
+            EditFileParams editFileParams = new EditFileParams();
+            editFileParams.image = flipView.SelectedItem as Image;
+            editFileParams.type = imageFormats[flipView.SelectedIndex];
+            editFileParams.file = openFileParams.FileList[flipView.SelectedIndex];
+            Frame.Navigate(typeof(EditorPage), editFileParams);
+        }
+
+        private void ViewerDelete_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void flipView_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (ViewerCommandBar.Visibility == Visibility.Collapsed)
+            {
+                ViewerCommandBar.Visibility = Visibility.Visible;
+                if (String.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Mobile"))
+                    text.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ViewerCommandBar.Visibility = Visibility.Collapsed;
+                if (String.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Mobile"))
+                    text.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        void ViewerPage_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            if (!string.IsNullOrEmpty(text.Text))
+            {
+                List<StorageFile> shareFiles = new List<StorageFile>();
+                shareFiles.Insert(0, openFileParams.FileList.ElementAt<StorageFile>(flipView.SelectedIndex));
+                args.Request.Data.Properties.Title = text.Text;
+                args.Request.Data.Properties.Description = "Portable Anymap Sharing";
+                args.Request.Data.SetStorageItems(shareFiles);
+            }
+            else
+            {
+                args.Request.FailWithDisplayText("Nothing to share");
+            }
+        }
+
+        private void ViewerZoomReal_Click(object sender, RoutedEventArgs e)
+        {
+            (((flipView.SelectedItem as ScrollViewer).Content as Image).RenderTransform as CompositeTransform).ScaleX = 1.0;
+            (((flipView.SelectedItem as ScrollViewer).Content as Image).RenderTransform as CompositeTransform).ScaleY = 1.0;
+            //(((flipView.SelectedItem as ScrollViewer).Content as Image).Source as WriteableBitmap).Invalidate();
+        }
+
+        private void ViewerZoomOut_Click(object sender, RoutedEventArgs e)
+        {
+            (((flipView.SelectedItem as ScrollViewer).Content as Image).RenderTransform as CompositeTransform).ScaleX *= 0.8;
+            (((flipView.SelectedItem as ScrollViewer).Content as Image).RenderTransform as CompositeTransform).ScaleY *= 0.8;
+            //(((flipView.SelectedItem as ScrollViewer).Content as Image).Source as WriteableBitmap).Invalidate();
+        }
+
+        private void ViewerZoomIn_Click(object sender, RoutedEventArgs e)
+        {
+            (((flipView.SelectedItem as ScrollViewer).Content as Image).RenderTransform as CompositeTransform).ScaleX *= 1.2;
+            (((flipView.SelectedItem as ScrollViewer).Content as Image).RenderTransform as CompositeTransform).ScaleY *= 1.2;
         }
     }
 }

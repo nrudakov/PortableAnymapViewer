@@ -10,9 +10,9 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="75" />
+            <RowDefinition Height="65" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="75" />
+            <RowDefinition Height="65" />
         </Grid.RowDefinitions>
         <TextBlock x:Name="MainHeaderTitle" Margin="10, 10, 10, 10" FontSize="24" Grid.Row="0">Folders</TextBlock>
         <ListView x:Name="FolderList"

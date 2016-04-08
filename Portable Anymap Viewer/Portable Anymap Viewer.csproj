@@ -114,6 +114,7 @@
     </Compile>
     <Compile Include="Models\AnymapProperties.cs" />
     <Compile Include="Models\DecodeResult.cs" />
+    <Compile Include="Models\EditFileParams.cs" />
     <Compile Include="Models\ExplorerItem.cs" />
     <Compile Include="Models\OpenFileParams.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -128,14 +129,56 @@
     <None Include="Portable Anymap Viewer_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Properties\Default.rd.xml" />
-    <Content Include="Assets\LockScreenLogo.scale-200.png" />
+    <Content Include="Assets\Logo-AppList.scale-100.png" />
+    <Content Include="Assets\Logo-AppList.scale-125.png" />
+    <Content Include="Assets\Logo-AppList.scale-150.png" />
+    <Content Include="Assets\Logo-AppList.scale-200.png" />
+    <Content Include="Assets\Logo-AppList.scale-400.png" />
+    <Content Include="Assets\Logo-AppList.targetsize-16_altform-unplated.png" />
+    <Content Include="Assets\Logo-AppList.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\Logo-AppList.targetsize-256_altform-unplated.png" />
+    <Content Include="Assets\Logo-AppList.targetsize-48_altform-unplated.png" />
+    <Content Include="Assets\Logo-NoMargins.scale-100.png" />
+    <Content Include="Assets\Logo-NoMargins.scale-125.png" />
+    <Content Include="Assets\Logo-NoMargins.scale-150.png" />
+    <Content Include="Assets\Logo-NoMargins.scale-200.png" />
+    <Content Include="Assets\Logo-NoMargins.scale-400.png" />
+    <Content Include="Assets\Logo-TileLarge.scale-100.png" />
+    <Content Include="Assets\Logo-TileLarge.scale-125.png" />
+    <Content Include="Assets\Logo-TileLarge.scale-150.png" />
+    <Content Include="Assets\Logo-TileLarge.scale-200.png" />
+    <Content Include="Assets\Logo-TileLarge.scale-400.png" />
+    <Content Include="Assets\Logo-TileMedium.scale-100.png" />
+    <Content Include="Assets\Logo-TileMedium.scale-125.png" />
+    <Content Include="Assets\Logo-TileMedium.scale-150.png" />
+    <Content Include="Assets\Logo-TileMedium.scale-200.png" />
+    <Content Include="Assets\Logo-TileMedium.scale-400.png" />
+    <Content Include="Assets\Logo-TileSmall.scale-100.png" />
+    <Content Include="Assets\Logo-TileSmall.scale-125.png" />
+    <Content Include="Assets\Logo-TileSmall.scale-150.png" />
+    <Content Include="Assets\Logo-TileSmall.scale-200.png" />
+    <Content Include="Assets\Logo-TileSmall.scale-400.png" />
+    <Content Include="Assets\Logo-TileWide.scale-100.png" />
+    <Content Include="Assets\Logo-TileWide.scale-125.png" />
+    <Content Include="Assets\Logo-TileWide.scale-150.png" />
+    <Content Include="Assets\Logo-TileWide.scale-200.png" />
+    <Content Include="Assets\Logo-TileWide.scale-400.png" />
+    <Content Include="Assets\SplashScreen.scale-100.png" />
+    <Content Include="Assets\SplashScreen.scale-125.png" />
+    <Content Include="Assets\SplashScreen.scale-150.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
-    <Content Include="Assets\Square150x150Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.scale-200.png" />
-    <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
-    <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Assets\SplashScreen.scale-400.png" />
+    <Content Include="Assets\StoreLogo.scale-100.png" />
+    <Content Include="Assets\StoreLogo.scale-125.png" />
+    <Content Include="Assets\StoreLogo.scale-150.png" />
+    <Content Include="Assets\StoreLogo.scale-200.png" />
+    <Content Include="Assets\StoreLogo.scale-400.png" />
+    <Content Include="Logo-TileLargeMedium.scale-100.png" />
+    <Content Include="Logo-TileLargeMedium.scale-125.png" />
+    <Content Include="Logo-TileLargeMedium.scale-150.png" />
+    <Content Include="Logo-TileLargeMedium.scale-200.png" />
+    <Content Include="Logo-TileLargeMedium.scale-400.png" />
+    <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
