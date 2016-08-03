@@ -141,7 +141,7 @@ namespace Portable_Anymap_Viewer
                 Window.Current.Content = rootFrame;
                 Window.Current.Activate();
             }
-
+            //switch (args.)
             IReadOnlyList<StorageFile> FileList = await args.NeighboringFilesQuery.GetFilesAsync();
             //foreach (StorageFile file in FileList)
             //{

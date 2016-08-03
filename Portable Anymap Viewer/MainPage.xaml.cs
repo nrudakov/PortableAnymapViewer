@@ -195,6 +195,11 @@ namespace Portable_Anymap_Viewer
             FolderList.SelectionMode = ListViewSelectionMode.None;
         }
 
+        private void OpenFile_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         //void OnWindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
         //{
         //    UpdateFullScreenModeStatus();
@@ -202,7 +207,7 @@ namespace Portable_Anymap_Viewer
 
         //void UpdateFullScreenModeStatus()
         //{
-            
+
         //}
 
         //CustomTitleBar customTitleBar = null;

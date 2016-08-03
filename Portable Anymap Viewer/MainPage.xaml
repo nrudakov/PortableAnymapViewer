@@ -55,8 +55,10 @@
             <AppBarButton x:Name="AddFolder" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
             <AppBarButton x:Name="RemoveFolders" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
             <AppBarButton x:Name="SelectFolders" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
+            <AppBarSeparator/>
+            <AppBarButton x:Name="OpenFile" Icon="OpenFile" Label="Open File" Click="OpenFile_Click"/>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="About" Label="About"></AppBarButton>
+                <AppBarButton x:Name="About" Label="About"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

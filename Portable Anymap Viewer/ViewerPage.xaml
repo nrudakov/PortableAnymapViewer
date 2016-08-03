@@ -8,11 +8,11 @@
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" x:Name="ViewerGrid" KeyDown="ViewerGrid_KeyDown">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <FlipView x:Name="flipView" Margin="0" SelectionChanged="flipView_SelectionChanged" Tapped="flipView_Tapped"/>
+        <FlipView x:Name="flipView" Margin="0" SelectionChanged="flipView_SelectionChanged" Tapped="flipView_Tapped" KeyDown="flipView_KeyDown"/>
 
         <StackPanel x:Name="ViewerZoomStack" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 50, 50" Height="50" Width="Auto" Visibility="Collapsed">
             <StackPanel.Background>
