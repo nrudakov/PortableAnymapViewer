@@ -114,11 +114,8 @@ namespace Portable_Anymap_Viewer
                 scroll.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
                 scroll.Content = canvas;
                 flipView.Items.Add(scroll);
-
-
-
-
-                if (file.Name == openFileParams.ClickedFile.Name)
+                
+                if (openFileParams.ClickedFile != null && file.Name == openFileParams.ClickedFile.Name)
                 {
                     flipView.SelectedItem = flipView.Items.ElementAt(fileId);
                 }

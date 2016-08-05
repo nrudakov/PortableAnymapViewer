@@ -56,7 +56,12 @@
             <AppBarButton x:Name="RemoveFolders" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
             <AppBarButton x:Name="SelectFolders" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="OpenFile" Icon="OpenFile" Label="Open File" Click="OpenFile_Click"/>
+            <AppBarButton x:Name="OpenFile" Icon="OpenFile" Label="Open" Click="OpenFile_Click"/>
+            <AppBarButton x:Name="Convert" Label="Convert" Click="Convert_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE2B0;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
             <CommandBar.SecondaryCommands>
                 <AppBarButton x:Name="About" Label="About"/>
             </CommandBar.SecondaryCommands>

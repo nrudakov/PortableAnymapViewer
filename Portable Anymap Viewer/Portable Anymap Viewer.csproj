@@ -100,6 +100,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ConverterPage.xaml.cs">
+      <DependentUpon>ConverterPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomTitleBar.xaml.cs">
       <DependentUpon>CustomTitleBar.xaml</DependentUpon>
     </Compile>
@@ -113,6 +116,7 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\AnymapProperties.cs" />
+    <Compile Include="Models\ConverterItem.cs" />
     <Compile Include="Models\DecodeResult.cs" />
     <Compile Include="Models\EditFileParams.cs" />
     <Compile Include="Models\ExplorerItem.cs" />
@@ -184,6 +188,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="ConverterPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CustomTitleBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
