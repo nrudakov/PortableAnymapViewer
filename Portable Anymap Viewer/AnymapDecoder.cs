@@ -1,17 +1,10 @@
 ﻿using Portable_Anymap_Viewer.Models;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.System.Threading;
 
 namespace Portable_Anymap_Viewer
 {
@@ -21,7 +14,6 @@ namespace Portable_Anymap_Viewer
         {
             var stream = await file.OpenAsync(FileAccessMode.Read);
             ulong size = stream.Size;
-
             var dataReader = new DataReader(stream.GetInputStreamAt(0));
             await dataReader.LoadAsync((uint)2);
             string formatType = dataReader.ReadString(2);
@@ -30,6 +22,8 @@ namespace Portable_Anymap_Viewer
             result.Width = 0;
             result.Height = 0;
             result.Bytes = null;
+            result.Filename = file.Name;
+            result.CurrentZoom = 1.0;
             if (formatType[0] != 'P')
             {
                 return result;
@@ -258,6 +252,11 @@ namespace Portable_Anymap_Viewer
             }
             return result;
         }
+
+        //public async Task<DecodeResult> decode(String str)
+        //{
+
+        //}
 
         private async Task<AnymapProperties> GetImageProperties(StorageFile file, bool isContainMaxValue)
         {

@@ -10,8 +10,10 @@ namespace Portable_Anymap_Viewer.Models
 {
     public class EditFileParams
     {
-        public Image image { get; set; }
-        public int type { get; set; }
-        public StorageFile file { get; set; }
+        public byte[] Bytes { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public int Type { get; set; }
+        public StorageFile File { get; set; }
     }
 }

@@ -195,6 +195,40 @@ namespace Portable_Anymap_Viewer
             FolderList.SelectionMode = ListViewSelectionMode.None;
         }
 
+        private async void OpenFile_Click(object sender, RoutedEventArgs e)
+        {
+            FileOpenPicker picker = new FileOpenPicker();
+            picker.ViewMode = PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+            picker.FileTypeFilter.Add(".pbm");
+            picker.FileTypeFilter.Add(".pgm");
+            picker.FileTypeFilter.Add(".ppm");
+
+            IReadOnlyList<StorageFile> files = await picker.PickMultipleFilesAsync();
+            if (files.Count > 0)
+            {
+                OpenFileParams openFileParams = new OpenFileParams();
+                openFileParams.FileList = files;
+                Frame.Navigate(typeof(ViewerPage), openFileParams);
+            }
+        }
+
+        private async void Convert_Click(object sender, RoutedEventArgs e)
+        {
+            FileOpenPicker picker = new FileOpenPicker();
+            picker.ViewMode = PickerViewMode.Thumbnail;
+            picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+            picker.FileTypeFilter.Add(".jpg");
+            picker.FileTypeFilter.Add(".jpeg");
+            picker.FileTypeFilter.Add(".png");
+
+            IReadOnlyList<StorageFile> files = await picker.PickMultipleFilesAsync();
+            if (files.Count > 0)
+            {
+                Frame.Navigate(typeof(ConverterPage), files);
+            }
+        }
+
         //void OnWindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
         //{
         //    UpdateFullScreenModeStatus();
@@ -202,7 +236,7 @@ namespace Portable_Anymap_Viewer
 
         //void UpdateFullScreenModeStatus()
         //{
-            
+
         //}
 
         //CustomTitleBar customTitleBar = null;

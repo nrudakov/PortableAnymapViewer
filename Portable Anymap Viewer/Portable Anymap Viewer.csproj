@@ -100,6 +100,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ConverterPage.xaml.cs">
+      <DependentUpon>ConverterPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomTitleBar.xaml.cs">
       <DependentUpon>CustomTitleBar.xaml</DependentUpon>
     </Compile>
@@ -113,11 +116,16 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\AnymapProperties.cs" />
+    <Compile Include="Models\ConverterItem.cs" />
     <Compile Include="Models\DecodeResult.cs" />
     <Compile Include="Models\EditFileParams.cs" />
     <Compile Include="Models\ExplorerItem.cs" />
     <Compile Include="Models\OpenFileParams.cs" />
+    <Compile Include="Models\ViewInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TabHeader.xaml.cs">
+      <DependentUpon>TabHeader.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewerPage.xaml.cs">
       <DependentUpon>ViewerPage.xaml</DependentUpon>
     </Compile>
@@ -173,11 +181,6 @@
     <Content Include="Assets\StoreLogo.scale-150.png" />
     <Content Include="Assets\StoreLogo.scale-200.png" />
     <Content Include="Assets\StoreLogo.scale-400.png" />
-    <Content Include="Logo-TileLargeMedium.scale-100.png" />
-    <Content Include="Logo-TileLargeMedium.scale-125.png" />
-    <Content Include="Logo-TileLargeMedium.scale-150.png" />
-    <Content Include="Logo-TileLargeMedium.scale-200.png" />
-    <Content Include="Logo-TileLargeMedium.scale-400.png" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -185,6 +188,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="ConverterPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CustomTitleBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -201,6 +208,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="TabHeader.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -211,8 +222,11 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="MSAdvertisingXaml, Version=8.1">
-      <Name>MSAdvertisingXaml</Name>
+    <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0">
+      <Name>Microsoft Advertising SDK for XAML</Name>
+    </SDKReference>
+    <SDKReference Include="Microsoft.VCLibs, Version=14.0">
+      <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
     </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
