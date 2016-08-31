@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.DirectX;
@@ -55,12 +56,17 @@ namespace Portable_Anymap_Viewer
                 case 1:
                 case 2:
                 case 3:
-                    var stream = await editFileParams.File.OpenAsync(FileAccessMode.Read);
-                    var dataReader = new DataReader(stream.GetInputStreamAt(0));
-                    uint bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size));
+                    EditorText.Visibility = Visibility.Visible;
+                    EditorHex.Visibility = Visibility.Collapsed;
+                    EditorEditGrid.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
+                    EditorEditGrid.RowDefinitions[1].Height = new GridLength(0, GridUnitType.Pixel);
 
-                    byte[] bytesText = new byte[bytesLoaded];
-                    dataReader.ReadBytes(bytesText);
+                    var streamT = await editFileParams.File.OpenAsync(FileAccessMode.Read);
+                    var dataReaderT = new DataReader(streamT.GetInputStreamAt(0));
+                    uint bytesLoadedT = await dataReaderT.LoadAsync((uint)(streamT.Size));
+
+                    byte[] bytesText = new byte[bytesLoadedT];
+                    dataReaderT.ReadBytes(bytesText);
 
                     ASCIIEncoding ascii = new ASCIIEncoding();
                     string strAll = ascii.GetString(bytesText);
@@ -69,6 +75,30 @@ namespace Portable_Anymap_Viewer
                 case 4:
                 case 5:
                 case 6:
+                    EditorText.Visibility = Visibility.Collapsed;
+                    EditorHex.Visibility = Visibility.Visible;
+                    EditorEditGrid.RowDefinitions[0].Height = new GridLength(0, GridUnitType.Pixel);
+                    EditorEditGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
+                    
+                    var streamB = await editFileParams.File.OpenAsync(FileAccessMode.Read);
+                    var dataReaderB = new DataReader(streamB.GetInputStreamAt(0));
+                    uint bytesLoadedB = await dataReaderB.LoadAsync((uint)(streamB.Size));
+
+                    byte[] bytesHex = new byte[bytesLoadedB];
+                    dataReaderB.ReadBytes(bytesHex);
+                    EditorHex.Bytes = bytesHex;
+
+                    //StringBuilder b = new StringBuilder();
+                    //int rowsNum = bytesHex.Length / 16 + 1;
+                    //int i = 0;
+                    //for (i = 0; i < rowsNum; ++i)
+                    //{
+                    //    Int32 offset = i * 16;
+                    //    b.AppendLine(offset.ToString("X8"));
+                    //}
+                    //PrimaryOffsets.Text = b.ToString();
+                    
+
                     break;
             }
         }
@@ -99,13 +129,27 @@ namespace Portable_Anymap_Viewer
 
         private async void EditorSave_Click(object sender, RoutedEventArgs e)
         {
-            var button = (sender as AppBarButton);
-            button.IsEnabled = false;
-            var stream = await editFileParams.File.OpenAsync(FileAccessMode.ReadWrite);
-            var dataWriter = new DataWriter(stream);
-            uint i = dataWriter.WriteString(EditorText.Text);
-
-            button.IsEnabled = true;
+            EditorCommandBar.IsEnabled = false;
+            EditorPivot.IsEnabled = false;
+            EditorRing.Visibility = Visibility.Visible;
+            EditorRing.IsActive = true;
+            switch (editFileParams.Type)
+            {
+                case 1:
+                case 2:
+                case 3:
+                    await FileIO.WriteTextAsync(editFileParams.File, EditorText.Text);
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    break;
+            }
+            await Task.Delay(5000);
+            EditorRing.IsActive = false;
+            EditorRing.Visibility = Visibility.Collapsed;
+            EditorCommandBar.IsEnabled = true;
+            EditorPivot.IsEnabled = true;
         }
 
         private void EditorCancel_Click(object sender, RoutedEventArgs e)

@@ -6,6 +6,7 @@
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:Portable_Anymap_Viewer="using:Portable_Anymap_Viewer"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -13,13 +14,20 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Pivot Grid.Row="1" SelectionChanged="Pivot_SelectionChanged">
+        <Pivot x:Name="EditorPivot" Grid.Row="1" SelectionChanged="Pivot_SelectionChanged">
             <PivotItem>
                 <PivotItem.Header>
                     <local:TabHeader Label="Edit" Glyph="&#xE70F;" />
                 </PivotItem.Header>
                 <PivotItem.Content>
-                    <TextBox x:Name="EditorText" AcceptsReturn="True" TextWrapping="NoWrap" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" FontFamily="Consolas"/>
+                    <Grid x:Name="EditorEditGrid" HorizontalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBox x:Name="EditorText" AcceptsReturn="True" TextWrapping="NoWrap" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" FontFamily="Assets/consola.ttf#Consolas" Grid.Row="0"/>
+                        <Portable_Anymap_Viewer:HexView x:Name="EditorHex" Grid.Row="1"/>
+                    </Grid>
                 </PivotItem.Content>
             </PivotItem>
             <PivotItem>
@@ -31,6 +39,7 @@
                 </PivotItem.Content>
             </PivotItem>
         </Pivot>
+        <ProgressRing Grid.Row="1" x:Name="EditorRing"  IsActive="False" Visibility="Collapsed" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" Height="60"/>
 
         <CommandBar x:Name="EditorCommandBar" VerticalAlignment="Bottom" Visibility="Visible" Grid.Row="0">
             <CommandBar.Background>
@@ -38,7 +47,11 @@
             </CommandBar.Background>
             <AppBarButton x:Name="EditorCompare" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)" Click="EditorCompare_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="EditorSaveCopy" Icon="SaveLocal" Label="Save copy" ToolTipService.ToolTip="Save copy (Ctrl+S)" Click="EditorSaveCopy_Click"/>
+            <AppBarButton x:Name="EditorSaveCopy" Label="Save copy" ToolTipService.ToolTip="Save copy (Ctrl+S)" Click="EditorSaveCopy_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA35;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
             <AppBarButton x:Name="EditorSave" Icon="Save" Label="Save" ToolTipService.ToolTip="Save" Click="EditorSave_Click"/>
             <AppBarButton x:Name="EditorCancel" Icon="Cancel" Label="Cancel" ToolTipService.ToolTip="Cancel (Esc)" Click="EditorCancel_Click"/>
         </CommandBar>
