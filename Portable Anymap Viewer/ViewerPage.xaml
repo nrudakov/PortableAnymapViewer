@@ -12,7 +12,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <FlipView x:Name="flipView" Margin="0" SelectionChanged="flipView_SelectionChanged" Tapped="flipView_Tapped" KeyDown="flipView_KeyDown"/>
+        
+        <FlipView x:Name="flipView" Grid.Row="0" Margin="0" SelectionChanged="flipView_SelectionChanged" Tapped="flipView_Tapped" KeyDown="flipView_KeyDown"/>
 
         <StackPanel x:Name="ViewerZoomStack" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 50, 50" Height="50" Width="Auto" Visibility="Collapsed">
             <StackPanel.Background>
@@ -35,8 +36,8 @@
             </AppBarButton>
         </StackPanel>
 
-        <TextBlock x:Name="text" Margin="0" FontSize="26" VerticalAlignment="Top" Visibility="Collapsed">
-        </TextBlock>
+        <TextBlock x:Name="text" Margin="0" FontSize="26" VerticalAlignment="Top" Visibility="Collapsed"/>
+
         <CommandBar x:Name="ViewerCommandBar" VerticalAlignment="Bottom" Visibility="Collapsed">
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
@@ -49,7 +50,7 @@
             <AppBarButton x:Name="ViewerEdit" Icon="Edit" Label="Edit" Click="ViewerEdit_Click"/>
             <AppBarButton x:Name="ViewerDelete" Icon="Delete" Label="Delete" Click="ViewerDelete_Click"/>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="ViewerAbout" Label="About"></AppBarButton>
+                <AppBarButton x:Name="ViewerAbout" Label="About"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Grid>

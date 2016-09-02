@@ -8,7 +8,6 @@
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
     mc:Ignorable="d">
 
-    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -46,29 +45,44 @@
             FontSize="16"
             FontStretch="Normal"
             TextWrapping="NoWrap"
-            Text="| ASCII           "/>
+            Text="| ASCII           "
+            />
         <canvas:CanvasControl 
             x:Name="PrimaryOffsets"
             Grid.Row="1"
             Grid.Column="0"
-            Draw="PrimaryOffsets_Draw"/>
+            Draw="PrimaryOffsets_Draw"
+            SizeChanged="PrimaryOffsets_SizeChanged"
+            ManipulationMode="TranslateY"
+            ManipulationDelta="HexDump_ManipulationDelta"
+            PointerWheelChanged="HexDump_PointerWheelChanged"
+            />
         <canvas:CanvasControl
             x:Name="HexDump"
             Grid.Row="1"
             Grid.Column="1"
             Draw="HexDump_Draw"
-            PointerPressed="HexDump_PointerPressed"/>
+            PointerPressed="HexDump_PointerPressed"
+            ManipulationMode="TranslateY"
+            ManipulationDelta="HexDump_ManipulationDelta"
+            PointerWheelChanged="HexDump_PointerWheelChanged"
+            />
         <canvas:CanvasControl
             x:Name="AsciiDump"
             Grid.Row="1"
             Grid.Column="2"
             Draw="AsciiDump_Draw"
-            PointerPressed="AsciiDump_PointerPressed"/>
+            PointerPressed="AsciiDump_PointerPressed"
+            ManipulationMode="TranslateY"
+            ManipulationDelta="HexDump_ManipulationDelta"
+            PointerWheelChanged="HexDump_PointerWheelChanged"
+            />
         <ScrollBar
             x:Name="Scroll"
             Grid.Row="1"
             Grid.Column="3"
             IndicatorMode="MouseIndicator"
-            Scroll="Scroll_Scroll"/>
+            Scroll="Scroll_Scroll"
+            />
     </Grid>
 </UserControl>

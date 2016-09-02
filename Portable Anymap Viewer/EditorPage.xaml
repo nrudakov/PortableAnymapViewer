@@ -8,44 +8,24 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:Portable_Anymap_Viewer="using:Portable_Anymap_Viewer"
     mc:Ignorable="d">
-
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Pivot x:Name="EditorPivot" Grid.Row="1" SelectionChanged="Pivot_SelectionChanged">
-            <PivotItem>
-                <PivotItem.Header>
-                    <local:TabHeader Label="Edit" Glyph="&#xE70F;" />
-                </PivotItem.Header>
-                <PivotItem.Content>
-                    <Grid x:Name="EditorEditGrid" HorizontalAlignment="Center">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <TextBox x:Name="EditorText" AcceptsReturn="True" TextWrapping="NoWrap" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" FontFamily="Assets/consola.ttf#Consolas" Grid.Row="0"/>
-                        <Portable_Anymap_Viewer:HexView x:Name="EditorHex" Grid.Row="1"/>
-                    </Grid>
-                </PivotItem.Content>
-            </PivotItem>
-            <PivotItem>
-                <PivotItem.Header>
-                    <local:TabHeader Label="Preview" Glyph="&#xE8FF;" />
-                </PivotItem.Header>
-                <PivotItem.Content>
-                    <canvas:CanvasControl x:Name="EditorCanvas" CreateResources="EditorCanvas_CreateResources" Draw="EditorCanvas_Draw"/>
-                </PivotItem.Content>
-            </PivotItem>
-        </Pivot>
-        <ProgressRing Grid.Row="1" x:Name="EditorRing"  IsActive="False" Visibility="Collapsed" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" Height="60"/>
-
-        <CommandBar x:Name="EditorCommandBar" VerticalAlignment="Bottom" Visibility="Visible" Grid.Row="0">
+    <Page.TopAppBar>
+        <CommandBar x:Name="EditorCommandBar">
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="EditorCompare" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)" Click="EditorCompare_Click"/>
+            <AppBarButton x:Name="EditorCompare" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)" Click="EditorCompare_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13C;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="EditorPreview" Label="Preview" ToolTipService.ToolTip="Preview" Click="EditorPreview_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8FF;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarSeparator/>
+            <AppBarButton x:Name="EditorUndo" Label="Undo" Icon="Undo" Click="EditorUndo_Click"/>
+            <AppBarButton x:Name="EditorRedo" Label="Redo" Icon="Redo" Click="EditorRedo_Click"/>
             <AppBarSeparator/>
             <AppBarButton x:Name="EditorSaveCopy" Label="Save copy" ToolTipService.ToolTip="Save copy (Ctrl+S)" Click="EditorSaveCopy_Click">
                 <AppBarButton.Icon>
@@ -55,5 +35,33 @@
             <AppBarButton x:Name="EditorSave" Icon="Save" Label="Save" ToolTipService.ToolTip="Save" Click="EditorSave_Click"/>
             <AppBarButton x:Name="EditorCancel" Icon="Cancel" Label="Cancel" ToolTipService.ToolTip="Cancel (Esc)" Click="EditorCancel_Click"/>
         </CommandBar>
+    </Page.TopAppBar>
+
+    <Grid x:Name="EditorEditGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0"/>
+            <RowDefinition Height="0"/>
+            <RowDefinition Height="0"/>
+        </Grid.RowDefinitions>
+        <TextBox
+            x:Name="EditorText"
+            AcceptsReturn="True"
+            TextWrapping="NoWrap"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            FontFamily="Assets/consola.ttf#Consolas"
+            Visibility="Collapsed"
+            Grid.Row="0"/>
+        <Portable_Anymap_Viewer:HexView
+            x:Name="EditorHex"
+            Visibility="Collapsed"
+            Grid.Row="1"/>
+        <canvas:CanvasControl
+            x:Name="EditorCanvas"
+            CreateResources="EditorCanvas_CreateResources"
+            Draw="EditorCanvas_Draw"
+            Visibility="Collapsed"
+            Grid.Row="2"/>
+        <ProgressRing x:Name="EditorRing" IsActive="False" Visibility="Collapsed" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" Height="60"/>
     </Grid>
 </Page>

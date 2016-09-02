@@ -43,6 +43,7 @@ namespace Portable_Anymap_Viewer
         EditFileParams editFileParams;
         CanvasBitmap cbm;
         CanvasImageBrush brush;
+        int editorRow;
         
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -56,11 +57,9 @@ namespace Portable_Anymap_Viewer
                 case 1:
                 case 2:
                 case 3:
+                    editorRow = 0;
                     EditorText.Visibility = Visibility.Visible;
-                    EditorHex.Visibility = Visibility.Collapsed;
-                    EditorEditGrid.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
-                    EditorEditGrid.RowDefinitions[1].Height = new GridLength(0, GridUnitType.Pixel);
-
+                    
                     var streamT = await editFileParams.File.OpenAsync(FileAccessMode.Read);
                     var dataReaderT = new DataReader(streamT.GetInputStreamAt(0));
                     uint bytesLoadedT = await dataReaderT.LoadAsync((uint)(streamT.Size));
@@ -75,10 +74,8 @@ namespace Portable_Anymap_Viewer
                 case 4:
                 case 5:
                 case 6:
-                    EditorText.Visibility = Visibility.Collapsed;
+                    editorRow = 1;
                     EditorHex.Visibility = Visibility.Visible;
-                    EditorEditGrid.RowDefinitions[0].Height = new GridLength(0, GridUnitType.Pixel);
-                    EditorEditGrid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
                     
                     var streamB = await editFileParams.File.OpenAsync(FileAccessMode.Read);
                     var dataReaderB = new DataReader(streamB.GetInputStreamAt(0));
@@ -87,20 +84,9 @@ namespace Portable_Anymap_Viewer
                     byte[] bytesHex = new byte[bytesLoadedB];
                     dataReaderB.ReadBytes(bytesHex);
                     EditorHex.Bytes = bytesHex;
-
-                    //StringBuilder b = new StringBuilder();
-                    //int rowsNum = bytesHex.Length / 16 + 1;
-                    //int i = 0;
-                    //for (i = 0; i < rowsNum; ++i)
-                    //{
-                    //    Int32 offset = i * 16;
-                    //    b.AppendLine(offset.ToString("X8"));
-                    //}
-                    //PrimaryOffsets.Text = b.ToString();
-                    
-
                     break;
             }
+            EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(1, GridUnitType.Star);
         }
 
         private void EditorCanvas_CreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
@@ -122,6 +108,32 @@ namespace Portable_Anymap_Viewer
 
         }
 
+        private void EditorPreview_Click(object sender, RoutedEventArgs e)
+        {
+            if (EditorCanvas.Visibility == Visibility.Collapsed)
+            {
+                EditorCanvas.Visibility = Visibility.Visible;
+                EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(0, GridUnitType.Pixel);
+                EditorEditGrid.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
+            }
+            else
+            {
+                EditorCanvas.Visibility = Visibility.Collapsed;
+                EditorEditGrid.RowDefinitions[2].Height = new GridLength(0, GridUnitType.Pixel);
+                EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(1, GridUnitType.Star);
+            }
+        }
+
+        private void EditorUndo_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void EditorRedo_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void EditorSaveCopy_Click(object sender, RoutedEventArgs e)
         {
 
@@ -130,7 +142,6 @@ namespace Portable_Anymap_Viewer
         private async void EditorSave_Click(object sender, RoutedEventArgs e)
         {
             EditorCommandBar.IsEnabled = false;
-            EditorPivot.IsEnabled = false;
             EditorRing.Visibility = Visibility.Visible;
             EditorRing.IsActive = true;
             switch (editFileParams.Type)
@@ -143,26 +154,18 @@ namespace Portable_Anymap_Viewer
                 case 4:
                 case 5:
                 case 6:
+                    await FileIO.WriteBytesAsync(editFileParams.File, EditorHex.Bytes);
                     break;
             }
             await Task.Delay(5000);
             EditorRing.IsActive = false;
             EditorRing.Visibility = Visibility.Collapsed;
             EditorCommandBar.IsEnabled = true;
-            EditorPivot.IsEnabled = true;
         }
 
         private void EditorCancel_Click(object sender, RoutedEventArgs e)
         {
 
-        }
-
-        private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if ((sender as Pivot).SelectedIndex == 1)
-            {
-
-            }
         }
     }
 }

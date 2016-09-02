@@ -12,9 +12,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="65" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="65" />
         </Grid.RowDefinitions>
-        <TextBlock x:Name="ExplorerHeaderTitle" Margin="10, 10, 10, 10" FontSize="24" Grid.Row="0"></TextBlock>
+        <TextBlock x:Name="ExplorerHeaderTitle" Margin="10" FontSize="24" Grid.Row="0"></TextBlock>
         <ListView x:Name="ExplorerItemList"
                   ItemsSource="{x:Bind ExplorerItems}"
                   IsItemClickEnabled="True"

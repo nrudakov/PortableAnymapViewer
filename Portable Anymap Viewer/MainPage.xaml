@@ -12,9 +12,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="65" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="65" />
         </Grid.RowDefinitions>
-        <TextBlock x:Name="MainHeaderTitle" Margin="10, 10, 10, 10" FontSize="24" Grid.Row="0">Folders</TextBlock>
+        <TextBlock x:Name="MainHeaderTitle" Margin="10" FontSize="24" Grid.Row="0">Folders</TextBlock>
         <ListView x:Name="FolderList"
                   ItemsSource="{x:Bind Folders}"
                   IsItemClickEnabled="True"
@@ -52,7 +51,7 @@
             <CommandBar.Content>
                 <Grid/>
             </CommandBar.Content>
-            <AppBarButton x:Name="AddFolder" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
+            <AppBarButton x:Name="AddFolder" Icon="NewFolder" Label="Add Folder" Click="AddFolder_Click"/>
             <AppBarButton x:Name="RemoveFolders" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
             <AppBarButton x:Name="SelectFolders" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
             <AppBarSeparator/>
