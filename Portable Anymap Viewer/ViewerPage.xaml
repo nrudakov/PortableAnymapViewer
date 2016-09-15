@@ -8,11 +8,28 @@
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
     mc:Ignorable="d">
 
+    <Page.TopAppBar>
+        <CommandBar x:Name="ViewerCommandBar" VerticalAlignment="Bottom" Visibility="Collapsed">
+            <CommandBar.Background>
+                <SolidColorBrush Color="Black" Opacity="0.1"/>
+            </CommandBar.Background>
+            <AppBarButton x:Name="ViewerShare" Label="Share" Click="ViewerShare_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72D;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="ViewerEdit" Icon="Edit" Label="Edit" Click="ViewerEdit_Click"/>
+            <AppBarButton x:Name="ViewerDelete" Icon="Delete" Label="Delete" Click="ViewerDelete_Click"/>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="ViewerAbout" Label="About"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.TopAppBar>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" x:Name="ViewerGrid" KeyDown="ViewerGrid_KeyDown">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        
+
         <FlipView x:Name="flipView" Grid.Row="0" Margin="0" SelectionChanged="flipView_SelectionChanged" Tapped="flipView_Tapped" KeyDown="flipView_KeyDown"/>
 
         <StackPanel x:Name="ViewerZoomStack" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 50, 50" Height="50" Width="Auto" Visibility="Collapsed">
@@ -35,23 +52,6 @@
                 </AppBarButton.Icon>
             </AppBarButton>
         </StackPanel>
-
         <TextBlock x:Name="text" Margin="0" FontSize="26" VerticalAlignment="Top" Visibility="Collapsed"/>
-
-        <CommandBar x:Name="ViewerCommandBar" VerticalAlignment="Bottom" Visibility="Collapsed">
-            <CommandBar.Background>
-                <SolidColorBrush Color="Black" Opacity="0.1"/>
-            </CommandBar.Background>
-            <AppBarButton x:Name="ViewerShare" Label="Share" Click="ViewerShare_Click">
-                <AppBarButton.Icon>
-                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72D;"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Name="ViewerEdit" Icon="Edit" Label="Edit" Click="ViewerEdit_Click"/>
-            <AppBarButton x:Name="ViewerDelete" Icon="Delete" Label="Delete" Click="ViewerDelete_Click"/>
-            <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="ViewerAbout" Label="About"/>
-            </CommandBar.SecondaryCommands>
-        </CommandBar>
     </Grid>
 </Page>

@@ -13,7 +13,7 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="EditorCompare" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)" Click="EditorCompare_Click">
+            <AppBarButton x:Name="EditorCompare" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13C;"/>
                 </AppBarButton.Icon>

@@ -1,5 +1,6 @@
 ﻿using Portable_Anymap_Viewer.Models;
 using System;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,11 +11,11 @@ namespace Portable_Anymap_Viewer
 {
     public class AnymapDecoder
     {
-        public async Task<DecodeResult> decode(StorageFile file)
+        private async Task<DecodeResult> decode(IRandomAccessStream stream, String filename)
         {
-            var stream = await file.OpenAsync(FileAccessMode.Read);
             ulong size = stream.Size;
-            var dataReader = new DataReader(stream.GetInputStreamAt(0));
+            stream.Seek(0);
+            var dataReader = new DataReader(stream);
             await dataReader.LoadAsync((uint)2);
             string formatType = dataReader.ReadString(2);
             DecodeResult result = new DecodeResult();
@@ -22,7 +23,7 @@ namespace Portable_Anymap_Viewer
             result.Width = 0;
             result.Height = 0;
             result.Bytes = null;
-            result.Filename = file.Name;
+            result.Filename = filename;
             result.CurrentZoom = 1.0;
             if (formatType[0] != 'P')
             {
@@ -34,12 +35,12 @@ namespace Portable_Anymap_Viewer
             switch (formatType[1])
             {
                 case '1':
-                    properties = await GetImageProperties(file, false);
-                    if(properties.MaxValue != 0)
+                    properties = await GetImageProperties(stream, false);
+                    if (properties.MaxValue != 0)
                     {
                         decodedAnymap = new byte[properties.Width * properties.Height * 4];
-                        stream = await file.OpenAsync(FileAccessMode.Read);
-                        dataReader = new DataReader(stream.GetInputStreamAt(properties.StreamPosition));
+                        stream.Seek(properties.StreamPosition);
+                        dataReader = new DataReader(stream);
 
                         bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
                         if (properties.BytesPerColor == 1)
@@ -72,12 +73,12 @@ namespace Portable_Anymap_Viewer
                     result.Bytes = decodedAnymap;
                     break;
                 case '2':
-                    properties = await GetImageProperties(file, true);
+                    properties = await GetImageProperties(stream, true);
                     if (properties.MaxValue != 0)
                     {
                         decodedAnymap = new byte[properties.Width * properties.Height * 4];
-                        stream = await file.OpenAsync(FileAccessMode.Read);
-                        dataReader = new DataReader(stream.GetInputStreamAt(properties.StreamPosition));
+                        stream.Seek(properties.StreamPosition);
+                        dataReader = new DataReader(stream);
 
                         bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
                         if (properties.BytesPerColor == 1)
@@ -110,12 +111,12 @@ namespace Portable_Anymap_Viewer
                     result.Bytes = decodedAnymap;
                     break;
                 case '3':
-                    properties = await GetImageProperties(file, true);
+                    properties = await GetImageProperties(stream, true);
                     if (properties.MaxValue != 0)
                     {
                         decodedAnymap = new byte[properties.Width * properties.Height * 4];
-                        stream = await file.OpenAsync(FileAccessMode.Read);
-                        dataReader = new DataReader(stream.GetInputStreamAt(properties.StreamPosition));
+                        stream.Seek(properties.StreamPosition);
+                        dataReader = new DataReader(stream);
 
                         bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
                         if (properties.BytesPerColor == 1)
@@ -161,24 +162,21 @@ namespace Portable_Anymap_Viewer
                     result.Bytes = decodedAnymap;
                     break;
                 case '4':
-                    properties = await GetImageProperties(file, false);
+                    properties = await GetImageProperties(stream, false);
                     decodedAnymap = new byte[properties.Width * properties.Height * 4];
-                    stream = await file.OpenAsync(FileAccessMode.Read);
-                    size = stream.Size;
-                    dataReader = new DataReader(stream.GetInputStreamAt(properties.StreamPosition));
+                    stream.Seek(properties.StreamPosition);
+                    dataReader = new DataReader(stream);
 
                     bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
                     if (properties.BytesPerColor == 1)
                     {
                         int resultIndex = 0;
                         int mod = (int)(properties.Width * properties.Height) % 8;
-
-                        // All bytes except last one
+                        
                         for (uint i = 0; i < bytesLoaded - 1; ++i)
                         {
                             unpackBytePbm(decodedAnymap, resultIndex, 8, dataReader.ReadByte());
                         }
-                        // The last byte
                         unpackBytePbm(decodedAnymap, resultIndex, mod == 0 ? 8 : mod, dataReader.ReadByte());
                     }
                     result.Type = 4;
@@ -187,13 +185,12 @@ namespace Portable_Anymap_Viewer
                     result.Bytes = decodedAnymap;
                     break;
                 case '5':
-                    properties = await GetImageProperties(file, true);
+                    properties = await GetImageProperties(stream, true);
                     if (properties.MaxValue != 0)
                     {
                         decodedAnymap = new byte[properties.Width * properties.Height * 4];
-                        stream = await file.OpenAsync(FileAccessMode.Read);
-                        size = stream.Size;
-                        dataReader = new DataReader(stream.GetInputStreamAt(properties.StreamPosition));
+                        stream.Seek(properties.StreamPosition);
+                        dataReader = new DataReader(stream);
 
                         bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
                         if (properties.BytesPerColor == 1)
@@ -218,14 +215,12 @@ namespace Portable_Anymap_Viewer
                     result.Bytes = decodedAnymap;
                     break;
                 case '6':
-                    properties = await GetImageProperties(file, true);
+                    properties = await GetImageProperties(stream, true);
                     if (properties.MaxValue != 0)
                     {
                         decodedAnymap = new byte[properties.Width * properties.Height * 4];
-
-                        stream = await file.OpenAsync(FileAccessMode.Read);
-                        size = stream.Size;
-                        dataReader = new DataReader(stream.GetInputStreamAt(properties.StreamPosition));
+                        stream.Seek(properties.StreamPosition);
+                        dataReader = new DataReader(stream);
 
                         bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
                         if (properties.BytesPerColor == 1)
@@ -252,18 +247,24 @@ namespace Portable_Anymap_Viewer
             }
             return result;
         }
-
-        //public async Task<DecodeResult> decode(String str)
-        //{
-
-        //}
-
-        private async Task<AnymapProperties> GetImageProperties(StorageFile file, bool isContainMaxValue)
+        public async Task<DecodeResult> decode(StorageFile file)
         {
             var stream = await file.OpenAsync(FileAccessMode.Read);
-            ulong size = stream.Size;
+            return await decode(stream, file.Name);
+        }
 
-            var dataReader = new DataReader(stream.GetInputStreamAt(0));
+        public async Task<DecodeResult> decode(byte[] bytes)
+        {
+            DecodeResult result = new DecodeResult();
+            var stream = (new MemoryStream(bytes)).AsRandomAccessStream();
+            return await decode(stream, "");
+        }
+        
+        private async Task<AnymapProperties> GetImageProperties(IRandomAccessStream stream, bool isContainMaxValue)
+        {
+            ulong size = stream.Size;
+            stream.Seek(0);
+            var dataReader = new DataReader(stream);
             uint bytesLoaded = await dataReader.LoadAsync((uint)size);
             byte[] bytes = new byte[bytesLoaded];
             dataReader.ReadBytes(bytes);
@@ -273,7 +274,8 @@ namespace Portable_Anymap_Viewer
 
             uint[] imageProperties = new uint[3];
             uint imagePropertiesCounter = 0;
-            string[] strs = strAll.Split('\n');
+            //string[] strs = strAll.Split(new String[] { Environment.NewLine }, StringSplitOptions.None);
+            string[] strs = strAll.Split('\r');
             int seekPos = 0;
             foreach (string str in strs)
             {
@@ -284,6 +286,7 @@ namespace Portable_Anymap_Viewer
                     if (imagePropertiesCounter == (isContainMaxValue ? 3 : 2))
                     {
                         seekPos += (mc[i].Index + mc[i].Length + 1);
+                        break;
                     }
                 }
                 if (imagePropertiesCounter == (isContainMaxValue ? 3 : 2))
@@ -303,7 +306,6 @@ namespace Portable_Anymap_Viewer
                 badProperties.StreamPosition = 0;
                 return badProperties;
             }
-            stream = await file.OpenAsync(FileAccessMode.Read);
             stream.Seek((ulong)(seekPos));
             AnymapProperties properties = new AnymapProperties();
             properties.Width = imageProperties[0];

@@ -13,6 +13,7 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System.Profile;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -31,18 +32,27 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 namespace Portable_Anymap_Viewer
 {
     /// <summary>
-    /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
+    /// Page for editing anymap files
     /// </summary>
     public sealed partial class EditorPage : Page
     {
         public EditorPage()
         {
             this.InitializeComponent();
+            decoder = new AnymapDecoder();
+            EditorCompare.AddHandler(PointerPressedEvent, new PointerEventHandler(EditorCompare_PointerPressed), true);
+            EditorCompare.AddHandler(PointerReleasedEvent, new PointerEventHandler(EditorCompare_PointerReleased), true);
         }
 
+        AnymapDecoder decoder;
         EditFileParams editFileParams;
         CanvasBitmap cbm;
         CanvasImageBrush brush;
+        DecodeResult lastDecodeResult;
+        string initialStrAll;
+        string currentStrAll;
+        byte[] initialBytes;
+        byte[] currentBytes;
         int editorRow;
         
         protected async override void OnNavigatedTo(NavigationEventArgs e)
@@ -68,8 +78,9 @@ namespace Portable_Anymap_Viewer
                     dataReaderT.ReadBytes(bytesText);
 
                     ASCIIEncoding ascii = new ASCIIEncoding();
-                    string strAll = ascii.GetString(bytesText);
-                    EditorText.Text = strAll;
+                    initialStrAll = ascii.GetString(bytesText);
+                    currentStrAll = initialStrAll;
+                    EditorText.Text = initialStrAll;
                     break;
                 case 4:
                 case 5:
@@ -81,9 +92,11 @@ namespace Portable_Anymap_Viewer
                     var dataReaderB = new DataReader(streamB.GetInputStreamAt(0));
                     uint bytesLoadedB = await dataReaderB.LoadAsync((uint)(streamB.Size));
 
-                    byte[] bytesHex = new byte[bytesLoadedB];
-                    dataReaderB.ReadBytes(bytesHex);
-                    EditorHex.Bytes = bytesHex;
+                    initialBytes = new byte[bytesLoadedB];
+                    dataReaderB.ReadBytes(initialBytes);
+                    EditorHex.Bytes = new byte[bytesLoadedB];
+                    initialBytes.CopyTo(EditorHex.Bytes, 0);
+                    EditorHex.Invalidate();
                     break;
             }
             EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(1, GridUnitType.Star);
@@ -103,24 +116,95 @@ namespace Portable_Anymap_Viewer
             args.DrawingSession.FillRectangle(new Rect(new Point(), sender.Size), brush);
         }
 
-        private void EditorCompare_Click(object sender, RoutedEventArgs e)
+        private void EditorCompare_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-
+            if (EditorCanvas.Visibility == Visibility.Visible)
+            {
+                cbm = CanvasBitmap.CreateFromBytes(EditorCanvas, editFileParams.Bytes, editFileParams.Width, editFileParams.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
+                brush = new CanvasImageBrush(EditorCanvas, cbm);
+                brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
+                EditorCanvas.Width = editFileParams.Width;
+                EditorCanvas.Height = editFileParams.Height;
+                EditorCanvas.Invalidate();
+            }
+            else
+            {
+                if (EditorText.Visibility == Visibility.Visible)
+                {
+                    currentStrAll = EditorText.Text;
+                    EditorText.Text = initialStrAll;
+                }
+                else if (EditorHex.Visibility == Visibility.Visible)
+                {
+                    currentBytes = new Byte[EditorHex.Bytes.Length];
+                    EditorHex.Bytes.CopyTo(currentBytes, 0);
+                    EditorHex.Bytes = new Byte[initialBytes.Length];
+                    initialBytes.CopyTo(EditorHex.Bytes, 0);
+                    EditorHex.Invalidate();
+                }
+            }
         }
 
-        private void EditorPreview_Click(object sender, RoutedEventArgs e)
+        private void EditorCompare_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            if (EditorCanvas.Visibility == Visibility.Visible)
+            {
+                cbm = CanvasBitmap.CreateFromBytes(EditorCanvas, lastDecodeResult.Bytes, lastDecodeResult.Width, lastDecodeResult.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
+                brush = new CanvasImageBrush(EditorCanvas, cbm);
+                brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
+                EditorCanvas.Width = lastDecodeResult.Width;
+                EditorCanvas.Height = lastDecodeResult.Height;
+                EditorCanvas.Invalidate();
+            }
+            else
+            {
+                if (EditorText.Visibility == Visibility.Visible)
+                {
+                    EditorText.Text = currentStrAll;
+                }
+                else if (EditorHex.Visibility == Visibility.Visible)
+                {
+                    EditorHex.Bytes = new byte[currentBytes.Length];
+                    currentBytes.CopyTo(EditorHex.Bytes, 0);
+                    EditorHex.Invalidate();
+                }
+            }
+        }
+        
+        private async void EditorPreview_Click(object sender, RoutedEventArgs e)
         {
             if (EditorCanvas.Visibility == Visibility.Collapsed)
             {
+                var uiSettings = new Windows.UI.ViewManagement.UISettings();
+                var color = uiSettings.GetColorValue(UIColorType.Accent);
+                (sender as AppBarButton).Background = new SolidColorBrush(color);
+
+                if (EditorText.Visibility == Visibility.Visible)
+                {
+                    lastDecodeResult = await decoder.decode(ASCIIEncoding.ASCII.GetBytes(EditorText.Text));
+                }
+                else if (EditorHex.Visibility == Visibility.Visible)
+                {
+                    lastDecodeResult = await decoder.decode(EditorHex.Bytes);
+                }
+                
+                cbm = CanvasBitmap.CreateFromBytes(EditorCanvas, lastDecodeResult.Bytes, lastDecodeResult.Width, lastDecodeResult.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
+                brush = new CanvasImageBrush(EditorCanvas, cbm);
+                brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
+                EditorCanvas.Width = editFileParams.Width;
+                EditorCanvas.Height = EditorCanvas.Height;
+
                 EditorCanvas.Visibility = Visibility.Visible;
                 EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(0, GridUnitType.Pixel);
                 EditorEditGrid.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
+                EditorCanvas.Invalidate();
             }
             else
             {
                 EditorCanvas.Visibility = Visibility.Collapsed;
                 EditorEditGrid.RowDefinitions[2].Height = new GridLength(0, GridUnitType.Pixel);
                 EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(1, GridUnitType.Star);
+                (sender as AppBarButton).Background = new SolidColorBrush(Windows.UI.Colors.Black);
             }
         }
 
@@ -131,12 +215,32 @@ namespace Portable_Anymap_Viewer
 
         private void EditorRedo_Click(object sender, RoutedEventArgs e)
         {
-
+            
         }
 
-        private void EditorSaveCopy_Click(object sender, RoutedEventArgs e)
+        private async void EditorSaveCopy_Click(object sender, RoutedEventArgs e)
         {
-
+            EditorCommandBar.IsEnabled = false;
+            EditorRing.Visibility = Visibility.Visible;
+            EditorRing.IsActive = true;
+            StorageFolder folder = await editFileParams.File.GetParentAsync();
+            StorageFile file = await folder.CreateFileAsync(editFileParams.File.Name, CreationCollisionOption.GenerateUniqueName);
+            switch (editFileParams.Type)
+            {
+                case 1:
+                case 2:
+                case 3:
+                    await FileIO.WriteTextAsync(file, EditorText.Text);
+                    break;
+                case 4:
+                case 5:
+                case 6:
+                    await FileIO.WriteBytesAsync(file, EditorHex.Bytes);
+                    break;
+            }
+            EditorRing.IsActive = false;
+            EditorRing.Visibility = Visibility.Collapsed;
+            EditorCommandBar.IsEnabled = true;
         }
 
         private async void EditorSave_Click(object sender, RoutedEventArgs e)
@@ -157,7 +261,6 @@ namespace Portable_Anymap_Viewer
                     await FileIO.WriteBytesAsync(editFileParams.File, EditorHex.Bytes);
                     break;
             }
-            await Task.Delay(5000);
             EditorRing.IsActive = false;
             EditorRing.Visibility = Visibility.Collapsed;
             EditorCommandBar.IsEnabled = true;

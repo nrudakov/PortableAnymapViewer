@@ -138,13 +138,17 @@ namespace Portable_Anymap_Viewer
                         ++this.selectedIndex;
                     }
                 }
+                if (this.selectedIndex >= this.offset + this.visibleRowsNum * 16)
+                {
+                    ++this.Scroll.Value;
+                }
             }
             this.Invalidate();
         }
 
         public static readonly DependencyProperty BytesProperty =
             DependencyProperty.Register("Bytes", typeof(byte[]), typeof(HexView), new PropertyMetadata(new byte[] { }));
-
+        //private byte[] BytesInitial = null;
         public byte[] Bytes
         {
             get
@@ -154,7 +158,15 @@ namespace Portable_Anymap_Viewer
             set
             {
                 SetValue(BytesProperty, value);
-                this.Invalidate();
+                //if (BytesInitial == null)
+                //{
+                //    BytesInitial = new byte[Bytes.Length];
+                //    for (int i = 0; i < Bytes.Length; ++i)
+                //    {
+                //        BytesInitial[i] = Bytes[i];
+                //    }
+                //}
+                //this.Invalidate();
             }
         }
 
@@ -181,7 +193,12 @@ namespace Portable_Anymap_Viewer
         };
         private Int32 offset;
 
-        private void Invalidate()
+        //public byte[] GetInitialBytes()
+        //{
+        //    return BytesInitial;
+        //}
+        
+        public void Invalidate()
         {
             this.PrimaryOffsets.Invalidate();
             this.HexDump.Invalidate();
