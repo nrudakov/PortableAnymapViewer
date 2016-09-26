@@ -9,7 +9,7 @@ namespace Portable_Anymap_Viewer.Models
         public Int32 Height { get; set; }
         public byte[] Bytes { get; set; }
         public String Filename { get; set; }
-        public Double CurrentZoom { get; set; }
+        public Single CurrentZoom { get; set; }
        
     }
 }

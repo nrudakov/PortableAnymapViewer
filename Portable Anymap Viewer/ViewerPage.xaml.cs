@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.DirectX;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.Streams;
@@ -34,31 +35,22 @@ using Microsoft.Graphics.Canvas.UI.Xaml;
 namespace Portable_Anymap_Viewer
 {
     /// <summary>
-    /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
+    /// Page that displays images in flipview
     /// </summary>
     public sealed partial class ViewerPage : Page
     {
         public ViewerPage()
         {
-            transforms = new TransformGroup();
-            previousTrasform = new MatrixTransform
-            {
-                Matrix = Matrix.Identity
-            };
-            deltaTransform = new CompositeTransform();
-            transforms.Children.Add(previousTrasform);
-            transforms.Children.Add(deltaTransform);
-
             this.InitializeComponent();
+            DataContext = this;
         }
 
         private OpenFileParams openFileParams;
         private List<DecodeResult> imagesInfo = new List<DecodeResult>();
         private AnymapDecoder anymapDecoder = new AnymapDecoder();
 
-        private TransformGroup transforms;
-        private MatrixTransform previousTrasform;
-        private CompositeTransform deltaTransform;
+        private Visibility commandBarVisibility = Visibility.Collapsed;
+        private bool commandBarSelector = false; // false is top, true is bottom
 
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
@@ -69,9 +61,10 @@ namespace Portable_Anymap_Viewer
             //}
             //else
             //{
+
             if (String.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Desktop"))
             {
-                ViewerCommandBar.VerticalAlignment = VerticalAlignment.Top;
+                //ViewerCommandBar.VerticalAlignment = VerticalAlignment.Top;
                 ViewerZoomStack.Visibility = Visibility.Visible;
             }
 
@@ -99,21 +92,14 @@ namespace Portable_Anymap_Viewer
                 // Create canvas
                 CanvasControl canvas = new CanvasControl();
                 canvas.Tag = result;
-                canvas.ManipulationMode =
-                    ManipulationModes.Scale |
-                    ManipulationModes.TranslateX |
-                    ManipulationModes.TranslateY;
                 canvas.CreateResources += Img_CreateResources;
                 canvas.Draw += Img_Draw;
-                canvas.ManipulationDelta += Canvas_ManipulationDelta;
-                canvas.RenderTransform = transforms;
 
+                CanvasWrapper wrapper = new CanvasWrapper(result);
+                wrapper.Margin = new Thickness(0, 0, 0, 0);
+                wrapper.SetCanvas(canvas);
 
-                ScrollViewer scroll = new ScrollViewer();
-                scroll.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-                scroll.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-                scroll.Content = canvas;
-                flipView.Items.Add(scroll);
+                flipView.Items.Add(wrapper);
                 
                 if (openFileParams.ClickedFile != null && file.Name == openFileParams.ClickedFile.Name)
                 {
@@ -126,19 +112,10 @@ namespace Portable_Anymap_Viewer
             DataTransferManager.GetForCurrentView().DataRequested += ViewerPage_DataRequested;
         }
 
-        private void Canvas_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            previousTrasform.Matrix = transforms.Value;
-            deltaTransform.TranslateX = e.Delta.Translation.X;
-            deltaTransform.TranslateY = e.Delta.Translation.Y;
-            deltaTransform.ScaleX = e.Delta.Scale;
-            deltaTransform.ScaleY = e.Delta.Scale;
-        }
-
         private void Img_CreateResources(CanvasControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
         {
             var result = sender.Tag as DecodeResult;
-            CanvasBitmap cbm = CanvasBitmap.CreateFromBytes(sender, result.Bytes, result.Width, result.Height, Windows.Graphics.DirectX.DirectXPixelFormat.B8G8R8A8UIntNormalized);
+            CanvasBitmap cbm = CanvasBitmap.CreateFromBytes(sender, result.Bytes, result.Width, result.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
             CanvasImageBrush brush = new CanvasImageBrush(sender, cbm);
             brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
             sender.Tag = brush;
@@ -164,15 +141,15 @@ namespace Portable_Anymap_Viewer
             if (e.OriginalSource.GetType() == typeof(Grid) ||
                 e.OriginalSource.GetType() == typeof(Image))
             {
-                if (ViewerCommandBar.Visibility == Visibility.Collapsed)
+                if (commandBarVisibility == Visibility.Collapsed)
                 {
-                    ViewerCommandBar.Visibility = Visibility.Visible;
+                    commandBarVisibility = Visibility.Visible;
                     if (String.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Mobile"))
                         text.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    ViewerCommandBar.Visibility = Visibility.Collapsed;
+                    commandBarVisibility = Visibility.Collapsed;
                     if (String.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Mobile"))
                         text.Visibility = Visibility.Collapsed;
                 }
@@ -218,12 +195,15 @@ namespace Portable_Anymap_Viewer
 
         private void ViewerZoomReal_Click(object sender, RoutedEventArgs e)
         {
-            CanvasControl canvas = (flipView.SelectedItem as ScrollViewer).Content as CanvasControl;
-            canvas.Width = imagesInfo[flipView.SelectedIndex].Width;
-            canvas.Height = imagesInfo[flipView.SelectedIndex].Height;
-            imagesInfo[flipView.SelectedIndex].CurrentZoom = 1.0;
-            (canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale((float)imagesInfo[flipView.SelectedIndex].CurrentZoom);
-            canvas.Invalidate();
+            //CanvasControl canvas = (flipView.SelectedItem as ScrollViewer).Content as CanvasControl;
+            //canvas.Width = imagesInfo[flipView.SelectedIndex].Width;
+            //canvas.Height = imagesInfo[flipView.SelectedIndex].Height;
+            //imagesInfo[flipView.SelectedIndex].CurrentZoom = 1.0;
+            //(canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale((float)imagesInfo[flipView.SelectedIndex].CurrentZoom);
+            //canvas.Invalidate();
+
+            (flipView.SelectedItem as CanvasWrapper).ZoomReal();
+
             //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Tag as CanvasImageBrush).Transform = System.Numerics.Matrix3x2.CreateScale((float)1);
             //((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Invalidate();
             //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).RenderTransform as CompositeTransform).ScaleX = 1.0;
@@ -233,16 +213,19 @@ namespace Portable_Anymap_Viewer
 
         private void ViewerZoomOut_Click(object sender, RoutedEventArgs e)
         {
-            CanvasControl canvas = (flipView.SelectedItem as ScrollViewer).Content as CanvasControl;
-            if (canvas.Width * 0.8 >= 1.0 &&
-                canvas.Height * 0.8 >= 1.0)
-            {
-                canvas.Width *= 0.8;
-                canvas.Height *= 0.8;
-                imagesInfo[flipView.SelectedIndex].CurrentZoom *= 0.8;
-                (canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale((float)imagesInfo[flipView.SelectedIndex].CurrentZoom);
-                canvas.Invalidate();
-            }
+            //CanvasControl canvas = (flipView.SelectedItem as ScrollViewer).Content as CanvasControl;
+            //if (canvas.Width * 0.8 >= 1.0 &&
+            //    canvas.Height * 0.8 >= 1.0)
+            //{
+            //    canvas.Width *= 0.8;
+            //    canvas.Height *= 0.8;
+            //    imagesInfo[flipView.SelectedIndex].CurrentZoom *= 0.8;
+            //    (canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale((float)imagesInfo[flipView.SelectedIndex].CurrentZoom);
+            //    canvas.Invalidate();
+            //}
+
+            (flipView.SelectedItem as CanvasWrapper).Zoom(0.8f);
+
             //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Tag as CanvasImageBrush).Transform = System.Numerics.Matrix3x2.CreateScale((float)0.5);
             //((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Invalidate();
             //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).RenderTransform as CompositeTransform).ScaleX *= 0.8;
@@ -252,16 +235,20 @@ namespace Portable_Anymap_Viewer
 
         private void ViewerZoomIn_Click(object sender, RoutedEventArgs e)
         {
-            CanvasControl canvas = (flipView.SelectedItem as ScrollViewer).Content as CanvasControl;
-            if (canvas.Width * 1.2 < canvas.Device.MaximumBitmapSizeInPixels &&
-                canvas.Height * 1.2 < canvas.Device.MaximumBitmapSizeInPixels)
-            {
-                canvas.Width *= 1.2;
-                canvas.Height *= 1.2;
-                imagesInfo[flipView.SelectedIndex].CurrentZoom *= 1.2;
-                (canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale((float)imagesInfo[flipView.SelectedIndex].CurrentZoom);
-                canvas.Invalidate();
-            }
+            //CanvasControl canvas = (flipView.SelectedItem as ScrollViewer).Content as CanvasControl;
+            //if (canvas.Width * 1.2 < canvas.Device.MaximumBitmapSizeInPixels &&
+            //    canvas.Height * 1.2 < canvas.Device.MaximumBitmapSizeInPixels)
+            //{
+            //    canvas.Width *= 1.2;
+            //    canvas.Height *= 1.2;
+            //    imagesInfo[flipView.SelectedIndex].CurrentZoom *= 1.2;
+            //    (canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale((float)imagesInfo[flipView.SelectedIndex].CurrentZoom);
+            //    canvas.Invalidate();
+            //}
+
+            (flipView.SelectedItem as CanvasWrapper).Zoom(1.25f);
+
+
             //((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Width *= 100;
             //((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Height *= 100;
             //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Tag as CanvasImageBrush).Transform = System.Numerics.Matrix3x2.CreateScale((float)100);
@@ -307,6 +294,37 @@ namespace Portable_Anymap_Viewer
                     }
                     break;
             }
+        }
+
+        private void flipView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            //CanvasControl canvas = (flipView.SelectedItem as ScrollViewer).Content as CanvasControl;
+            //previousTrasform.Matrix = transforms.Value;
+            //deltaTransform.ScaleX = e.Delta.Scale;
+            //deltaTransform.ScaleY = e.Delta.Scale;
+            
+            
+
+            //if (canvas.Width > flipView.ActualWidth &&
+            //    previousTrasform.Matrix.OffsetX + e.Delta.Translation.X + canvas.Width >= flipView.ActualWidth &&
+            //    previousTrasform.Matrix.OffsetX + e.Delta.Translation.X <= 0)
+            //{
+            //    deltaTransform.TranslateX = e.Delta.Translation.X;
+            //}
+            //else
+            //{
+            //    deltaTransform.TranslateX = 0;
+            //}
+            //if (canvas.Height > flipView.ActualHeight &&
+            //    previousTrasform.Matrix.OffsetY + e.Delta.Translation.Y + canvas.Height >= flipView.ActualHeight &&
+            //    previousTrasform.Matrix.OffsetY + e.Delta.Translation.Y <= 0)
+            //{
+            //    deltaTransform.TranslateY = e.Delta.Translation.Y;
+            //}
+            //else
+            //{
+            //    deltaTransform.TranslateY = 0;
+            //}
         }
     }
 }

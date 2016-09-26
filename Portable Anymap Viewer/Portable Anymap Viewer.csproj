@@ -102,6 +102,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CanvasWrapper.cs" />
     <Compile Include="ConverterPage.xaml.cs">
       <DependentUpon>ConverterPage.xaml</DependentUpon>
     </Compile>

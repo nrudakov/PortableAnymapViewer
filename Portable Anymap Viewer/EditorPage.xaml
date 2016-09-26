@@ -63,5 +63,11 @@
             Visibility="Collapsed"
             Grid.Row="2"/>
         <ProgressRing x:Name="EditorRing" IsActive="False" Visibility="Collapsed" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" Height="60"/>
+        <Popup x:Name="ExitPopup" IsOpen="False" VerticalAlignment="Top" HorizontalAlignment="Right">
+            <StackPanel BorderBrush="White" BorderThickness="2">
+                <TextBlock x:Name="ExitPopupText" Text="Unsaved changes will be lost when exit!"/>
+                <Button x:Name="ExitPopupButton" Content="Exit"/>
+            </StackPanel>
+        </Popup>
     </Grid>
 </Page>

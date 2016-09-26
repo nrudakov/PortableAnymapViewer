@@ -13,6 +13,30 @@
             <RowDefinition Height="65" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TopCommandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="BottomCommandBar.Visibility" Value="Visible"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="720"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TopCommandBar.Visibility" Value="Visible"/>
+                        <Setter Target="BottomCommandBar.Visibility" Value="Collapsed"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        
         <TextBlock x:Name="MainHeaderTitle" Margin="10" FontSize="24" Grid.Row="0">Folders</TextBlock>
         <ListView x:Name="FolderList"
                   ItemsSource="{x:Bind Folders}"
@@ -46,23 +70,43 @@
         </ListView>
     </Grid>
 
-    <Page.BottomAppBar>
-        <CommandBar >
+    <Page.TopAppBar>
+        <CommandBar x:Name="TopCommandBar" Visibility="Collapsed">
             <CommandBar.Content>
                 <Grid/>
             </CommandBar.Content>
-            <AppBarButton x:Name="AddFolder" Icon="NewFolder" Label="Add Folder" Click="AddFolder_Click"/>
-            <AppBarButton x:Name="RemoveFolders" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
-            <AppBarButton x:Name="SelectFolders" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
+            <AppBarButton x:Name="AddFolderTop" Icon="NewFolder" Label="Add Folder" Click="AddFolder_Click"/>
+            <AppBarButton x:Name="RemoveFoldersTop" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
+            <AppBarButton x:Name="SelectFoldersTop" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="OpenFile" Icon="OpenFile" Label="Open" Click="OpenFile_Click"/>
-            <AppBarButton x:Name="Convert" Label="Convert" Click="Convert_Click">
+            <AppBarButton x:Name="OpenFileTop" Icon="OpenFile" Label="Open" Click="OpenFile_Click"/>
+            <AppBarButton x:Name="ConvertTop" Label="Convert" Click="Convert_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE2B0;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="About" Label="About"/>
+                <AppBarButton x:Name="AboutTop" Label="About"/>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.TopAppBar>
+    <Page.BottomAppBar>
+        <CommandBar x:Name="BottomCommandBar" Visibility="Collapsed">
+            <CommandBar.Content>
+                <Grid/>
+            </CommandBar.Content>
+            <AppBarButton x:Name="AddFolderBottom" Icon="NewFolder" Label="Add Folder" Click="AddFolder_Click"/>
+            <AppBarButton x:Name="RemoveFoldersBottom" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
+            <AppBarButton x:Name="SelectFoldersBottom" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
+            <AppBarSeparator/>
+            <AppBarButton x:Name="OpenFileBottom" Icon="OpenFile" Label="Open" Click="OpenFile_Click"/>
+            <AppBarButton x:Name="ConvertBottom" Label="Convert" Click="Convert_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE2B0;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="AboutBottom" Label="About"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

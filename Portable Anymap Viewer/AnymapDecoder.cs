@@ -24,7 +24,7 @@ namespace Portable_Anymap_Viewer
             result.Height = 0;
             result.Bytes = null;
             result.Filename = filename;
-            result.CurrentZoom = 1.0;
+            result.CurrentZoom = 1.0f;
             if (formatType[0] != 'P')
             {
                 return result;

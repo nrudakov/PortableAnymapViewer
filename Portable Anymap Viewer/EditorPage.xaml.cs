@@ -268,7 +268,7 @@ namespace Portable_Anymap_Viewer
 
         private void EditorCancel_Click(object sender, RoutedEventArgs e)
         {
-
+            ExitPopup.IsOpen = !ExitPopup.IsOpen;
         }
     }
 }

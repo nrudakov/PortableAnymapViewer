@@ -13,6 +13,30 @@
             <RowDefinition Height="65" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TopCommandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="BottomCommandBar.Visibility" Value="Visible"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="720"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TopCommandBar.Visibility" Value="Visible"/>
+                        <Setter Target="BottomCommandBar.Visibility" Value="Collapsed"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
         <TextBlock x:Name="ExplorerHeaderTitle" Margin="10" FontSize="24" Grid.Row="0"></TextBlock>
         <ListView x:Name="ExplorerItemList"
                   ItemsSource="{x:Bind ExplorerItems}"
@@ -45,18 +69,33 @@
             </ListView.ItemTemplate>
         </ListView>
     </Grid>
-    
-    <Page.BottomAppBar>
-        <CommandBar >
+
+    <Page.TopAppBar>
+        <CommandBar x:Name="TopCommandBar" Visibility="Collapsed">
             <CommandBar.Content>
                 <Grid/>
             </CommandBar.Content>
-            <AppBarButton x:Name="AddFile" Icon="Add" Label="Create File" Click="AddFile_Click"/>
-            <!--<AppBarButton x:Name="AddFolder" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
-            <AppBarButton x:Name="RemoveFolders" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
-            <AppBarButton x:Name="SelectFolders" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>-->
+            <AppBarButton x:Name="AddFileTop" Icon="Add" Label="Create File" Click="AddFile_Click"/>
+            <!--<AppBarButton x:Name="AddFolderTop" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
+            <AppBarButton x:Name="RemoveFoldersTop" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
+            <AppBarButton x:Name="SelectFoldersTop" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>-->
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="About" Label="About"></AppBarButton>
+                <AppBarButton x:Name="AboutTop" Label="About"></AppBarButton>
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </Page.TopAppBar>
+
+    <Page.BottomAppBar>
+        <CommandBar x:Name="BottomCommandBar" Visibility="Collapsed">
+            <CommandBar.Content>
+                <Grid/>
+            </CommandBar.Content>
+            <AppBarButton x:Name="AddFileBottom" Icon="Add" Label="Create File" Click="AddFile_Click"/>
+            <!--<AppBarButton x:Name="AddFolderBottom" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
+            <AppBarButton x:Name="RemoveFoldersBottom" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
+            <AppBarButton x:Name="SelectFoldersBottom" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>-->
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="AboutBottom" Label="About"></AppBarButton>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
