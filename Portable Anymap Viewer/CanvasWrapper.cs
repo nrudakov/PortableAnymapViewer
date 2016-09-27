@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Sensors;
 using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -34,22 +35,20 @@ namespace Portable_Anymap_Viewer
                 ManipulationModes.Scale;
             this.ManipulationDelta += CanvasWrapper_ManipulationDelta;
             this.Loaded += CanvasWrapper_Loaded;
-            //this.SizeChanged += (a, b) =>
-            //{
-            //    //this.scaleTransform.CenterX = this.ActualWidth / 2;
-            //    //this.scaleTransform.CenterY = this.ActualHeight / 2;
-            //};
-            this.DoubleTapped += CanvasWrapper_DoubleTapped;
         }
 
-        private void CanvasWrapper_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        private void Sensor_OrientationChanged(SimpleOrientationSensor sender, SimpleOrientationSensorOrientationChangedEventArgs args)
         {
-            this.translateTransform.X = 0;
-            this.translateTransform.Y = 0;
-            this.ManipulationMode =
-                ManipulationModes.System |
-                ManipulationModes.Scale;
-        }
+            try
+            { 
+                this.UpdateManipulationMode();
+                this.GetCanvas().Invalidate();
+            }
+            catch (Exception ex)
+            {
+                
+            }
+        }   
 
         private void CanvasWrapper_Loaded(object sender, RoutedEventArgs e)
         {
@@ -136,6 +135,7 @@ namespace Portable_Anymap_Viewer
             this.translateTransform.Y = 0;
             (canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale(this.imageInfo.CurrentZoom);
             canvas.Invalidate();
+            this.UpdateManipulationMode();
         }
 
         private void Shift(Point translation)
@@ -156,7 +156,6 @@ namespace Portable_Anymap_Viewer
                 ) *
                 Matrix3x2.CreateScale(this.imageInfo.CurrentZoom);
             // Redraw canvas
-            Debug.WriteLine("{0} {1}", this.translateTransform.X, this.translateTransform.Y);
             canvas.Invalidate();
         }
 
@@ -242,6 +241,7 @@ namespace Portable_Anymap_Viewer
         {
             this.Children.Clear();
             this.Children.Add(canvas);
+            SimpleOrientationSensor.GetDefault().OrientationChanged += Sensor_OrientationChanged;
         }
 
         private CanvasControl GetCanvas()
