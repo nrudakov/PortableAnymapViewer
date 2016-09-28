@@ -241,12 +241,16 @@ namespace Portable_Anymap_Viewer
         {
             this.Children.Clear();
             this.Children.Add(canvas);
-            SimpleOrientationSensor.GetDefault().OrientationChanged += Sensor_OrientationChanged;
+            SimpleOrientationSensor sensor = SimpleOrientationSensor.GetDefault();
+            if (sensor != null)
+            {
+                sensor.OrientationChanged += Sensor_OrientationChanged;
+            }
         }
 
         private CanvasControl GetCanvas()
         {
-            return this.Children[0] as CanvasControl;
+            return this.Children?[0] as CanvasControl;
         }
     }
 }

@@ -56,7 +56,7 @@
                                 Orientation="Horizontal" 
                                 HorizontalAlignment="Stretch">
 
-                        <Image x:Name="ExplorerItemThumbnail" Source="{x:Bind Thumbnail}" HorizontalAlignment="Center" Width="64" Height="64" />
+                        <Image x:Name="ExplorerItemThumbnail" Source="{x:Bind Thumbnail}" HorizontalAlignment="Center" Width="48" Height="48" Margin="5" />
                         <StackPanel x:Name="ExplorerItemSecondaryPanel"
                                     Margin="10,0,0,0"
                                     HorizontalAlignment="Stretch"

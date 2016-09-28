@@ -143,6 +143,9 @@
     <None Include="Portable Anymap Viewer_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\File_ext_B.png" />
+    <Content Include="Assets\File_ext_G.png" />
+    <Content Include="Assets\File_ext_P.png" />
     <Content Include="Assets\Logo-AppList.scale-100.png" />
     <Content Include="Assets\Logo-AppList.scale-125.png" />
     <Content Include="Assets\Logo-AppList.scale-150.png" />
