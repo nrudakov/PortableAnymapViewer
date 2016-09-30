@@ -13,6 +13,7 @@ using Windows.Storage.FileProperties;
 using Windows.Storage.Search;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -27,7 +28,7 @@ using Windows.UI.Xaml.Navigation;
 namespace Portable_Anymap_Viewer
 {
     /// <summary>
-    /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
+    /// Shows the content of the folder
     /// </summary>
     public sealed partial class ExplorerPage : Page
     {
@@ -86,7 +87,9 @@ namespace Portable_Anymap_Viewer
                 explorerItem.Token = "";
                 ExplorerItems.Add(explorerItem);
             }
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
         }
+
         private ObservableCollection<ExplorerItem> ExplorerItems;
         private IReadOnlyList<StorageFile> FileList;
 

@@ -103,6 +103,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="CanvasWrapper.cs" />
+    <Compile Include="Triggers\ContinuumMobileAvailableTrigger.cs" />
     <Compile Include="ConverterPage.xaml.cs">
       <DependentUpon>ConverterPage.xaml</DependentUpon>
     </Compile>
@@ -132,6 +133,7 @@
     <Compile Include="TabHeader.xaml.cs">
       <DependentUpon>TabHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Triggers\DisplayModeTrigger.cs" />
     <Compile Include="ViewerPage.xaml.cs">
       <DependentUpon>ViewerPage.xaml</DependentUpon>
     </Compile>

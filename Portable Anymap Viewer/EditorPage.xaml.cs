@@ -100,6 +100,7 @@ namespace Portable_Anymap_Viewer
                     break;
             }
             EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(1, GridUnitType.Star);
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
         }
 
         private void EditorCanvas_CreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)

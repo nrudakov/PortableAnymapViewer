@@ -1,4 +1,5 @@
 ﻿<Page
+    x:Name="ViewerPageEntity"
     x:Class="Portable_Anymap_Viewer.ViewerPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,38 +7,36 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    xmlns:triggers="using:Portable_Anymap_Viewer.Triggers"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" x:Name="ViewerGrid" KeyDown="ViewerGrid_KeyDown">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
         <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState>
+            <VisualStateGroup x:Name="DisplayModeStates">
+                <VisualState x:Name="MobileMode">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0"/>
+                        <triggers:DisplayModeTrigger IsInDesktopMode="False"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="TopCommandBar.Visibility" Value="Collapsed"/>
-                        <Setter Target="BottomCommandBar.Visibility" Value="{Binding ElementName=ViewerTopCommandBar, FallbackValue=commandBarVisibility}"/>
-                        
+                        <Setter Target="ViewerTopCommandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="ViewerBottomCommandBar.Visibility" Value="Visible"/>
+                        <Setter Target="ViewerZoomStack.Visibility" Value="Collapsed"/>
                     </VisualState.Setters>
                 </VisualState>
-                <VisualState>
+                <VisualState x:Name="DesktopMode">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="720"/>
+                        <triggers:DisplayModeTrigger IsInDesktopMode="True"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="TopCommandBar.Visibility" Value="Visible"/>
-                        <Setter Target="BottomCommandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="ViewerTopCommandBar.Visibility" Value="Visible"/>
+                        <Setter Target="ViewerBottomCommandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="ViewerZoomStack.Visibility" Value="Visible"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-
-        <FlipView x:Name="flipView" Grid.Row="0" Margin="0" SelectionChanged="flipView_SelectionChanged" Tapped="flipView_Tapped" KeyDown="flipView_KeyDown" />
+        
+        <FlipView x:Name="flipView"  Margin="0" SelectionChanged="flipView_SelectionChanged" Tapped="flipView_Tapped" KeyDown="flipView_KeyDown" />
 
         <StackPanel x:Name="ViewerZoomStack" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 50, 50" Height="50" Width="Auto" Visibility="Collapsed">
             <StackPanel.Background>
@@ -59,7 +58,6 @@
                 </AppBarButton.Icon>
             </AppBarButton>
         </StackPanel>
-        <TextBlock x:Name="text" Margin="0" FontSize="26" VerticalAlignment="Top" Visibility="Collapsed"/>
     </Grid>
 
     <Page.TopAppBar>
@@ -77,9 +75,11 @@
             <CommandBar.SecondaryCommands>
                 <AppBarButton x:Name="ViewerAboutTop" Label="About"/>
             </CommandBar.SecondaryCommands>
+            <CommandBar.Content>
+                <TextBlock x:Name="ViewerFilenameTop"/>
+            </CommandBar.Content>
         </CommandBar>
     </Page.TopAppBar>
-
     <Page.BottomAppBar>
         <CommandBar x:Name="ViewerBottomCommandBar" Visibility="Collapsed">
             <CommandBar.Background>
@@ -95,7 +95,9 @@
             <CommandBar.SecondaryCommands>
                 <AppBarButton x:Name="ViewerAboutBottom" Label="About"/>
             </CommandBar.SecondaryCommands>
+            <CommandBar.Content>
+                <TextBlock x:Name="ViewerFilenameBottom"/>
+            </CommandBar.Content>
         </CommandBar>
     </Page.BottomAppBar>
-
 </Page>

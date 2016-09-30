@@ -46,6 +46,7 @@ namespace Portable_Anymap_Viewer
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
             //Window.Current.SizeChanged += OnWindowSizeChanged;
             //UpdateFullScreenModeStatus();
             //Current.AddCustomTitleBar();

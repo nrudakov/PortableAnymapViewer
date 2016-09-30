@@ -1,41 +1,28 @@
 ﻿using Portable_Anymap_Viewer.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Graphics.DirectX;
-using Windows.Graphics.Imaging;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.System.Profile;
-using Windows.System.Threading;
-using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.UI.Xaml;
+using Windows.UI.ViewManagement;
 
 // Шаблон элемента пустой страницы задокументирован по адресу http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace Portable_Anymap_Viewer
 {
     /// <summary>
-    /// Page that displays images in flipview
+    /// Displays anymap images in flipview gallery
     /// </summary>
     public sealed partial class ViewerPage : Page
     {
@@ -48,10 +35,23 @@ namespace Portable_Anymap_Viewer
         private OpenFileParams openFileParams;
         private List<DecodeResult> imagesInfo = new List<DecodeResult>();
         private AnymapDecoder anymapDecoder = new AnymapDecoder();
-
-        private Visibility commandBarVisibility = Visibility.Collapsed;
-        private bool commandBarSelector = false; // false is top, true is bottom
-
+        
+        //private static readonly DependencyProperty CommandBarPositionProperty =
+        //    DependencyProperty.Register("CommandBarPosition", typeof(CommandBarPosition), typeof(ViewerPage), new PropertyMetadata(CommandBarPosition.Top));
+        //private CommandBarPosition _commandBarPosition;
+        //private CommandBarPosition CommandBarPosition
+        //{
+        //    get
+        //    {
+        //        //return (CommandBarPosition)GetValue(CommandBarPositionProperty);
+        //        return _commandBarPosition;
+        //    }
+        //    set
+        //    {
+        //        //SetValue(CommandBarPositionProperty, value);
+        //        _commandBarPosition = value;
+        //    }
+        //}
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -86,9 +86,7 @@ namespace Portable_Anymap_Viewer
                 {
                     continue;
                 }
-
-                imagesInfo.Add(result);
-
+                
                 // Create canvas
                 CanvasControl canvas = new CanvasControl();
                 canvas.Tag = result;
@@ -99,6 +97,7 @@ namespace Portable_Anymap_Viewer
                 wrapper.Margin = new Thickness(0, 0, 0, 0);
                 wrapper.SetCanvas(canvas);
 
+                imagesInfo.Add(result);
                 flipView.Items.Add(wrapper);
                 
                 if (openFileParams.ClickedFile != null && file.Name == openFileParams.ClickedFile.Name)
@@ -107,9 +106,11 @@ namespace Portable_Anymap_Viewer
                 }
                 ++fileId;
             }
-            text.Text = imagesInfo[flipView.SelectedIndex].Filename;
+            ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
+            ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
             flipView.Visibility = Visibility.Visible;
             DataTransferManager.GetForCurrentView().DataRequested += ViewerPage_DataRequested;
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
         }
 
         private void Img_CreateResources(CanvasControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
@@ -132,26 +133,44 @@ namespace Portable_Anymap_Viewer
         {
             if (flipView.Visibility == Visibility.Visible)
             {
-                text.Text = imagesInfo[flipView.SelectedIndex].Filename;
+                ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
+                ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
             }
         }
 
         private void flipView_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (e.OriginalSource.GetType() == typeof(Grid) ||
+            if (e.OriginalSource.GetType() == typeof(CanvasWrapper) ||
                 e.OriginalSource.GetType() == typeof(Image))
             {
-                if (commandBarVisibility == Visibility.Collapsed)
+                try
                 {
-                    commandBarVisibility = Visibility.Visible;
-                    if (String.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Mobile"))
-                        text.Visibility = Visibility.Visible;
+                    if (DisplayModeStates.CurrentState == DesktopMode)
+                    {
+                        if (ViewerTopCommandBar.Visibility == Visibility.Visible)
+                        {
+                            ViewerTopCommandBar.Visibility = Visibility.Collapsed;
+                        }
+                        else
+                        {
+                            ViewerTopCommandBar.Visibility = Visibility.Visible;
+                        }
+                    }
+                    else
+                    {
+                        if (ViewerBottomCommandBar.Visibility == Visibility.Visible)
+                        {
+                            ViewerBottomCommandBar.Visibility = Visibility.Collapsed;
+                        }
+                        else
+                        {
+                            ViewerBottomCommandBar.Visibility = Visibility.Visible;
+                        }
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    commandBarVisibility = Visibility.Collapsed;
-                    if (String.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Mobile"))
-                        text.Visibility = Visibility.Collapsed;
+                    Debug.WriteLine("ViewerPage flipView_Tapped: {0}", ex.Message);
                 }
             }
         }
@@ -179,11 +198,11 @@ namespace Portable_Anymap_Viewer
 
         void ViewerPage_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
         {
-            if (!string.IsNullOrEmpty(text.Text))
+            if (!string.IsNullOrEmpty(ViewerFilenameTop.Text))
             {
                 List<StorageFile> shareFiles = new List<StorageFile>();
                 shareFiles.Insert(0, openFileParams.FileList.ElementAt<StorageFile>(flipView.SelectedIndex));
-                args.Request.Data.Properties.Title = text.Text;
+                args.Request.Data.Properties.Title = ViewerFilenameTop.Text;
                 args.Request.Data.Properties.Description = "Portable Anymap Sharing";
                 args.Request.Data.SetStorageItems(shareFiles);
             }
@@ -195,67 +214,17 @@ namespace Portable_Anymap_Viewer
 
         private void ViewerZoomReal_Click(object sender, RoutedEventArgs e)
         {
-            //CanvasControl canvas = (flipView.SelectedItem as ScrollViewer).Content as CanvasControl;
-            //canvas.Width = imagesInfo[flipView.SelectedIndex].Width;
-            //canvas.Height = imagesInfo[flipView.SelectedIndex].Height;
-            //imagesInfo[flipView.SelectedIndex].CurrentZoom = 1.0;
-            //(canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale((float)imagesInfo[flipView.SelectedIndex].CurrentZoom);
-            //canvas.Invalidate();
-
             (flipView.SelectedItem as CanvasWrapper).ZoomReal();
-
-            //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Tag as CanvasImageBrush).Transform = System.Numerics.Matrix3x2.CreateScale((float)1);
-            //((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Invalidate();
-            //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).RenderTransform as CompositeTransform).ScaleX = 1.0;
-            //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).RenderTransform as CompositeTransform).ScaleY = 1.0;
-            //(((flipView.SelectedItem as ScrollViewer).Content as Image).Source as WriteableBitmap).Invalidate();
         }
 
         private void ViewerZoomOut_Click(object sender, RoutedEventArgs e)
         {
-            //CanvasControl canvas = (flipView.SelectedItem as ScrollViewer).Content as CanvasControl;
-            //if (canvas.Width * 0.8 >= 1.0 &&
-            //    canvas.Height * 0.8 >= 1.0)
-            //{
-            //    canvas.Width *= 0.8;
-            //    canvas.Height *= 0.8;
-            //    imagesInfo[flipView.SelectedIndex].CurrentZoom *= 0.8;
-            //    (canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale((float)imagesInfo[flipView.SelectedIndex].CurrentZoom);
-            //    canvas.Invalidate();
-            //}
-
             (flipView.SelectedItem as CanvasWrapper).Zoom(0.8f);
-
-            //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Tag as CanvasImageBrush).Transform = System.Numerics.Matrix3x2.CreateScale((float)0.5);
-            //((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Invalidate();
-            //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).RenderTransform as CompositeTransform).ScaleX *= 0.8;
-            //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).RenderTransform as CompositeTransform).ScaleY *= 0.8;
-            //(((flipView.SelectedItem as ScrollViewer).Content as Image).Source as WriteableBitmap).Invalidate();
         }
 
         private void ViewerZoomIn_Click(object sender, RoutedEventArgs e)
         {
-            //CanvasControl canvas = (flipView.SelectedItem as ScrollViewer).Content as CanvasControl;
-            //if (canvas.Width * 1.2 < canvas.Device.MaximumBitmapSizeInPixels &&
-            //    canvas.Height * 1.2 < canvas.Device.MaximumBitmapSizeInPixels)
-            //{
-            //    canvas.Width *= 1.2;
-            //    canvas.Height *= 1.2;
-            //    imagesInfo[flipView.SelectedIndex].CurrentZoom *= 1.2;
-            //    (canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale((float)imagesInfo[flipView.SelectedIndex].CurrentZoom);
-            //    canvas.Invalidate();
-            //}
-
             (flipView.SelectedItem as CanvasWrapper).Zoom(1.25f);
-
-
-            //((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Width *= 100;
-            //((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Height *= 100;
-            //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Tag as CanvasImageBrush).Transform = System.Numerics.Matrix3x2.CreateScale((float)100);
-            //((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).Invalidate();
-
-            //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).RenderTransform as CompositeTransform).ScaleX *= 1.2;
-            //(((flipView.SelectedItem as ScrollViewer).Content as CanvasControl).RenderTransform as CompositeTransform).ScaleY *= 1.2;
         }
 
         private void ViewerGrid_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -294,37 +263,6 @@ namespace Portable_Anymap_Viewer
                     }
                     break;
             }
-        }
-
-        private void flipView_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            //CanvasControl canvas = (flipView.SelectedItem as ScrollViewer).Content as CanvasControl;
-            //previousTrasform.Matrix = transforms.Value;
-            //deltaTransform.ScaleX = e.Delta.Scale;
-            //deltaTransform.ScaleY = e.Delta.Scale;
-            
-            
-
-            //if (canvas.Width > flipView.ActualWidth &&
-            //    previousTrasform.Matrix.OffsetX + e.Delta.Translation.X + canvas.Width >= flipView.ActualWidth &&
-            //    previousTrasform.Matrix.OffsetX + e.Delta.Translation.X <= 0)
-            //{
-            //    deltaTransform.TranslateX = e.Delta.Translation.X;
-            //}
-            //else
-            //{
-            //    deltaTransform.TranslateX = 0;
-            //}
-            //if (canvas.Height > flipView.ActualHeight &&
-            //    previousTrasform.Matrix.OffsetY + e.Delta.Translation.Y + canvas.Height >= flipView.ActualHeight &&
-            //    previousTrasform.Matrix.OffsetY + e.Delta.Translation.Y <= 0)
-            //{
-            //    deltaTransform.TranslateY = e.Delta.Translation.Y;
-            //}
-            //else
-            //{
-            //    deltaTransform.TranslateY = 0;
-            //}
         }
     }
 }
