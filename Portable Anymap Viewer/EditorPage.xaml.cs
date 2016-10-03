@@ -1,33 +1,21 @@
-﻿using Portable_Anymap_Viewer.Models;
+﻿using Portable_Anymap_Viewer.Classes;
+using Portable_Anymap_Viewer.Models;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using System.Threading.Tasks;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Graphics.DirectX;
 using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.System.Profile;
-using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
-
-// Шаблон элемента пустой страницы задокументирован по адресу http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace Portable_Anymap_Viewer
 {
@@ -40,8 +28,10 @@ namespace Portable_Anymap_Viewer
         {
             this.InitializeComponent();
             decoder = new AnymapDecoder();
-            EditorCompare.AddHandler(PointerPressedEvent, new PointerEventHandler(EditorCompare_PointerPressed), true);
-            EditorCompare.AddHandler(PointerReleasedEvent, new PointerEventHandler(EditorCompare_PointerReleased), true);
+            EditorCompareTop.AddHandler(PointerPressedEvent, new PointerEventHandler(EditorCompare_PointerPressed), true);
+            EditorCompareTop.AddHandler(PointerReleasedEvent, new PointerEventHandler(EditorCompare_PointerReleased), true);
+            EditorCompareBottom.AddHandler(PointerPressedEvent, new PointerEventHandler(EditorCompare_PointerPressed), true);
+            EditorCompareBottom.AddHandler(PointerReleasedEvent, new PointerEventHandler(EditorCompare_PointerReleased), true);
         }
 
         AnymapDecoder decoder;
@@ -57,10 +47,6 @@ namespace Portable_Anymap_Viewer
         
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (String.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Desktop"))
-            {
-                EditorCommandBar.VerticalAlignment = VerticalAlignment.Top;
-            }
             editFileParams = (e.Parameter as EditFileParams);
             switch (editFileParams.Type)
             {
@@ -221,7 +207,8 @@ namespace Portable_Anymap_Viewer
 
         private async void EditorSaveCopy_Click(object sender, RoutedEventArgs e)
         {
-            EditorCommandBar.IsEnabled = false;
+            EditorTopCommandBar.IsEnabled = false;
+            EditorBottomCommandBar.IsEnabled = false;
             EditorRing.Visibility = Visibility.Visible;
             EditorRing.IsActive = true;
             StorageFolder folder = await editFileParams.File.GetParentAsync();
@@ -241,12 +228,14 @@ namespace Portable_Anymap_Viewer
             }
             EditorRing.IsActive = false;
             EditorRing.Visibility = Visibility.Collapsed;
-            EditorCommandBar.IsEnabled = true;
+            EditorTopCommandBar.IsEnabled = true;
+            EditorBottomCommandBar.IsEnabled = true;
         }
 
         private async void EditorSave_Click(object sender, RoutedEventArgs e)
         {
-            EditorCommandBar.IsEnabled = false;
+            EditorTopCommandBar.IsEnabled = false;
+            EditorBottomCommandBar.IsEnabled = false;
             EditorRing.Visibility = Visibility.Visible;
             EditorRing.IsActive = true;
             switch (editFileParams.Type)
@@ -264,7 +253,8 @@ namespace Portable_Anymap_Viewer
             }
             EditorRing.IsActive = false;
             EditorRing.Visibility = Visibility.Collapsed;
-            EditorCommandBar.IsEnabled = true;
+            EditorTopCommandBar.IsEnabled = true;
+            EditorBottomCommandBar.IsEnabled = true;
         }
 
         private void EditorCancel_Click(object sender, RoutedEventArgs e)

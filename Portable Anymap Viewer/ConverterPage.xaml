@@ -2,52 +2,127 @@
     x:Class="Portable_Anymap_Viewer.ConverterPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Portable_Anymap_Viewer"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:Portable_Anymap_Viewer"
+    xmlns:controls="using:Portable_Anymap_Viewer.Controls"
+    xmlns:triggers="using:Portable_Anymap_Viewer.Triggers"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <TextBlock x:Name="ConverterHeader" Grid.Row="0" Text="JPEG/PNG -> Anymap" FontSize="36" Margin="10"/>
-        <StackPanel Grid.Row="1" Orientation="Vertical">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <ComboBox x:Name="ConverterCombo" Grid.Row="1" Header="Convert to:" VerticalAlignment="Bottom" Margin="10" SelectionChanged="ConverterCombo_SelectionChanged">
-                    <ComboBoxItem Name="Bitmap">
-                        <TextBlock Text="Bitmap"/>
-                    </ComboBoxItem>
-                    <ComboBoxItem Name="Graymap">
-                        <TextBlock Text="Graymap"/>
-                    </ComboBoxItem>
-                    <ComboBoxItem Name="Pixmap" IsSelected="True">
-                        <TextBlock Text="Pixmap"/>
-                    </ComboBoxItem>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="DisplayModeStates">
+                <VisualState x:Name="MobileMode">
+                    <VisualState.StateTriggers>
+                        <triggers:DisplayModeTrigger IsInDesktopMode="False"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ConverterTopCommandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="ConverterBottomCommandBar.Visibility" Value="Visible"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="DesktopMode">
+                    <VisualState.StateTriggers>
+                        <triggers:DisplayModeTrigger IsInDesktopMode="True"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ConverterTopCommandBar.Visibility" Value="Visible"/>
+                        <Setter Target="ConverterBottomCommandBar.Visibility" Value="Collapsed"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <Grid HorizontalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.Row="0">
+                <ComboBox x:Name="FileTypeCombo" x:Uid="ConverterFileTypeCombo" Header="Format" Margin="10" SelectionChanged="ConverterCombo_SelectionChanged">
+                    <ComboBoxItem x:Name="BitmapComboItem" x:Uid="ConverterBitmapComboItem" Content="Bitmap"/>
+                    <ComboBoxItem x:Name="GraymapComboItem" x:Uid="ConverterGraymapComboItem" Content="Graymap"/>
+                    <ComboBoxItem x:Name="PixmapComboItem" x:Uid="ConverterPixmapComboItem" Content="Pixmap" IsSelected="True"/>
                 </ComboBox>
-                <ToggleSwitch x:Name="ConverterIsBinary" Header="Mode:" OffContent="Text" OnContent="Binary" VerticalAlignment="Bottom" Margin="0,0,0,10" />
-                <Button x:Name="ConverterSubmit" VerticalAlignment="Bottom" Margin="0,0,0,10" Click="ConverterSubmit_Click">Convert</Button>
+                <ToggleSwitch x:Name="IsBinary" x:Uid="ConverterIsBinary" Header="Mode" OffContent="Text" OnContent="Binary" Margin="10"/>
             </StackPanel>
-            <Grid HorizontalAlignment="Center" Margin="10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
+            <TextBox x:Name="MaxPixelValue" x:Uid="ConverterMaxPixelValue" Header="Maximum Pixel Value (0–255)" InputScope="Number" MaxLength="3" Text="255" Margin="10,10,316,10" Width="70" Grid.Row="1" KeyDown="MaxPixelValue_KeyDown"/>
+            <ComboBox x:Name="NameCollisionCombo" x:Uid="ConverterNameCollisionCombo" Header="Name Collision Issue" Margin="10" Grid.Row="2">
+                <ComboBoxItem x:Name="UniqueComboItem" x:Uid="ConverterUniqueComboItem" Content="Generate Unique Name" IsSelected="True"/>
+                <ComboBoxItem x:Name="ReplaceComboItem" x:Uid="ConverterReplaceComboItem" Content="Replace Existing"/>
+                <ComboBoxItem x:Name="SkipComboItem" x:Uid="ConverterSkipComboItem" Content="Skip"/>
+            </ComboBox>
+            <ProgressBar x:Name="ProgressBar" Grid.Row="3" Visibility="Collapsed"/>
+            <Pivot Margin="10" Grid.Row="4">
+                <PivotItem>
+                    <PivotItem.Header>
+                        <controls:TabHeader Label="Waiting Files" Glyph="&#xE9F3;"/>
+                    </PivotItem.Header>
+                    <ListView x:Name="InputFilesList" SelectionMode="None"/>
+                </PivotItem>
+                <PivotItem>
+                    <PivotItem.Header>
+                        <controls:TabHeader Label="Converted Files" Glyph="&#xE73A;"/>
+                    </PivotItem.Header>
+                    <ListView x:Name="OutputFilesList" SelectionMode="None"/>
+                </PivotItem>
+            </Pivot>
+            <!--<Grid Grid.Row="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2" Grid.Row="0" HorizontalAlignment="Right" Margin="10">
-                    <TextBlock x:Name="ConverterDirOutLabel" Text="Output Folder:" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                    <TextBlock x:Name="ConverterDirOutText" VerticalAlignment="Center" />
-                    <Button x:Name="ConverterDirOutButton" VerticalAlignment="Center" Margin="10, 0, 0, 0">Change Folder</Button>
-                </StackPanel>
-                <ListView x:Name="ConverterListFileIn" SelectionMode="None" Header="Input Files:" Grid.Column="0" Grid.Row="1"/>
-                <ListView x:Name="ConverterListFileOut" SelectionMode="None" Header="Output Files:" Grid.Column="1" Grid.Row="1"/>
-            </Grid>
-            
-        </StackPanel>
-        
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="InputFilesLabel" x:Uid="ConverterInputFilesLabel" Text="Input files" Grid.Row="0" Grid.Column="0"/>
+                <TextBlock x:Name="OutputFilesLabel" x:Uid="ConverterOutputFilesLabel" Text="Output files" Grid.Row="0" Grid.Column="1"/>
+                <ListView x:Name="FilenameList" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" SelectionMode="None" BorderThickness="0" Padding="-1">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+            </Grid>-->
+        </Grid>
     </Grid>
+
+    <Page.TopAppBar>
+        <CommandBar x:Name="ConverterTopCommandBar">
+            <CommandBar.Background>
+                <SolidColorBrush Color="Black" Opacity="0.1"/>
+            </CommandBar.Background>
+            <CommandBar.Content>
+                <StackPanel x:Name="OutputFolderStackTop" Orientation="Horizontal">
+                    <TextBlock x:Name="OutputFolderLabelTop" x:Uid="ConverterOutputFolderLabelTop" Text="Output Folder: "/>
+                    <TextBlock x:Name="OutputFolderPathTop"/>
+                </StackPanel>
+            </CommandBar.Content>
+            <AppBarButton x:Name="ChangeFolderTop" x:Uid="ConverterChangeFolderTop" Icon="MoveToFolder" Label="Change Folder" Click="ChangeFolder_Click"/>
+            <AppBarButton x:Name="ConvertTop" x:Uid="ConverterConvertTop" Icon="Accept" Label="Convert" Click="Convert_Click"/>
+        </CommandBar>
+    </Page.TopAppBar>
+    <Page.BottomAppBar>
+        <CommandBar x:Name="ConverterBottomCommandBar">
+            <CommandBar.Background>
+                <SolidColorBrush Color="Black" Opacity="0.1"/>
+            </CommandBar.Background>
+            <CommandBar.Content>
+                <StackPanel x:Name="OutputFolderStackBottom" Orientation="Horizontal">
+                    <TextBlock x:Name="OutputFolderLabelBottom" x:Uid="ConverterOutputFolderLabelBottom" Text="Output Folder: "/>
+                    <TextBlock x:Name="OutputFolderPathBottom"/>
+                </StackPanel>
+            </CommandBar.Content>
+            <AppBarButton x:Name="ChangeFolderBottom" x:Uid="ConverterChangeFolderBottom" Icon="MoveToFolder" Label="Change Folder"  Click="ChangeFolder_Click"/>
+            <AppBarButton x:Name="ConvertBottom" x:Uid="ConverterConvertBottom" Icon="Accept" Label="Convert" Click="Convert_Click"/>
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>

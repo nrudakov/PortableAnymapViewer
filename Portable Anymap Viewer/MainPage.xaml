@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:data="using:Portable_Anymap_Viewer.Models"
+    xmlns:triggers="using:Portable_Anymap_Viewer.Triggers"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -13,31 +14,30 @@
             <RowDefinition Height="65" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
         <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState>
+            <VisualStateGroup x:Name="DisplayModeStates">
+                <VisualState x:Name="MobileMode">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0"/>
+                        <triggers:DisplayModeTrigger IsInDesktopMode="False"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="TopCommandBar.Visibility" Value="Collapsed"/>
-                        <Setter Target="BottomCommandBar.Visibility" Value="Visible"/>
+                        <Setter Target="MainTopCommandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="MainBottomCommandBar.Visibility" Value="Visible"/>
                     </VisualState.Setters>
                 </VisualState>
-                <VisualState>
+                <VisualState x:Name="DesktopMode">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="720"/>
+                        <triggers:DisplayModeTrigger IsInDesktopMode="True"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="TopCommandBar.Visibility" Value="Visible"/>
-                        <Setter Target="BottomCommandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="MainTopCommandBar.Visibility" Value="Visible"/>
+                        <Setter Target="MainBottomCommandBar.Visibility" Value="Collapsed"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
         
-        <TextBlock x:Name="MainHeaderTitle" Margin="10" FontSize="24" Grid.Row="0">Folders</TextBlock>
+        <TextBlock x:Name="MainHeaderTitle" x:Uid="MainHeaderTitle" Margin="10" FontSize="24" Grid.Row="0">Folders</TextBlock>
         <ListView x:Name="FolderList"
                   ItemsSource="{x:Bind Folders}"
                   IsItemClickEnabled="True"
@@ -71,42 +71,42 @@
     </Grid>
 
     <Page.TopAppBar>
-        <CommandBar x:Name="TopCommandBar" Visibility="Collapsed">
-            <CommandBar.Content>
-                <Grid/>
-            </CommandBar.Content>
-            <AppBarButton x:Name="AddFolderTop" Icon="NewFolder" Label="Add Folder" Click="AddFolder_Click"/>
-            <AppBarButton x:Name="RemoveFoldersTop" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
-            <AppBarButton x:Name="SelectFoldersTop" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
+        <CommandBar x:Name="MainTopCommandBar" Visibility="Collapsed">
+            <CommandBar.Background>
+                <SolidColorBrush Color="Black" Opacity="0.1"/>
+            </CommandBar.Background>
+            <AppBarButton x:Name="AddFolderTop" x:Uid="MainAddFolderTop" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
+            <AppBarButton x:Name="RemoveFoldersTop" x:Uid="MainRemoveFoldersTop" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
+            <AppBarButton x:Name="SelectFoldersTop" x:Uid="MainSelectFoldersTop" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="OpenFileTop" Icon="OpenFile" Label="Open" Click="OpenFile_Click"/>
-            <AppBarButton x:Name="ConvertTop" Label="Convert" Click="Convert_Click">
+            <AppBarButton x:Name="OpenFileTop" x:Uid="MainOpenFileTop" Icon="OpenFile" Label="Open" Click="OpenFile_Click"/>
+            <AppBarButton x:Name="ConvertTop" x:Uid="MainConvertTop" Label="Convert" Click="Convert_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE2B0;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="AboutTop" Label="About"/>
+                <AppBarButton x:Name="AboutTop" x:Uid="MainAboutTop" Label="About"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.TopAppBar>
     <Page.BottomAppBar>
-        <CommandBar x:Name="BottomCommandBar" Visibility="Collapsed">
-            <CommandBar.Content>
-                <Grid/>
-            </CommandBar.Content>
-            <AppBarButton x:Name="AddFolderBottom" Icon="NewFolder" Label="Add Folder" Click="AddFolder_Click"/>
-            <AppBarButton x:Name="RemoveFoldersBottom" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
-            <AppBarButton x:Name="SelectFoldersBottom" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
+        <CommandBar x:Name="MainBottomCommandBar" Visibility="Collapsed">
+            <CommandBar.Background>
+                <SolidColorBrush Color="Black" Opacity="0.1"/>
+            </CommandBar.Background>
+            <AppBarButton x:Name="AddFolderBottom" x:Uid="MainAddFolderBottom" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
+            <AppBarButton x:Name="RemoveFoldersBottom" x:Uid="MainRemoveFoldersBottom" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
+            <AppBarButton x:Name="SelectFoldersBottom" x:Uid="MainSelectFoldersBottom" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="OpenFileBottom" Icon="OpenFile" Label="Open" Click="OpenFile_Click"/>
-            <AppBarButton x:Name="ConvertBottom" Label="Convert" Click="Convert_Click">
+            <AppBarButton x:Name="OpenFileBottom" x:Uid="MainOpenFileBottom" Icon="OpenFile" Label="Open" Click="OpenFile_Click"/>
+            <AppBarButton x:Name="ConvertBottom" x:Uid="MainConvertBottom" Label="Convert" Click="Convert_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE2B0;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="AboutBottom" Label="About"/>
+                <AppBarButton x:Name="AboutBottom" x:Uid="MainAboutBottom" Label="About"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

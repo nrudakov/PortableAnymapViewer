@@ -2,12 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
 using Windows.Storage.FileProperties;
@@ -16,19 +12,14 @@ using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
-// Документацию по шаблону элемента "Пустая страница" см. по адресу http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
-
 namespace Portable_Anymap_Viewer
 {
     /// <summary>
-    /// Пустая страница, которую можно использовать саму по себе или для перехода внутри фрейма.
+    /// Main page displaying pinned folders
     /// </summary>
     public sealed partial class MainPage : Page
     {
@@ -40,22 +31,14 @@ namespace Portable_Anymap_Viewer
             Folders = new ObservableCollection<ExplorerItem>();
             SelectedFolders = new List<ExplorerItem>();
             readSavedFolders();
-            //CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
+            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
-            //Window.Current.SizeChanged += OnWindowSizeChanged;
-            //UpdateFullScreenModeStatus();
-            //Current.AddCustomTitleBar();
         }
-
-        //protected override void OnNavigatedFrom(NavigationEventArgs e)
-        //{
-        //    Window.Current.SizeChanged -= OnWindowSizeChanged;
-        //}
 
         private async void AddFolder_Click(object sender, RoutedEventArgs e)
         {
@@ -241,43 +224,5 @@ namespace Portable_Anymap_Viewer
                 Frame.Navigate(typeof(ConverterPage), files);
             }
         }
-
-        //void OnWindowSizeChanged(object sender, WindowSizeChangedEventArgs e)
-        //{
-        //    UpdateFullScreenModeStatus();
-        //}
-
-        //void UpdateFullScreenModeStatus()
-        //{
-
-        //}
-
-        //CustomTitleBar customTitleBar = null;
-
-        //public void AddCustomTitleBar()
-        //{
-        //    if (customTitleBar == null)
-        //    {
-        //        customTitleBar = new CustomTitleBar();
-
-        //        // Make the main page's content a child of the title bar,
-        //        // and make the title bar the new page content.
-        //        UIElement mainContent = this.Content;
-        //        this.Content = null;
-        //        customTitleBar.SetPageContent(mainContent);
-        //        this.Content = customTitleBar;
-        //    }
-        //}
-
-        //public void RemoveCustomTitleBar()
-        //{
-        //    if (customTitleBar != null)
-        //    {
-        //        // Take the title bar's page content and make it
-        //        // the window content.
-        //        this.Content = customTitleBar.SetPageContent(null);
-        //        customTitleBar = null;
-        //    }
-        //}
     }
 }

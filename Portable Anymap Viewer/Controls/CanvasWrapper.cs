@@ -16,7 +16,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
-namespace Portable_Anymap_Viewer
+namespace Portable_Anymap_Viewer.Controls
 {
     public class CanvasWrapper : Grid
     {

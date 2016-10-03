@@ -1,4 +1,6 @@
-﻿using Portable_Anymap_Viewer.Models;
+﻿using Portable_Anymap_Viewer.Classes;
+using Portable_Anymap_Viewer.Controls;
+using Portable_Anymap_Viewer.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +9,6 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Graphics.DirectX;
 using Windows.Storage;
-using Windows.System.Profile;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -16,8 +17,6 @@ using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.ViewManagement;
-
-// Шаблон элемента пустой страницы задокументирован по адресу http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace Portable_Anymap_Viewer
 {
@@ -61,12 +60,6 @@ namespace Portable_Anymap_Viewer
             //}
             //else
             //{
-
-            if (String.Equals(AnalyticsInfo.VersionInfo.DeviceFamily, "Windows.Desktop"))
-            {
-                //ViewerCommandBar.VerticalAlignment = VerticalAlignment.Top;
-                ViewerZoomStack.Visibility = Visibility.Visible;
-            }
 
             openFileParams = e.Parameter as OpenFileParams;
             flipView.Visibility = Visibility.Collapsed;

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
-namespace Portable_Anymap_Viewer
+namespace Portable_Anymap_Viewer.Classes
 {
     public class AnymapDecoder
     {

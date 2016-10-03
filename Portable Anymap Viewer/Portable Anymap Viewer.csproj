@@ -96,19 +96,23 @@
     <Content Include="Assets\consola.ttf" />
     <Content Include="Assets\consolab.ttf" />
     <None Include="project.json" />
+    <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnymapDecoder.cs" />
+    <Compile Include="Classes\AnymapDecoder.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CanvasWrapper.cs" />
-    <Compile Include="Triggers\ContinuumMobileAvailableTrigger.cs" />
+    <Compile Include="Classes\AnymapEncoder.cs" />
+    <Compile Include="Controls\CanvasWrapper.cs" />
+    <Compile Include="Controls\ConverterFilename.xaml.cs">
+      <DependentUpon>ConverterFilename.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TabHeader.xaml.cs">
+      <DependentUpon>TabHeader.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ConverterPage.xaml.cs">
       <DependentUpon>ConverterPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="CustomTitleBar.xaml.cs">
-      <DependentUpon>CustomTitleBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="EditorPage.xaml.cs">
       <DependentUpon>EditorPage.xaml</DependentUpon>
@@ -116,23 +120,19 @@
     <Compile Include="ExplorerPage.xaml.cs">
       <DependentUpon>ExplorerPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="HexView.xaml.cs">
+    <Compile Include="Controls\HexView.xaml.cs">
       <DependentUpon>HexView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\AnymapProperties.cs" />
-    <Compile Include="Models\ConverterItem.cs" />
     <Compile Include="Models\DecodeResult.cs" />
     <Compile Include="Models\EditFileParams.cs" />
     <Compile Include="Models\ExplorerItem.cs" />
     <Compile Include="Models\OpenFileParams.cs" />
     <Compile Include="Models\ViewInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TabHeader.xaml.cs">
-      <DependentUpon>TabHeader.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Triggers\DisplayModeTrigger.cs" />
     <Compile Include="ViewerPage.xaml.cs">
       <DependentUpon>ViewerPage.xaml</DependentUpon>
@@ -199,11 +199,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="ConverterPage.xaml">
+    <Page Include="Controls\ConverterFilename.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="CustomTitleBar.xaml">
+    <Page Include="Controls\TabHeader.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ConverterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -215,15 +219,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="HexView.xaml">
+    <Page Include="Controls\HexView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="TabHeader.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -241,6 +241,7 @@
       <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

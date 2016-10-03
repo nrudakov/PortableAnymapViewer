@@ -65,6 +65,9 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
+            <CommandBar.Content>
+                <TextBlock x:Name="ViewerFilenameTop"/>
+            </CommandBar.Content>
             <AppBarButton x:Name="ViewerShareTop" Label="Share" Click="ViewerShare_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72D;"/>
@@ -75,9 +78,6 @@
             <CommandBar.SecondaryCommands>
                 <AppBarButton x:Name="ViewerAboutTop" Label="About"/>
             </CommandBar.SecondaryCommands>
-            <CommandBar.Content>
-                <TextBlock x:Name="ViewerFilenameTop"/>
-            </CommandBar.Content>
         </CommandBar>
     </Page.TopAppBar>
     <Page.BottomAppBar>
@@ -85,6 +85,9 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
+            <CommandBar.Content>
+                <TextBlock x:Name="ViewerFilenameBottom"/>
+            </CommandBar.Content>
             <AppBarButton x:Name="ViewerShareBottom" Label="Share" Click="ViewerShare_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72D;"/>
@@ -95,9 +98,6 @@
             <CommandBar.SecondaryCommands>
                 <AppBarButton x:Name="ViewerAboutBottom" Label="About"/>
             </CommandBar.SecondaryCommands>
-            <CommandBar.Content>
-                <TextBlock x:Name="ViewerFilenameBottom"/>
-            </CommandBar.Content>
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

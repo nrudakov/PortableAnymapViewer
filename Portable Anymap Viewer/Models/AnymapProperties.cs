@@ -13,5 +13,11 @@ namespace Portable_Anymap_Viewer.Models
         public UInt32 MaxValue { get; set; }
         public UInt32 BytesPerColor { get; set; }
         public UInt32 StreamPosition { get; set; }
+        public AnymapType AnymapType { get; set; }
+    }
+
+    public enum AnymapType
+    {
+        Bitmap, Graymap, Pixmap
     }
 }

@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:data="using:Portable_Anymap_Viewer.Models"
+    xmlns:triggers="using:Portable_Anymap_Viewer.Triggers"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -15,23 +16,23 @@
         </Grid.RowDefinitions>
 
         <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup>
-                <VisualState>
+            <VisualStateGroup x:Name="DisplayModeStates">
+                <VisualState x:Name="MobileMode">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0"/>
+                        <triggers:DisplayModeTrigger IsInDesktopMode="False"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="TopCommandBar.Visibility" Value="Collapsed"/>
-                        <Setter Target="BottomCommandBar.Visibility" Value="Visible"/>
+                        <Setter Target="ExplorerTopCommandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="ExplorerBottomCommandBar.Visibility" Value="Visible"/>
                     </VisualState.Setters>
                 </VisualState>
-                <VisualState>
+                <VisualState x:Name="DesktopMode">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="720"/>
+                        <triggers:DisplayModeTrigger IsInDesktopMode="True"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="TopCommandBar.Visibility" Value="Visible"/>
-                        <Setter Target="BottomCommandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="ExplorerTopCommandBar.Visibility" Value="Visible"/>
+                        <Setter Target="ExplorerBottomCommandBar.Visibility" Value="Collapsed"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
@@ -71,10 +72,10 @@
     </Grid>
 
     <Page.TopAppBar>
-        <CommandBar x:Name="TopCommandBar" Visibility="Collapsed">
-            <CommandBar.Content>
-                <Grid/>
-            </CommandBar.Content>
+        <CommandBar x:Name="ExplorerTopCommandBar" Visibility="Collapsed">
+            <CommandBar.Background>
+                <SolidColorBrush Color="Black" Opacity="0.1"/>
+            </CommandBar.Background>
             <AppBarButton x:Name="AddFileTop" Icon="Add" Label="Create File" Click="AddFile_Click"/>
             <!--<AppBarButton x:Name="AddFolderTop" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
             <AppBarButton x:Name="RemoveFoldersTop" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
@@ -86,10 +87,10 @@
     </Page.TopAppBar>
 
     <Page.BottomAppBar>
-        <CommandBar x:Name="BottomCommandBar" Visibility="Collapsed">
-            <CommandBar.Content>
-                <Grid/>
-            </CommandBar.Content>
+        <CommandBar x:Name="ExplorerBottomCommandBar" Visibility="Collapsed">
+            <CommandBar.Background>
+                <SolidColorBrush Color="Black" Opacity="0.1"/>
+            </CommandBar.Background>
             <AppBarButton x:Name="AddFileBottom" Icon="Add" Label="Create File" Click="AddFile_Click"/>
             <!--<AppBarButton x:Name="AddFolderBottom" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
             <AppBarButton x:Name="RemoveFoldersBottom" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
