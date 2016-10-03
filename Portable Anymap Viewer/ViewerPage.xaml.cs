@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Graphics.DirectX;
@@ -15,6 +16,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Graphics.Canvas;
 using Microsoft.Graphics.Canvas.Brushes;
+using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.ViewManagement;
 
@@ -79,20 +81,32 @@ namespace Portable_Anymap_Viewer
                 {
                     continue;
                 }
-                
+
+                Double width = ApplicationView.GetForCurrentView().VisibleBounds.Width;
+                Double height = ApplicationView.GetForCurrentView().VisibleBounds.Height;
+                Double widthDiff = result.Width - width;
+                Double heightDiff = result.Height - height;
+                if (widthDiff > 0 || heightDiff > 0)
+                {
+                    if (widthDiff > heightDiff)
+                    {
+                        result.CurrentZoom = (Single)width / result.Width;
+                    }
+                    else
+                    {
+                        result.CurrentZoom = (Single)height / result.Height;
+                    }
+                }
                 // Create canvas
                 CanvasControl canvas = new CanvasControl();
                 canvas.Tag = result;
                 canvas.CreateResources += Img_CreateResources;
                 canvas.Draw += Img_Draw;
-
                 CanvasWrapper wrapper = new CanvasWrapper(result);
                 wrapper.Margin = new Thickness(0, 0, 0, 0);
                 wrapper.SetCanvas(canvas);
-
                 imagesInfo.Add(result);
                 flipView.Items.Add(wrapper);
-                
                 if (openFileParams.ClickedFile != null && file.Name == openFileParams.ClickedFile.Name)
                 {
                     flipView.SelectedItem = flipView.Items.ElementAt(fileId);
@@ -106,15 +120,16 @@ namespace Portable_Anymap_Viewer
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
         }
 
-        private void Img_CreateResources(CanvasControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
+        private void Img_CreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
         {
             var result = sender.Tag as DecodeResult;
             CanvasBitmap cbm = CanvasBitmap.CreateFromBytes(sender, result.Bytes, result.Width, result.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
             CanvasImageBrush brush = new CanvasImageBrush(sender, cbm);
-            brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
+            brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;                    
+            brush.Transform = Matrix3x2.CreateScale(result.CurrentZoom);
+            sender.Width = result.Width * result.CurrentZoom;
+            sender.Height = result.Height * result.CurrentZoom;
             sender.Tag = brush;
-            sender.Width = result.Width;
-            sender.Height = result.Height;
         }
 
         private void Img_Draw(CanvasControl sender, CanvasDrawEventArgs args)

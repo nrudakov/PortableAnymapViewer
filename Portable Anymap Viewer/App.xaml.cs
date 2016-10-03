@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -112,7 +113,7 @@ namespace Portable_Anymap_Viewer
         {
             base.OnFileActivated(args);
             Frame rootFrame = Window.Current.Content as Frame;
-
+            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
             // Не повторяйте инициализацию приложения, если в окне уже имеется содержимое,
             // только обеспечьте активность окна
             if (rootFrame == null)

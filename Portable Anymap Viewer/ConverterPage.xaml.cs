@@ -9,8 +9,11 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
+using Windows.Storage.AccessCache;
+using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
@@ -31,51 +34,61 @@ namespace Portable_Anymap_Viewer
         private IReadOnlyList<StorageFile> files;
         private AnymapEncoder anymapEncoder = new AnymapEncoder();
         private String outputExtension = ".ppm";
+        private StorageFolder outputFolder = null;
+        private List<String> inputFiles = new List<String>();
+        private List<String> outputFiles = new List<String>();
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             files = e.Parameter as IReadOnlyList<StorageFile>;
-            StorageFolder folder = await files.First().GetParentAsync();
-            OutputFolderPathTop.Text = folder.Path;
-            OutputFolderPathBottom.Text = folder.Path;
-            Double maxHalfWidth = Double.MinValue;
+            outputFolder = await files.First().GetParentAsync();
+            if (outputFolder != null)
+            {
+                OutputFolderPathTop.Text = outputFolder.Path;
+                OutputFolderPathBottom.Text = outputFolder.Path;
+            }
             foreach (StorageFile file in files)
             {
-                //ConverterFilename filename = new ConverterFilename(file.Name, file.DisplayName + ".ppm");
-                //FilenameList.Items.Add(filename);
                 TextBlock inputTextBlock = new TextBlock();
                 inputTextBlock.Text = file.Name;
                 TextBlock outputTextBlock = new TextBlock();
                 outputTextBlock.Text = file.DisplayName + outputExtension;
+                outputTextBlock.Visibility = Visibility.Collapsed;
                 InputFilesList.Items.Add(inputTextBlock);
                 OutputFilesList.Items.Add(outputTextBlock);
+                inputFiles.Add(inputTextBlock.Text);
+                outputFiles.Add(outputTextBlock.Text);
             }
-            //FilenameList.UpdateLayout();
-            //foreach (ConverterFilename filename in FilenameList.Items)
-            //{
-            //    Double halfWidth = filename.GetHalfWidth();
-            //    if (halfWidth > maxHalfWidth)
-            //    {
-            //        maxHalfWidth = halfWidth;
-            //    }
-            //}
-            //maxHalfWidth += 10;
-            //foreach (ConverterFilename filename in FilenameList.Items)
-            //{
-            //    filename.SetHalfWidth(maxHalfWidth);
-            //}
+            ProgressBar.Value = 0;
+            ProgressBar.Minimum = 0;
+            ProgressBar.Maximum = files.Count;
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
         }
 
         private async void Convert_Click(object sender, RoutedEventArgs e)
         {
-            UInt32 maxPixelValue = Convert.ToUInt32(MaxPixelValue.Text);
-            AnymapType type = (AnymapType)FileTypeCombo.SelectedIndex;
+            this.ChangeFolderTop.IsEnabled = false;
+            this.ConvertTop.IsEnabled = false;
+            this.ChangeFolderBottom.IsEnabled = false;
+            this.ConvertBottom.IsEnabled = false;
+            this.IsBinary.Visibility = Visibility.Collapsed;
+            this.FileTypeCombo.Visibility = Visibility.Collapsed;
+            this.MaxPixelValue.Visibility = Visibility.Collapsed;
+            this.NameCollisionCombo.Visibility = Visibility.Collapsed;
+            this.ProgressBar.Visibility = Visibility.Visible;
+            if (outputFolder == null)
+            {
+                await this.ChangeFolder();
+            }
+
+            var maxPixelValue = Convert.ToUInt32(MaxPixelValue.Text);
+            var type = (AnymapType)FileTypeCombo.SelectedIndex;
+            var isBinary = IsBinary.IsOn;
+            var collisionOption = (CreationCollisionOption)NameCollisionCombo.SelectedIndex;
             Parallel.For(0, InputFilesList.Items.Count, async (i, state) =>
             {
                 using (var stream = await RandomAccessStreamReference.CreateFromFile(files[i]).OpenReadAsync())
                 {
-                    Debug.WriteLine("{0}", i);
-
                     var imageDecoder = await BitmapDecoder.CreateAsync(stream);
                     
                     AnymapProperties properties = new AnymapProperties();
@@ -85,9 +98,11 @@ namespace Portable_Anymap_Viewer
                     properties.MaxValue = maxPixelValue;
                     properties.StreamPosition = 0;
                     properties.BytesPerColor = maxPixelValue > 255 ? (UInt32)2 : (UInt32)1;
-                    StorageFolder folder = await StorageFolder.GetFolderFromPathAsync(OutputFolderPathTop.Text);
-                    StorageFile newFile = await folder.CreateFileAsync((OutputFilesList.Items[i] as TextBlock).Text, (CreationCollisionOption)NameCollisionCombo.SelectedIndex);
-                    if (IsBinary.IsOn)
+                    StorageFile newFile = await outputFolder.CreateFileAsync(
+                        outputFiles[i], 
+                        collisionOption
+                    );
+                    if (isBinary)
                     {
                         byte[] anymapBytes = await anymapEncoder.encodeBinary(imageDecoder, properties);
                         await FileIO.WriteBytesAsync(
@@ -107,14 +122,32 @@ namespace Portable_Anymap_Viewer
                     {
                         (this.InputFilesList.Items[i] as TextBlock).Visibility = Visibility.Collapsed;
                         (this.OutputFilesList.Items[i] as TextBlock).Visibility = Visibility.Visible;
+                        ++this.ProgressBar.Value;
                     });
                 }
             });
+            this.ProgressBar.Visibility = Visibility.Collapsed;
         }
 
-        private void ChangeFolder_Click(object sender, RoutedEventArgs e)
+        private async void ChangeFolder_Click(object sender, RoutedEventArgs e)
         {
+            await ChangeFolder();
+        }
 
+        private async Task ChangeFolder()
+        {
+            FolderPicker folderPicker = new FolderPicker();
+            folderPicker.FileTypeFilter.Add(".pbm");
+            folderPicker.FileTypeFilter.Add(".pgm");
+            folderPicker.FileTypeFilter.Add(".ppm");
+            folderPicker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
+            outputFolder = await folderPicker.PickSingleFolderAsync();
+            StorageApplicationPermissions.FutureAccessList.Add(outputFolder);
+            if (outputFolder != null)
+            {
+                OutputFolderPathTop.Text = outputFolder.Path;
+                OutputFolderPathBottom.Text = outputFolder.Path;
+            }
         }
 
         private void ConverterCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -22,11 +22,13 @@ namespace Portable_Anymap_Viewer.Controls
     {
         private TranslateTransform translateTransform;
         private DecodeResult imageInfo;
+        private Single initialZoom;
 
         public CanvasWrapper(DecodeResult imageInfo)
         {
             this.translateTransform = new TranslateTransform();
             this.imageInfo = imageInfo;
+            this.initialZoom = imageInfo.CurrentZoom;
 
             this.Background = new SolidColorBrush(Colors.Transparent);
 
@@ -77,13 +79,13 @@ namespace Portable_Anymap_Viewer.Controls
 
         public bool IsUnzoomable()
         {
-            return !(imageInfo.CurrentZoom == 1);
+            return !(this.imageInfo.CurrentZoom == this.initialZoom);
         }
 
         public void Zoom(Single scale)
         {
             CanvasControl canvas = this.GetCanvas();
-            if (scale * imageInfo.CurrentZoom < 1)
+            if (scale * this.imageInfo.CurrentZoom < this.initialZoom)
             {
                 this.ZoomReal();
             }
@@ -93,13 +95,13 @@ namespace Portable_Anymap_Viewer.Controls
                 {
                     canvas.Width *= scale;
                     canvas.Height *= scale;
-                    Double xp = this.translateTransform.X / ((canvas.ActualWidth - this.ActualWidth) / imageInfo.CurrentZoom);
-                    Double yp = this.translateTransform.Y / ((canvas.ActualHeight - this.ActualHeight) / imageInfo.CurrentZoom);
+                    Double xp = this.translateTransform.X / ((canvas.ActualWidth - this.ActualWidth) / this.imageInfo.CurrentZoom);
+                    Double yp = this.translateTransform.Y / ((canvas.ActualHeight - this.ActualHeight) / this.imageInfo.CurrentZoom);
                     this.imageInfo.CurrentZoom *= scale;
-                    if (scale < 1)
+                    if (scale < this.initialZoom)
                     {
-                        this.translateTransform.X = xp * ((canvas.Width - this.ActualWidth) / imageInfo.CurrentZoom);
-                        this.translateTransform.Y = yp * ((canvas.Height - this.ActualHeight) / imageInfo.CurrentZoom);
+                        this.translateTransform.X = xp * ((canvas.Width - this.ActualWidth) / this.imageInfo.CurrentZoom);
+                        this.translateTransform.Y = yp * ((canvas.Height - this.ActualHeight) / this.imageInfo.CurrentZoom);
                     }
                     if (this.translateTransform.X > 0)
                     {
@@ -128,9 +130,9 @@ namespace Portable_Anymap_Viewer.Controls
         public void ZoomReal()
         {
             CanvasControl canvas = this.GetCanvas();
-            canvas.Width = this.imageInfo.Width;
-            canvas.Height = this.imageInfo.Height;
-            imageInfo.CurrentZoom = 1.0f;
+            canvas.Width = this.imageInfo.Width * this.initialZoom;
+            canvas.Height = this.imageInfo.Height * this.initialZoom;
+            imageInfo.CurrentZoom = this.initialZoom;
             this.translateTransform.X = 0;
             this.translateTransform.Y = 0;
             (canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale(this.imageInfo.CurrentZoom);
@@ -141,8 +143,8 @@ namespace Portable_Anymap_Viewer.Controls
         private void Shift(Point translation)
         {
             // Apply shifting
-            this.translateTransform.X += translation.X / imageInfo.CurrentZoom;
-            this.translateTransform.Y += translation.Y / imageInfo.CurrentZoom;
+            this.translateTransform.X += translation.X / this.imageInfo.CurrentZoom;
+            this.translateTransform.Y += translation.Y / this.imageInfo.CurrentZoom;
             this.RectifyTranslateTransform();
             CanvasControl canvas = this.GetCanvas();
             (canvas.Tag as CanvasImageBrush).Transform =
@@ -170,14 +172,14 @@ namespace Portable_Anymap_Viewer.Controls
                 {
                     this.translateTransform.X = 0;
                 }
-                else if (xRange / imageInfo.CurrentZoom < -this.translateTransform.X)
+                else if (xRange / this.imageInfo.CurrentZoom < -this.translateTransform.X)
                 {
-                    this.translateTransform.X = -xRange / imageInfo.CurrentZoom;
+                    this.translateTransform.X = -xRange / this.imageInfo.CurrentZoom;
                 }
             }
             else
             {
-                translateTransform.X = 0;
+                this.translateTransform.X = 0;
             }
             // at Y-axis
             Double yRange = canvas.ActualHeight - this.ActualHeight;
@@ -187,14 +189,14 @@ namespace Portable_Anymap_Viewer.Controls
                 {
                     this.translateTransform.Y = 0;
                 }
-                else if (yRange / imageInfo.CurrentZoom < -this.translateTransform.Y)
+                else if (yRange / this.imageInfo.CurrentZoom < -this.translateTransform.Y)
                 {
-                    this.translateTransform.Y = -yRange / imageInfo.CurrentZoom;
+                    this.translateTransform.Y = -yRange / this.imageInfo.CurrentZoom;
                 }
             }
             else
             {
-                translateTransform.Y = 0;
+                this.translateTransform.Y = 0;
             }
         }
 

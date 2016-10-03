@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.ViewManagement;
 
 namespace Portable_Anymap_Viewer.Classes
 {

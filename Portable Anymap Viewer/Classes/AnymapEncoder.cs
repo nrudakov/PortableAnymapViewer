@@ -13,7 +13,6 @@ namespace Portable_Anymap_Viewer.Classes
 {
     public class AnymapEncoder
     {
-        private static byte[] newline = new byte[2] { 0x0d, 0x0a };
         private delegate void WriteDelegate(byte[] image, MemoryStream stream, UInt32 totalPixels, UInt32 bytesPerColor);
 
         public async Task<String> encodeText(BitmapDecoder imageDecoder, AnymapProperties properties)
@@ -58,28 +57,28 @@ namespace Portable_Anymap_Viewer.Classes
                     break;
             }
             UInt32 bytesForType = 4;
-            UInt32 bytesForSize = (UInt32)properties.Width.ToString().Length + 1 + (UInt32)properties.Height.ToString().Length + 2;
-            UInt32 bytesForMaxV = (UInt32)properties.MaxValue.ToString().Length + 2;
+            UInt32 bytesForSize = (UInt32)properties.Width.ToString().Length + 1 + (UInt32)properties.Height.ToString().Length + 1;
+            UInt32 bytesForMaxV = (UInt32)properties.MaxValue.ToString().Length + 1;
             UInt32 bytesNum = bytesForType + bytesForSize + bytesForMaxV + bytesNumForPixels;
             byte[] anymap = new byte[bytesNum];
             MemoryStream stream = new MemoryStream(anymap);
             // Format
             stream.WriteByte((Byte)'P');
             stream.WriteByte(type);
-            stream.Write(AnymapEncoder.newline, 0, 2);
+            stream.WriteByte(0x0a);
             // Size
             byte[] widthArr = Encoding.ASCII.GetBytes(properties.Width.ToString());
             stream.Write(widthArr, 0, widthArr.Length);
             stream.WriteByte((Byte)' ');
             byte[] heightArr = Encoding.ASCII.GetBytes(properties.Height.ToString());
             stream.Write(heightArr, 0, heightArr.Length);
-            stream.Write(AnymapEncoder.newline, 0, 2);
+            stream.WriteByte(0x0a);
             // Maximum pixel value
             if (isContainMaxValue)
             {
                 byte[] maxPixelValueArr = Encoding.ASCII.GetBytes(properties.MaxValue.ToString());
                 stream.Write(maxPixelValueArr, 0, maxPixelValueArr.Length);
-                stream.Write(AnymapEncoder.newline, 0, 2);
+                stream.WriteByte(0x0a);
             }
             // Pixels
             write(image, stream, totalPixels, properties.BytesPerColor);
@@ -109,9 +108,9 @@ namespace Portable_Anymap_Viewer.Classes
                 byte[] pixel = new byte[3];
                 for (UInt32 i = 0; i < totalPixels; ++i)
                 {
-                    pixel[0] = image[i * 4];
+                    pixel[0] = image[i * 4 + 2];
                     pixel[1] = image[i * 4 + 1];
-                    pixel[2] = image[i * 4 + 2];
+                    pixel[2] = image[i * 4];
                     stream.Write(pixel, 0, 3);
                 }
             }

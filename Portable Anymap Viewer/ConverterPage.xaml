@@ -72,26 +72,6 @@
                     <ListView x:Name="OutputFilesList" SelectionMode="None"/>
                 </PivotItem>
             </Pivot>
-            <!--<Grid Grid.Row="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock x:Name="InputFilesLabel" x:Uid="ConverterInputFilesLabel" Text="Input files" Grid.Row="0" Grid.Column="0"/>
-                <TextBlock x:Name="OutputFilesLabel" x:Uid="ConverterOutputFilesLabel" Text="Output files" Grid.Row="0" Grid.Column="1"/>
-                <ListView x:Name="FilenameList" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" SelectionMode="None" BorderThickness="0" Padding="-1">
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="Padding" Value="0"/>
-                            <Setter Property="BorderThickness" Value="0"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                </ListView>
-            </Grid>-->
         </Grid>
     </Grid>
 
@@ -106,7 +86,7 @@
                     <TextBlock x:Name="OutputFolderPathTop"/>
                 </StackPanel>
             </CommandBar.Content>
-            <AppBarButton x:Name="ChangeFolderTop" x:Uid="ConverterChangeFolderTop" Icon="MoveToFolder" Label="Change Folder" Click="ChangeFolder_Click"/>
+            <AppBarButton x:Name="ChangeFolderTop" x:Uid="ConverterChangeFolderTop" Icon="MoveToFolder" Label="Output Folder" Click="ChangeFolder_Click"/>
             <AppBarButton x:Name="ConvertTop" x:Uid="ConverterConvertTop" Icon="Accept" Label="Convert" Click="Convert_Click"/>
         </CommandBar>
     </Page.TopAppBar>
@@ -121,7 +101,7 @@
                     <TextBlock x:Name="OutputFolderPathBottom"/>
                 </StackPanel>
             </CommandBar.Content>
-            <AppBarButton x:Name="ChangeFolderBottom" x:Uid="ConverterChangeFolderBottom" Icon="MoveToFolder" Label="Change Folder"  Click="ChangeFolder_Click"/>
+            <AppBarButton x:Name="ChangeFolderBottom" x:Uid="ConverterChangeFolderBottom" Icon="MoveToFolder" Label="Output Folder" Click="ChangeFolder_Click"/>
             <AppBarButton x:Name="ConvertBottom" x:Uid="ConverterConvertBottom" Icon="Accept" Label="Convert" Click="Convert_Click"/>
         </CommandBar>
     </Page.BottomAppBar>
