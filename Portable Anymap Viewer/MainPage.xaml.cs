@@ -23,11 +23,9 @@ namespace Portable_Anymap_Viewer
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public static MainPage Current;
         public MainPage()
         {
             this.InitializeComponent();
-            Current = this;
             Folders = new ObservableCollection<ExplorerItem>();
             SelectedFolders = new List<ExplorerItem>();
             readSavedFolders();

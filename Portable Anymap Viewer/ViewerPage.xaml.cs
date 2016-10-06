@@ -10,6 +10,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Graphics.DirectX;
 using Windows.Storage;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -37,37 +38,12 @@ namespace Portable_Anymap_Viewer
         private List<DecodeResult> imagesInfo = new List<DecodeResult>();
         private AnymapDecoder anymapDecoder = new AnymapDecoder();
         
-        //private static readonly DependencyProperty CommandBarPositionProperty =
-        //    DependencyProperty.Register("CommandBarPosition", typeof(CommandBarPosition), typeof(ViewerPage), new PropertyMetadata(CommandBarPosition.Top));
-        //private CommandBarPosition _commandBarPosition;
-        //private CommandBarPosition CommandBarPosition
-        //{
-        //    get
-        //    {
-        //        //return (CommandBarPosition)GetValue(CommandBarPositionProperty);
-        //        return _commandBarPosition;
-        //    }
-        //    set
-        //    {
-        //        //SetValue(CommandBarPositionProperty, value);
-        //        _commandBarPosition = value;
-        //    }
-        //}
-
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
-            //if (e.NavigationMode == NavigationMode.Back)
-            //{
-
-            //}
-            //else
-            //{
-
             openFileParams = e.Parameter as OpenFileParams;
             flipView.Visibility = Visibility.Collapsed;
             int fileId = 0;
-
             foreach (StorageFile file in openFileParams.FileList)
             {
                 // Skip other extensions
@@ -108,16 +84,29 @@ namespace Portable_Anymap_Viewer
                 wrapper.SetCanvas(canvas);
                 imagesInfo.Add(result);
                 flipView.Items.Add(wrapper);
-                if (openFileParams.ClickedFile != null && file.Name == openFileParams.ClickedFile.Name)
+                switch(e.NavigationMode)
                 {
-                    flipView.SelectedItem = flipView.Items.ElementAt(fileId);
+                    case NavigationMode.New:
+                        if (openFileParams.ClickedFile != null && file.Name == openFileParams.ClickedFile.Name)
+                        {
+                            flipView.SelectedItem = flipView.Items.ElementAt(fileId);
+                        }
+                        break;
+                    case NavigationMode.Back:
+                        if (file.Name == openFileParams.NavigateBackFilename)
+                        {
+                            flipView.SelectedItem = flipView.Items.ElementAt(fileId);
+                        }
+                        break;
                 }
+                
                 ++fileId;
             }
             ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
             ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
             flipView.Visibility = Visibility.Visible;
             DataTransferManager.GetForCurrentView().DataRequested += ViewerPage_DataRequested;
+            
         }
 
         private void Img_CreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
@@ -139,7 +128,9 @@ namespace Portable_Anymap_Viewer
 
         private void flipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (flipView.Visibility == Visibility.Visible)
+            if (flipView.Visibility == Visibility.Visible &&
+                0 <= flipView.SelectedIndex &&
+                flipView.SelectedIndex < flipView.Items.Count)
             {
                 ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
                 ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
@@ -190,6 +181,7 @@ namespace Portable_Anymap_Viewer
 
         private void ViewerEdit_Click(object sender, RoutedEventArgs e)
         {
+            openFileParams.NavigateBackFilename = openFileParams.FileList[flipView.SelectedIndex].Name;
             EditFileParams editFileParams = new EditFileParams();
             editFileParams.Bytes = imagesInfo[flipView.SelectedIndex].Bytes;
             editFileParams.Width = imagesInfo[flipView.SelectedIndex].Width;
@@ -199,9 +191,26 @@ namespace Portable_Anymap_Viewer
             Frame.Navigate(typeof(EditorPage), editFileParams);
         }
 
-        private void ViewerDelete_Click(object sender, RoutedEventArgs e)
+        private async void ViewerDelete_Click(object sender, RoutedEventArgs e)
         {
+            MessageDialog deleteConfirmation = new MessageDialog("Are you sure to delete the file?", "Delete file");
+            deleteConfirmation.Commands.Add(new UICommand("Yes"));
+            deleteConfirmation.Commands.Add(new UICommand("No"));
+            deleteConfirmation.DefaultCommandIndex = 1;
 
+            var selectedCommand = await deleteConfirmation.ShowAsync();
+
+            if (selectedCommand.Label == "Yes")
+            {
+                await openFileParams.FileList[flipView.SelectedIndex].DeleteAsync();
+                int pos = flipView.SelectedIndex - 1;
+                if (pos < 0)
+                {
+                    pos = 0;
+                }
+                flipView.Items.RemoveAt(flipView.SelectedIndex);
+                flipView.SelectedIndex = pos;
+            }            
         }
 
         void ViewerPage_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)

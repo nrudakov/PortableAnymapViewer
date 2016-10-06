@@ -95,7 +95,7 @@ namespace Portable_Anymap_Viewer
                 // параметр
                 rootFrame.Navigate(typeof(MainPage), e.Arguments);
             }
-            Windows.UI.Core.SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
+            SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
 
             // Обеспечение активности текущего окна
             Window.Current.Activate();
