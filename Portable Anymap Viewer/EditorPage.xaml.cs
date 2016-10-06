@@ -47,6 +47,7 @@ namespace Portable_Anymap_Viewer
         
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
             editFileParams = (e.Parameter as EditFileParams);
             switch (editFileParams.Type)
             {
@@ -86,7 +87,6 @@ namespace Portable_Anymap_Viewer
                     break;
             }
             EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(1, GridUnitType.Star);
-            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
         }
 
         private void EditorCanvas_CreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)

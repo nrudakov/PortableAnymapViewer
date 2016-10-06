@@ -32,7 +32,7 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-        <Grid HorizontalAlignment="Center">
+        <Grid HorizontalAlignment="Left">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -41,24 +41,24 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="400"/>
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0">
-                <ComboBox x:Name="FileTypeCombo" x:Uid="ConverterFileTypeCombo" Header="Format" Margin="10" SelectionChanged="ConverterCombo_SelectionChanged">
+                <ComboBox x:Name="FileTypeCombo" x:Uid="ConverterFileTypeCombo" Header="Format" Margin="10" Width="110" SelectionChanged="ConverterCombo_SelectionChanged">
                     <ComboBoxItem x:Name="BitmapComboItem" x:Uid="ConverterBitmapComboItem" Content="Bitmap"/>
                     <ComboBoxItem x:Name="GraymapComboItem" x:Uid="ConverterGraymapComboItem" Content="Graymap"/>
                     <ComboBoxItem x:Name="PixmapComboItem" x:Uid="ConverterPixmapComboItem" Content="Pixmap" IsSelected="True"/>
                 </ComboBox>
                 <ToggleSwitch x:Name="IsBinary" x:Uid="ConverterIsBinary" Header="Mode" OffContent="Text" OnContent="Binary" Margin="10"/>
             </StackPanel>
-            <TextBox x:Name="MaxPixelValue" x:Uid="ConverterMaxPixelValue" Header="Maximum Pixel Value (0–255)" InputScope="Number" MaxLength="3" Text="255" Margin="10,10,316,10" Width="70" Grid.Row="1" KeyDown="MaxPixelValue_KeyDown"/>
-            <ComboBox x:Name="NameCollisionCombo" x:Uid="ConverterNameCollisionCombo" Header="Name Collision Issue" Margin="10" Grid.Row="2">
+            <TextBox x:Name="MaxPixelValue" x:Uid="ConverterMaxPixelValue" Header="Maximum Pixel Value (0–255)" InputScope="Number" MaxLength="3" Text="255" HorizontalAlignment="Left" Width="205" Margin="10" Grid.Row="1" KeyDown="MaxPixelValue_KeyDown"/>
+            <ComboBox x:Name="NameCollisionCombo" x:Uid="ConverterNameCollisionCombo" Header="Name Collision Issue" Margin="10" Width="205" Grid.Row="2">
                 <ComboBoxItem x:Name="UniqueComboItem" x:Uid="ConverterUniqueComboItem" Content="Generate Unique Name" IsSelected="True"/>
                 <ComboBoxItem x:Name="ReplaceComboItem" x:Uid="ConverterReplaceComboItem" Content="Replace Existing"/>
                 <ComboBoxItem x:Name="SkipComboItem" x:Uid="ConverterSkipComboItem" Content="Skip"/>
             </ComboBox>
-            <ProgressBar x:Name="ProgressBar" Grid.Row="3" Visibility="Collapsed"/>
-            <Pivot Margin="10" Grid.Row="4">
+            <ProgressBar x:Name="FileProgressBar" Grid.Row="3" Visibility="Collapsed" ValueChanged="ProgressBar_ValueChanged"/>
+            <Pivot x:Name="FileListPivot" Margin="10" Grid.Row="4">
                 <PivotItem>
                     <PivotItem.Header>
                         <controls:TabHeader Label="Waiting Files" Glyph="&#xE9F3;"/>

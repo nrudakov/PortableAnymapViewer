@@ -79,8 +79,8 @@
             <AppBarButton x:Name="RemoveFoldersTop" x:Uid="MainRemoveFoldersTop" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
             <AppBarButton x:Name="SelectFoldersTop" x:Uid="MainSelectFoldersTop" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="OpenFileTop" x:Uid="MainOpenFileTop" Icon="OpenFile" Label="Open" Click="OpenFile_Click"/>
-            <AppBarButton x:Name="ConvertTop" x:Uid="MainConvertTop" Label="Convert" Click="Convert_Click">
+            <AppBarButton x:Name="OpenFileTop" x:Uid="MainOpenFileTop" Icon="OpenFile" Label="Open Anymap" Click="OpenFile_Click"/>
+            <AppBarButton x:Name="ConvertTop" x:Uid="MainConvertTop" Label="Convert to Anymap" Click="Convert_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE2B0;"/>
                 </AppBarButton.Icon>
@@ -99,8 +99,8 @@
             <AppBarButton x:Name="RemoveFoldersBottom" x:Uid="MainRemoveFoldersBottom" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
             <AppBarButton x:Name="SelectFoldersBottom" x:Uid="MainSelectFoldersBottom" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="OpenFileBottom" x:Uid="MainOpenFileBottom" Icon="OpenFile" Label="Open" Click="OpenFile_Click"/>
-            <AppBarButton x:Name="ConvertBottom" x:Uid="MainConvertBottom" Label="Convert" Click="Convert_Click">
+            <AppBarButton x:Name="OpenFileBottom" x:Uid="MainOpenFileBottom" Icon="OpenFile" Label="Open Anymap" Click="OpenFile_Click"/>
+            <AppBarButton x:Name="ConvertBottom" x:Uid="MainConvertBottom" Label="Convert to Anymap" Click="Convert_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE2B0;"/>
                 </AppBarButton.Icon>

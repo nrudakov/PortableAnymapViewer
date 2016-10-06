@@ -2,9 +2,7 @@
 using Portable_Anymap_Viewer.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Core;
 using Windows.Graphics.Imaging;
@@ -16,7 +14,7 @@ using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Navigation;
 
 namespace Portable_Anymap_Viewer
@@ -40,42 +38,48 @@ namespace Portable_Anymap_Viewer
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            files = e.Parameter as IReadOnlyList<StorageFile>;
-            outputFolder = await files.First().GetParentAsync();
-            if (outputFolder != null)
-            {
-                OutputFolderPathTop.Text = outputFolder.Path;
-                OutputFolderPathBottom.Text = outputFolder.Path;
-            }
-            foreach (StorageFile file in files)
-            {
-                TextBlock inputTextBlock = new TextBlock();
-                inputTextBlock.Text = file.Name;
-                TextBlock outputTextBlock = new TextBlock();
-                outputTextBlock.Text = file.DisplayName + outputExtension;
-                outputTextBlock.Visibility = Visibility.Collapsed;
-                InputFilesList.Items.Add(inputTextBlock);
-                OutputFilesList.Items.Add(outputTextBlock);
-                inputFiles.Add(inputTextBlock.Text);
-                outputFiles.Add(outputTextBlock.Text);
-            }
-            ProgressBar.Value = 0;
-            ProgressBar.Minimum = 0;
-            ProgressBar.Maximum = files.Count;
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
+            if (e.NavigationMode == NavigationMode.New)
+            {
+                files = e.Parameter as IReadOnlyList<StorageFile>;
+                outputFolder = await files.First().GetParentAsync();
+                if (outputFolder != null)
+                {
+                    OutputFolderPathTop.Text = outputFolder.Path;
+                    OutputFolderPathBottom.Text = outputFolder.Path;
+                }
+                foreach (StorageFile file in files)
+                {
+                    TextBlock inputTextBlock = new TextBlock();
+                    inputTextBlock.Text = file.Name;
+                    TextBlock outputTextBlock = new TextBlock();
+                    outputTextBlock.Text = file.DisplayName + outputExtension;
+                    outputTextBlock.Visibility = Visibility.Collapsed;
+                    InputFilesList.Items.Add(inputTextBlock);
+                    OutputFilesList.Items.Add(outputTextBlock);
+                    inputFiles.Add(inputTextBlock.Text);
+                    outputFiles.Add(outputTextBlock.Text);
+                }
+                FileProgressBar.Value = 0;
+                FileProgressBar.Minimum = 0;
+                FileProgressBar.Maximum = files.Count;
+            }
+            else
+            {
+                ConverterTopCommandBar.IsEnabled = false;
+                ConverterBottomCommandBar.IsEnabled = false;
+            }
         }
 
         private async void Convert_Click(object sender, RoutedEventArgs e)
         {
-            this.ChangeFolderTop.IsEnabled = false;
-            this.ConvertTop.IsEnabled = false;
-            this.ChangeFolderBottom.IsEnabled = false;
-            this.ConvertBottom.IsEnabled = false;
+            ConverterTopCommandBar.IsEnabled = false;
+            ConverterBottomCommandBar.IsEnabled = false;
+            this.FileProgressBar.Visibility = Visibility.Visible;
             this.IsBinary.Visibility = Visibility.Collapsed;
             this.FileTypeCombo.Visibility = Visibility.Collapsed;
             this.MaxPixelValue.Visibility = Visibility.Collapsed;
             this.NameCollisionCombo.Visibility = Visibility.Collapsed;
-            this.ProgressBar.Visibility = Visibility.Visible;
             if (outputFolder == null)
             {
                 await this.ChangeFolder();
@@ -122,11 +126,10 @@ namespace Portable_Anymap_Viewer
                     {
                         (this.InputFilesList.Items[i] as TextBlock).Visibility = Visibility.Collapsed;
                         (this.OutputFilesList.Items[i] as TextBlock).Visibility = Visibility.Visible;
-                        ++this.ProgressBar.Value;
+                        this.FileProgressBar.Value = this.FileProgressBar.Value + 1;
                     });
                 }
             });
-            this.ProgressBar.Visibility = Visibility.Collapsed;
         }
 
         private async void ChangeFolder_Click(object sender, RoutedEventArgs e)
@@ -145,8 +148,7 @@ namespace Portable_Anymap_Viewer
             StorageApplicationPermissions.FutureAccessList.Add(outputFolder);
             if (outputFolder != null)
             {
-                OutputFolderPathTop.Text = outputFolder.Path;
-                OutputFolderPathBottom.Text = outputFolder.Path;
+                OutputFolderPathTop.Text = OutputFolderPathBottom.Text = outputFolder.Path;
             }
         }
 
@@ -158,15 +160,18 @@ namespace Portable_Anymap_Viewer
                 {
                     case "Bitmap":
                         outputExtension = ".pbm";
-                        this.MaxPixelValue.Visibility = Visibility.Collapsed;
+                        this.MaxPixelValue.Header = "Threshold level (0-255)";
+                        this.MaxPixelValue.Text = "127";
                         break;
                     case "Graymap":
                         outputExtension = ".pgm";
-                        this.MaxPixelValue.Visibility = Visibility.Visible;
+                        this.MaxPixelValue.Header = "Maximum pixel value (0-255)";
+                        this.MaxPixelValue.Text = "255";
                         break;
                     case "Pixmap":
                         outputExtension = ".ppm";
-                        this.MaxPixelValue.Visibility = Visibility.Visible;
+                        this.MaxPixelValue.Header = "Maximum pixel value (0-255)";
+                        this.MaxPixelValue.Text = "255";
                         break;
                     default:
                         outputExtension = "";
@@ -174,7 +179,7 @@ namespace Portable_Anymap_Viewer
                 }
                 for (int i = 0; i < OutputFilesList?.Items.Count; ++i)
                 {
-                    (OutputFilesList.Items[i] as TextBlock).Text = files[i].DisplayName + outputExtension;
+                    (OutputFilesList.Items[i] as TextBlock).Text = outputFiles[i] = files[i].DisplayName + outputExtension;
                 }
             }
         }
@@ -207,6 +212,16 @@ namespace Portable_Anymap_Viewer
             {
                 e.Handled = true;
             }
+        }
+
+        private void ProgressBar_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
+        {
+            var bar = (sender as ProgressBar);
+            if (e.NewValue == bar.Maximum)
+            {
+                bar.Visibility = Visibility.Collapsed;
+            }
+            this.FileListPivot.SelectedIndex = 1;
         }
     }
 }

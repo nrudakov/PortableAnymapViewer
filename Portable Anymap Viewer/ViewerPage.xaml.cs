@@ -56,6 +56,7 @@ namespace Portable_Anymap_Viewer
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
             //if (e.NavigationMode == NavigationMode.Back)
             //{
 
@@ -117,7 +118,6 @@ namespace Portable_Anymap_Viewer
             ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
             flipView.Visibility = Visibility.Visible;
             DataTransferManager.GetForCurrentView().DataRequested += ViewerPage_DataRequested;
-            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
         }
 
         private void Img_CreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)

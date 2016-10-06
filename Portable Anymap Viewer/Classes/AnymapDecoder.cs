@@ -176,9 +176,10 @@ namespace Portable_Anymap_Viewer.Classes
                         
                         for (uint i = 0; i < bytesLoaded - 1; ++i)
                         {
-                            unpackBytePbm(decodedAnymap, resultIndex, 8, dataReader.ReadByte());
+                            unpackBitsPbm(decodedAnymap, resultIndex, 8, dataReader.ReadByte());
+                            resultIndex += 32;
                         }
-                        unpackBytePbm(decodedAnymap, resultIndex, mod == 0 ? 8 : mod, dataReader.ReadByte());
+                        unpackBitsPbm(decodedAnymap, resultIndex, mod == 0 ? 8 : mod, dataReader.ReadByte());
                     }
                     result.Type = 4;
                     result.Width = (Int32)properties.Width;
@@ -317,16 +318,17 @@ namespace Portable_Anymap_Viewer.Classes
             return properties;
         }
 
-        private Action<byte[], int, int, byte> unpackBytePbm = delegate (byte[] arr, int arrPos, int num, byte b)
+        private Action<byte[], int, int, byte> unpackBitsPbm = delegate (byte[] arr, int arrPos, int num, byte b)
         {
             byte kk = (byte)(0x80 >> num);
+            int shift = 0;
             for (byte k = 0x80; k != kk; k >>= 1)
             {
-                arr[arrPos] = (byte)(((b & k) == k) ? 0 : 255);
-                arr[arrPos + 1] = arr[arrPos];
-                arr[arrPos + 2] = arr[arrPos];
-                arr[arrPos + 3] = 255;
-                arrPos += 4;
+                arr[arrPos + shift] = (byte)(((b & k) == k) ? 0 : 255);
+                arr[arrPos + shift + 1] = arr[arrPos];
+                arr[arrPos + shift + 2] = arr[arrPos];
+                arr[arrPos + shift + 3] = 255;
+                shift += 4;
             }
         };
     }

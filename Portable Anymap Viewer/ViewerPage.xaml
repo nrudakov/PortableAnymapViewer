@@ -40,7 +40,7 @@
 
         <StackPanel x:Name="ViewerZoomStack" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 50, 50" Height="50" Width="Auto" Visibility="Collapsed">
             <StackPanel.Background>
-                <SolidColorBrush Color="Black" Opacity="0.1"/>
+                <SolidColorBrush Color="Black" Opacity="0.2"/>
             </StackPanel.Background>
             <AppBarButton x:Name="ViewerZoomReal" Click="ViewerZoomReal_Click">
                 <AppBarButton.Icon>
@@ -63,7 +63,7 @@
     <Page.TopAppBar>
         <CommandBar x:Name="ViewerTopCommandBar" Visibility="Collapsed">
             <CommandBar.Background>
-                <SolidColorBrush Color="Black" Opacity="0.1"/>
+                <SolidColorBrush Color="Black" Opacity="0.2"/>
             </CommandBar.Background>
             <CommandBar.Content>
                 <TextBlock x:Name="ViewerFilenameTop"/>
@@ -83,7 +83,7 @@
     <Page.BottomAppBar>
         <CommandBar x:Name="ViewerBottomCommandBar" Visibility="Collapsed">
             <CommandBar.Background>
-                <SolidColorBrush Color="Black" Opacity="0.1"/>
+                <SolidColorBrush Color="Black" Opacity="0.2"/>
             </CommandBar.Background>
             <CommandBar.Content>
                 <TextBlock x:Name="ViewerFilenameBottom"/>

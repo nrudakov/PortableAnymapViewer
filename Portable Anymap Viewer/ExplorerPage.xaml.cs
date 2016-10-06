@@ -26,6 +26,7 @@ namespace Portable_Anymap_Viewer
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
             ExplorerItem paramFolder = e.Parameter as ExplorerItem;
             ExplorerHeaderTitle.Text = paramFolder.Path;
             StorageFolder currentStorageFolder = await StorageFolder.GetFolderFromPathAsync(paramFolder.Path);
@@ -73,7 +74,6 @@ namespace Portable_Anymap_Viewer
                 explorerItem.Token = "";
                 ExplorerItems.Add(explorerItem);
             }
-            ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
         }
 
         private ObservableCollection<ExplorerItem> ExplorerItems;
