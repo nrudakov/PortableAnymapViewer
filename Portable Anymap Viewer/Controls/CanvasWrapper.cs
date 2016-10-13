@@ -20,13 +20,21 @@ namespace Portable_Anymap_Viewer.Controls
 {
     public class CanvasWrapper : Grid
     {
-        private TranslateTransform translateTransform;
+        private TranslateTransform translateTransform = new TranslateTransform();
         private DecodeResult imageInfo;
         private Single initialZoom;
+        private bool isInfoSet = false;
+        private bool isCanvasSet = false;
+
+        public CanvasWrapper() {}
 
         public CanvasWrapper(DecodeResult imageInfo)
         {
-            this.translateTransform = new TranslateTransform();
+            SetImageInfo(imageInfo);
+        }
+
+        public void SetImageInfo (DecodeResult imageInfo)
+        {
             this.imageInfo = imageInfo;
             this.initialZoom = imageInfo.CurrentZoom;
 
@@ -35,8 +43,23 @@ namespace Portable_Anymap_Viewer.Controls
             this.ManipulationMode =
                 ManipulationModes.System |
                 ManipulationModes.Scale;
-            this.ManipulationDelta += CanvasWrapper_ManipulationDelta;
-            this.Loaded += CanvasWrapper_Loaded;
+            isInfoSet = true;
+        }
+
+        public bool IsInfoSet
+        {
+            get
+            {
+                return this.isInfoSet;
+            }
+        }
+
+        public bool IsCanvasSet
+        {
+            get
+            {
+                return this.isCanvasSet;
+            }
         }
 
         private void Sensor_OrientationChanged(SimpleOrientationSensor sender, SimpleOrientationSensorOrientationChangedEventArgs args)
@@ -51,11 +74,6 @@ namespace Portable_Anymap_Viewer.Controls
                 
             }
         }   
-
-        private void CanvasWrapper_Loaded(object sender, RoutedEventArgs e)
-        {
-            this.Loaded -= CanvasWrapper_Loaded;
-        }
 
         private void CanvasWrapper_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -243,11 +261,26 @@ namespace Portable_Anymap_Viewer.Controls
         {
             this.Children.Clear();
             this.Children.Add(canvas);
+            this.ManipulationDelta += CanvasWrapper_ManipulationDelta;
             SimpleOrientationSensor sensor = SimpleOrientationSensor.GetDefault();
             if (sensor != null)
             {
                 sensor.OrientationChanged += Sensor_OrientationChanged;
             }
+            this.isCanvasSet = true;
+        }
+
+        public void RemoveCanvas()
+        {
+            this.ManipulationDelta -= CanvasWrapper_ManipulationDelta;
+            SimpleOrientationSensor sensor = SimpleOrientationSensor.GetDefault();
+            if (sensor != null)
+            {
+                sensor.OrientationChanged -= Sensor_OrientationChanged;
+            }
+            this.GetCanvas()?.RemoveFromVisualTree();
+            this.Children.Clear();
+            this.isCanvasSet = false;
         }
 
         private CanvasControl GetCanvas()

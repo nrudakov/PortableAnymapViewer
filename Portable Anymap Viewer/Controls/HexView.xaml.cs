@@ -31,7 +31,29 @@ namespace Portable_Anymap_Viewer.Controls
         public HexView()
         {
             this.InitializeComponent();
-            Window.Current.CoreWindow.KeyDown += CoreWindow_KeyDown;
+            Window.Current.CoreWindow.KeyDown += this.CoreWindow_KeyDown;
+        }
+
+        ~HexView()
+        {
+            Window.Current.CoreWindow.KeyDown -= this.CoreWindow_KeyDown;
+
+            this.PrimaryOffsets.Draw -= this.PrimaryOffsets_Draw;
+            this.PrimaryOffsets.SizeChanged -= this.PrimaryOffsets_SizeChanged;
+            this.PrimaryOffsets.ManipulationDelta -= this.HexDump_ManipulationDelta;
+            this.PrimaryOffsets.PointerWheelChanged -= this.HexDump_PointerWheelChanged;
+
+            this.HexDump.Draw -= this.HexDump_Draw;
+            this.HexDump.ManipulationDelta -= this.HexDump_ManipulationDelta;
+            this.HexDump.PointerWheelChanged -= this.HexDump_PointerWheelChanged;
+            this.HexDump.PointerPressed -= this.HexDump_PointerPressed;
+
+            this.AsciiDump.Draw -= this.AsciiDump_Draw;
+            this.AsciiDump.ManipulationDelta -= this.HexDump_ManipulationDelta;
+            this.AsciiDump.PointerWheelChanged -= this.HexDump_PointerWheelChanged;
+            this.AsciiDump.PointerPressed -= this.AsciiDump_PointerPressed;
+
+            this.Scroll.Scroll -= this.Scroll_Scroll;
         }
 
         private void CoreWindow_KeyDown(CoreWindow sender, KeyEventArgs args)
@@ -148,7 +170,6 @@ namespace Portable_Anymap_Viewer.Controls
 
         public static readonly DependencyProperty BytesProperty =
             DependencyProperty.Register("Bytes", typeof(byte[]), typeof(HexView), new PropertyMetadata(new byte[] { }));
-        //private byte[] BytesInitial = null;
         public byte[] Bytes
         {
             get
@@ -158,15 +179,6 @@ namespace Portable_Anymap_Viewer.Controls
             set
             {
                 SetValue(BytesProperty, value);
-                //if (BytesInitial == null)
-                //{
-                //    BytesInitial = new byte[Bytes.Length];
-                //    for (int i = 0; i < Bytes.Length; ++i)
-                //    {
-                //        BytesInitial[i] = Bytes[i];
-                //    }
-                //}
-                //this.Invalidate();
             }
         }
 
@@ -192,11 +204,6 @@ namespace Portable_Anymap_Viewer.Controls
             WordWrapping = CanvasWordWrapping.NoWrap
         };
         private Int32 offset;
-
-        //public byte[] GetInitialBytes()
-        //{
-        //    return BytesInitial;
-        //}
         
         public void Invalidate()
         {

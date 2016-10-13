@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:data="using:Portable_Anymap_Viewer.Models"
     xmlns:triggers="using:Portable_Anymap_Viewer.Triggers"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Unloaded="Page_Unloaded">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -19,7 +20,7 @@
             <VisualStateGroup x:Name="DisplayModeStates">
                 <VisualState x:Name="MobileMode">
                     <VisualState.StateTriggers>
-                        <triggers:DisplayModeTrigger IsInDesktopMode="False"/>
+                        <triggers:DisplayModeTrigger x:Name="MobileTrigger" IsInDesktopMode="False"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="ExplorerTopCommandBar.Visibility" Value="Collapsed"/>
@@ -28,7 +29,7 @@
                 </VisualState>
                 <VisualState x:Name="DesktopMode">
                     <VisualState.StateTriggers>
-                        <triggers:DisplayModeTrigger IsInDesktopMode="True"/>
+                        <triggers:DisplayModeTrigger x:Name="DesktopTrigger" IsInDesktopMode="True"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="ExplorerTopCommandBar.Visibility" Value="Visible"/>
@@ -40,13 +41,13 @@
 
         <TextBlock x:Name="ExplorerHeaderTitle" Margin="10" FontSize="24" Grid.Row="0"></TextBlock>
         <ListView x:Name="ExplorerItemList"
-                  ItemsSource="{x:Bind ExplorerItems}"
+                  
                   IsItemClickEnabled="True"
                   ItemClick="ExplorerItemList_ItemClick"
                   SelectionMode="None"                  
                   SelectionChanged="ExplorerItemList_SelectionChanged"
                   Grid.Row="1">
-            <ListView.ItemContainerStyle>
+            <!--<ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
@@ -67,7 +68,7 @@
                         </StackPanel>
                     </StackPanel>
                 </DataTemplate>
-            </ListView.ItemTemplate>
+            </ListView.ItemTemplate>-->
         </ListView>
     </Grid>
 

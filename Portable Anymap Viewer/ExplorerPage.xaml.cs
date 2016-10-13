@@ -1,4 +1,5 @@
-﻿using Portable_Anymap_Viewer.Models;
+﻿using Portable_Anymap_Viewer.Controls;
+using Portable_Anymap_Viewer.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,7 +22,7 @@ namespace Portable_Anymap_Viewer
         public ExplorerPage()
         {
             this.InitializeComponent();
-            ExplorerItems = new ObservableCollection<ExplorerItem>();
+            //ExplorerItems = new ObservableCollection<ExplorerItem>();
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
@@ -49,13 +50,13 @@ namespace Portable_Anymap_Viewer
                 
                 ExplorerItem explorerItem = new ExplorerItem();
                 explorerItem.Thumbnail = thumbnailBitmap;
-                explorerItem.Name = storageFolder.Name;
+                explorerItem.Filename = storageFolder.Name;
                 explorerItem.Type = null;
                 explorerItem.DisplayName = storageFolder.DisplayName;
                 explorerItem.DisplayType = storageFolder.DisplayType;
                 explorerItem.Path = storageFolder.Path;
                 explorerItem.Token = "";
-                ExplorerItems.Add(explorerItem);
+                ExplorerItemList.Items.Add(explorerItem);
             }
 
             foreach(StorageFile file in FileList)
@@ -66,17 +67,17 @@ namespace Portable_Anymap_Viewer
 
                 ExplorerItem explorerItem = new ExplorerItem();
                 explorerItem.Thumbnail = thumbnailBitmap;
-                explorerItem.Name = file.Name;
+                explorerItem.Filename = file.Name;
                 explorerItem.Type = file.FileType;
                 explorerItem.DisplayName = file.DisplayName;
                 explorerItem.DisplayType = file.DisplayType;
                 explorerItem.Path = file.Path;
                 explorerItem.Token = "";
-                ExplorerItems.Add(explorerItem);
+                ExplorerItemList.Items.Add(explorerItem);
             }
         }
 
-        private ObservableCollection<ExplorerItem> ExplorerItems;
+        //private ObservableCollection<ExplorerItem> ExplorerItems;
         private IReadOnlyList<StorageFile> FileList;
 
         private void ExplorerItemList_ItemClick(object sender, ItemClickEventArgs e)
@@ -103,6 +104,29 @@ namespace Portable_Anymap_Viewer
         private void AddFile_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            this.Unloaded -= Page_Unloaded;
+
+            ExplorerItemList.SelectionChanged -= ExplorerItemList_SelectionChanged;
+
+            AddFileTop.Click -= AddFile_Click;
+
+            AddFileBottom.Click -= AddFile_Click;
+
+            MobileTrigger.Detach();
+            DesktopTrigger.Detach();
+
+            ExplorerItemList.Items.Clear();
+            //ExplorerItems.Clear();
+
+
+            //this.Bindings.StopTracking();
+            //ExplorerItems.Clear();
+            //ExplorerItems = null;
+            GC.Collect();
         }
     }
 }

@@ -1,0 +1,25 @@
+﻿<UserControl
+    x:Class="Portable_Anymap_Viewer.Controls.ExplorerItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Portable_Anymap_Viewer.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel x:Name="ExplorerItemMainPanel"
+                                Orientation="Horizontal" 
+                                HorizontalAlignment="Stretch">
+
+            <Image x:Name="ExplorerItemThumbnail" HorizontalAlignment="Center" Width="48" Height="48" Margin="5" />
+            <StackPanel x:Name="ExplorerItemSecondaryPanel"
+                                    Margin="10,0,0,0"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center">
+                <TextBlock x:Name="ExplorerItemName" HorizontalAlignment="Left" FontSize="16" Margin="0,0,0,5" />
+                <TextBlock x:Name="ExplorerItemDisplayType" HorizontalAlignment="Left" FontSize="10"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

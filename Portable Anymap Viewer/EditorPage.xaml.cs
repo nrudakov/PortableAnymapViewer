@@ -65,8 +65,10 @@ namespace Portable_Anymap_Viewer
                     dataReaderT.ReadBytes(bytesText);
 
                     ASCIIEncoding ascii = new ASCIIEncoding();
-                    initialStrAll = ascii.GetString(bytesText);
-                    currentStrAll = initialStrAll;
+                    char[] str = new char[bytesLoadedT];
+                    ascii.GetDecoder().GetChars(bytesText, 0, (int)bytesLoadedT, str, 0);
+                    initialStrAll = new String(str);
+                    currentStrAll = new String(str);
                     EditorText.Text = initialStrAll;
                     break;
                 case 4:

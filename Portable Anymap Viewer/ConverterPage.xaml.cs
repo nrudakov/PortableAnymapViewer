@@ -122,7 +122,7 @@ namespace Portable_Anymap_Viewer
                         );
                     }
 
-                    await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    await CoreApplication.GetCurrentView().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
                         (this.InputFilesList.Items[i] as TextBlock).Visibility = Visibility.Collapsed;
                         (this.OutputFilesList.Items[i] as TextBlock).Visibility = Visibility.Visible;

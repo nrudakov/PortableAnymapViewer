@@ -1,4 +1,5 @@
-﻿using Portable_Anymap_Viewer.Models;
+﻿using Portable_Anymap_Viewer.Controls;
+using Portable_Anymap_Viewer.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,8 +8,11 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.DataTransfer.ShareTarget;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Globalization;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
 using Windows.Storage.FileProperties;
@@ -56,7 +60,7 @@ namespace Portable_Anymap_Viewer
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
-                //this.DebugSettings.EnableFrameRateCounter = true;
+                this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
 
@@ -99,6 +103,19 @@ namespace Portable_Anymap_Viewer
 
             // Обеспечение активности текущего окна
             Window.Current.Activate();
+        }
+
+        private Frame CreateRootFrame()
+        {
+            Frame rootFrame = Window.Current.Content as Frame;
+            if (rootFrame == null)
+            {
+                rootFrame = new Frame();
+                rootFrame.Language = ApplicationLanguages.Languages[0];
+                rootFrame.NavigationFailed += OnNavigationFailed;
+                Window.Current.Content = rootFrame;
+            }
+            return rootFrame;
         }
 
         private void RootFrame_Navigated(object sender, NavigationEventArgs e)
@@ -184,7 +201,7 @@ namespace Portable_Anymap_Viewer
             Frame rootFrame = Window.Current.Content as Frame;
             if (rootFrame == null)
                 return;
-
+            
             // If we can go back and the event has not already been handled, do so.
             if (rootFrame.CanGoBack && e.Handled == false)
             {
@@ -215,6 +232,24 @@ namespace Portable_Anymap_Viewer
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Сохранить состояние приложения и остановить все фоновые операции
             deferral.Complete();
+        }
+
+        protected override async void OnShareTargetActivated(ShareTargetActivatedEventArgs args)
+        {
+            var rootFrame = CreateRootFrame();
+            if (args.ShareOperation.Data.Contains(StandardDataFormats.StorageItems))
+            {
+                IReadOnlyList<IStorageItem> fileList = await args.ShareOperation.Data.GetStorageItemsAsync();
+                StorageFile file = fileList.First() as StorageFile;
+                List<StorageFile> ff = new List<StorageFile>();
+                ff.Add(file);
+                rootFrame.Navigate(typeof(ConverterPage), ff);
+            }
+            else
+            {
+                rootFrame.Navigate(typeof(ShareTargetPage), args.ShareOperation);
+            }
+            Window.Current.Activate();
         }
     }
 }

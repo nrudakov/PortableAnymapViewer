@@ -22,6 +22,12 @@ namespace Portable_Anymap_Viewer.Triggers
             ProjectionManager.ProjectionDisplayAvailableChanged += ProjectionManager_ProjectionDisplayAvailableChanged;
         }
 
+        public void Detach()
+        {
+            Window.Current.SizeChanged -= Window_SizeChanged;
+            ProjectionManager.ProjectionDisplayAvailableChanged -= ProjectionManager_ProjectionDisplayAvailableChanged;
+        }
+
         public bool IsInDesktopMode
         {
             get

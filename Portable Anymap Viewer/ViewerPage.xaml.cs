@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Graphics.DirectX;
@@ -37,6 +38,9 @@ namespace Portable_Anymap_Viewer
         private OpenFileParams openFileParams;
         private List<DecodeResult> imagesInfo = new List<DecodeResult>();
         private AnymapDecoder anymapDecoder = new AnymapDecoder();
+        private bool isLoadingCompleted = false;
+        private int canvasLoadRange = 0;
+        private UInt64 memoryUsage = 0;
         
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -44,69 +48,127 @@ namespace Portable_Anymap_Viewer
             openFileParams = e.Parameter as OpenFileParams;
             flipView.Visibility = Visibility.Collapsed;
             int fileId = 0;
-            foreach (StorageFile file in openFileParams.FileList)
+            for (int i = 0; i < openFileParams.FileList.Count; ++i)
             {
-                // Skip other extensions
-                if (file.FileType != ".pbm" && file.FileType != ".pgm" && file.FileType != ".ppm")
-                {
-                    continue;
-                }
-
-                // Skip corrupted formats
-                DecodeResult result = await anymapDecoder.decode(file);
-                if (result.Bytes == null)
-                {
-                    continue;
-                }
-
-                Double width = ApplicationView.GetForCurrentView().VisibleBounds.Width;
-                Double height = ApplicationView.GetForCurrentView().VisibleBounds.Height;
-                Double widthDiff = result.Width - width;
-                Double heightDiff = result.Height - height;
-                if (widthDiff > 0 || heightDiff > 0)
-                {
-                    if (widthDiff > heightDiff)
-                    {
-                        result.CurrentZoom = (Single)width / result.Width;
-                    }
-                    else
-                    {
-                        result.CurrentZoom = (Single)height / result.Height;
-                    }
-                }
-                // Create canvas
-                CanvasControl canvas = new CanvasControl();
-                canvas.Tag = result;
-                canvas.CreateResources += Img_CreateResources;
-                canvas.Draw += Img_Draw;
-                CanvasWrapper wrapper = new CanvasWrapper(result);
-                wrapper.Margin = new Thickness(0, 0, 0, 0);
-                wrapper.SetCanvas(canvas);
-                imagesInfo.Add(result);
+                CanvasWrapper wrapper = new CanvasWrapper();
                 flipView.Items.Add(wrapper);
-                switch(e.NavigationMode)
+                imagesInfo.Add(null);
+                switch (e.NavigationMode)
                 {
                     case NavigationMode.New:
-                        if (openFileParams.ClickedFile != null && file.Name == openFileParams.ClickedFile.Name)
+                        if (openFileParams.ClickedFile != null && openFileParams.FileList[i].Name == openFileParams.ClickedFile.Filename)
                         {
-                            flipView.SelectedItem = flipView.Items.ElementAt(fileId);
+                            flipView.SelectedIndex = i;
+                            await this.LoadCanvas(i);
                         }
                         break;
                     case NavigationMode.Back:
-                        if (file.Name == openFileParams.NavigateBackFilename)
+                        if (openFileParams.FileList[i].Name == openFileParams.NavigateBackFilename)
                         {
-                            flipView.SelectedItem = flipView.Items.ElementAt(fileId);
+                            flipView.SelectedIndex = i;
+                            await this.LoadCanvas(i);
                         }
                         break;
                 }
-                
-                ++fileId;
             }
+
+
+            
+
+            //foreach (StorageFile file in openFileParams.FileList)
+            //{
+            //    // Skip other extensions
+            //    if (file.FileType != ".pbm" && file.FileType != ".pgm" && file.FileType != ".ppm")
+            //    {
+            //        continue;
+            //    }
+
+            //    // Skip corrupted formats
+            //    DecodeResult result = await anymapDecoder.decode(file);
+            //    if (result.Bytes == null)
+            //    {
+            //        continue;
+            //    }
+
+            //    Double width = ApplicationView.GetForCurrentView().VisibleBounds.Width;
+            //    Double height = ApplicationView.GetForCurrentView().VisibleBounds.Height;
+            //    Double widthDiff = result.Width - width;
+            //    Double heightDiff = result.Height - height;
+            //    if (widthDiff > 0 || heightDiff > 0)
+            //    {
+            //        if (widthDiff > heightDiff)
+            //        {
+            //            result.CurrentZoom = (Single)width / result.Width;
+            //        }
+            //        else
+            //        {
+            //            result.CurrentZoom = (Single)height / result.Height;
+            //        }
+            //    }
+            //    // Create canvas
+            //    CanvasControl canvas = new CanvasControl();
+            //    canvas.Tag = result;
+            //    canvas.CreateResources += Img_CreateResources;
+            //    canvas.Draw += Img_Draw;
+            //    CanvasWrapper wrapper = new CanvasWrapper(result);
+            //    wrapper.Margin = new Thickness(0, 0, 0, 0);
+            //    wrapper.SetCanvas(canvas);
+            //    imagesInfo.Add(result);
+            //    flipView.Items.Add(wrapper);
+                
+                
+            //    ++fileId;
+            //}
+
+
             ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
             ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
             flipView.Visibility = Visibility.Visible;
-            DataTransferManager.GetForCurrentView().DataRequested += ViewerPage_DataRequested;
-            
+            DataTransferManager.GetForCurrentView().DataRequested += ViewerPage_DataRequested;   
+        }
+
+        private async Task LoadCanvas(int pos)
+        {
+            // Skip other extensions
+            var file = openFileParams.FileList[pos];
+            if (file.FileType != ".pbm" && file.FileType != ".pgm" && file.FileType != ".ppm")
+            {
+                return;
+            }
+
+            // Skip corrupted formats
+            DecodeResult result = await anymapDecoder.decode(file);
+            if (result.Bytes == null)
+            {
+                return;
+            }
+
+            Double width = ApplicationView.GetForCurrentView().VisibleBounds.Width;
+            Double height = ApplicationView.GetForCurrentView().VisibleBounds.Height;
+            Double widthDiff = result.Width - width;
+            Double heightDiff = result.Height - height;
+            if (widthDiff > 0 || heightDiff > 0)
+            {
+                if (widthDiff > heightDiff)
+                {
+                    result.CurrentZoom = (Single)width / result.Width;
+                }
+                else
+                {
+                    result.CurrentZoom = (Single)height / result.Height;
+                }
+            }
+            // Create canvas
+            CanvasControl canvas = new CanvasControl();
+            canvas.Tag = result;
+            canvas.CreateResources += Img_CreateResources;
+            canvas.Draw += Img_Draw;
+
+            var wrapper = (flipView.Items[pos] as CanvasWrapper);
+            wrapper.SetImageInfo(result);
+            wrapper.Margin = new Thickness(0, 0, 0, 0);
+            wrapper.SetCanvas(canvas);
+            imagesInfo[pos] = result;
         }
 
         private void Img_CreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
@@ -126,12 +188,16 @@ namespace Portable_Anymap_Viewer
             args.DrawingSession.FillRectangle(new Rect(new Point(), sender.Size), sender.Tag as CanvasImageBrush);
         }
 
-        private void flipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void flipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (flipView.Visibility == Visibility.Visible &&
                 0 <= flipView.SelectedIndex &&
                 flipView.SelectedIndex < flipView.Items.Count)
             {
+                if (!(flipView.SelectedItem as CanvasWrapper).IsCanvasSet)
+                {
+                    await this.LoadCanvas(flipView.SelectedIndex);
+                }
                 ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
                 ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
             }
@@ -280,6 +346,39 @@ namespace Portable_Anymap_Viewer
                     }
                     break;
             }
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            this.Unloaded -= Page_Unloaded;
+
+            ViewerGrid.KeyDown -= ViewerGrid_KeyDown;
+            flipView.KeyDown -= flipView_KeyDown;
+            flipView.Tapped -= flipView_Tapped;
+            flipView.SelectionChanged -= flipView_SelectionChanged;
+            ViewerZoomReal.Click -= ViewerZoomReal_Click;
+            ViewerZoomIn.Click -= ViewerZoomIn_Click;
+            ViewerZoomOut.Click -= ViewerZoomOut_Click;
+
+            ViewerShareTop.Click -= ViewerShare_Click;
+            ViewerEditTop.Click -= ViewerEdit_Click;
+            ViewerDeleteTop.Click -= ViewerDelete_Click;
+
+            ViewerShareBottom.Click -= ViewerShare_Click;
+            ViewerEditBottom.Click -= ViewerEdit_Click;
+            ViewerDeleteBottom.Click -= ViewerDelete_Click;
+
+            this.MobileTrigger.Detach();
+            this.DesktopTrigger.Detach();
+
+            foreach (CanvasWrapper wrapper in this.flipView.Items)
+            {
+                wrapper.RemoveCanvas();
+            }
+
+            flipView.Items.Clear();
+            imagesInfo.Clear();
+            GC.Collect();
         }
     }
 }

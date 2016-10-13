@@ -1,4 +1,5 @@
-﻿using Portable_Anymap_Viewer.Models;
+﻿using Portable_Anymap_Viewer.Controls;
+using Portable_Anymap_Viewer.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -93,13 +94,13 @@ namespace Portable_Anymap_Viewer
 
                     ExplorerItem folder = new ExplorerItem();
                     folder.Thumbnail = thumbnailBitmap;
-                    folder.Name = storageFolder.Name;
+                    folder.Filename = storageFolder.Name;
                     folder.Type = null;
                     folder.DisplayName = storageFolder.DisplayName;
                     folder.DisplayType = storageFolder.DisplayType;
                     folder.Path = storageFolder.Path;
                     folder.Token = token;
-                    Folders.Add(folder);
+                    FolderList.Items.Add(folder);
                 }
             }
         }
@@ -221,6 +222,40 @@ namespace Portable_Anymap_Viewer
             {
                 Frame.Navigate(typeof(ConverterPage), files);
             }
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            this.Unloaded -= Page_Unloaded;
+
+            FolderList.SelectionChanged -= foldersListView_SelectionChanged;
+
+            AddFolderTop.Click -= AddFolder_Click;
+            RemoveFoldersTop.Click -= RemoveFolders_Click;
+            SelectFoldersTop.Click -= SelectFolders_Click;
+            OpenFileTop.Click -= OpenFile_Click;
+            ConvertTop.Click -= Convert_Click;
+
+            AddFolderBottom.Click -= AddFolder_Click;
+            RemoveFoldersBottom.Click -= RemoveFolders_Click;
+            SelectFoldersBottom.Click -= SelectFolders_Click;
+            OpenFileBottom.Click -= OpenFile_Click;
+            ConvertBottom.Click -= Convert_Click;
+
+            MobileTrigger.Detach();
+            DesktopTrigger.Detach();
+
+
+
+            FolderList.Items.Clear();
+            SelectedFolders.Clear();
+            GC.Collect();
+
+            //this.Bindings.StopTracking();
+            //Folders.Clear();
+            //Folders = null;
+            //SelectedFolders.Clear();
+            //SelectedFolders = null;
         }
     }
 }
