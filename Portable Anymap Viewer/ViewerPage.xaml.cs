@@ -124,7 +124,8 @@ namespace Portable_Anymap_Viewer
             ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
             ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
             flipView.Visibility = Visibility.Visible;
-            DataTransferManager.GetForCurrentView().DataRequested += ViewerPage_DataRequested;   
+            DataTransferManager.GetForCurrentView().DataRequested += ViewerPage_DataRequested;
+            isLoadingCompleted = true;   
         }
 
         private async Task LoadCanvas(int pos)
@@ -350,6 +351,13 @@ namespace Portable_Anymap_Viewer
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
+            // Wait for loading to avoid memory leak
+            int i = 0;
+            while (!isLoadingCompleted)
+            {
+                Debug.WriteLine("Unloaded waiting: {0}", ++i);
+            }
+
             this.Unloaded -= Page_Unloaded;
 
             ViewerGrid.KeyDown -= ViewerGrid_KeyDown;

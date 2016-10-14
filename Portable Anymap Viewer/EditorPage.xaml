@@ -8,7 +8,8 @@
     xmlns:controls="using:Portable_Anymap_Viewer.Controls"
     xmlns:local="using:Portable_Anymap_Viewer"
     xmlns:triggers="using:Portable_Anymap_Viewer.Triggers"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Unloaded="Page_Unloaded">
     
     <Grid x:Name="EditorEditGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -20,7 +21,7 @@
             <VisualStateGroup x:Name="DisplayModeStates">
                 <VisualState x:Name="MobileMode">
                     <VisualState.StateTriggers>
-                        <triggers:DisplayModeTrigger IsInDesktopMode="False"/>
+                        <triggers:DisplayModeTrigger x:Name="MobileTrigger" IsInDesktopMode="False"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="EditorTopCommandBar.Visibility" Value="Collapsed"/>
@@ -29,7 +30,7 @@
                 </VisualState>
                 <VisualState x:Name="DesktopMode">
                     <VisualState.StateTriggers>
-                        <triggers:DisplayModeTrigger IsInDesktopMode="True"/>
+                        <triggers:DisplayModeTrigger x:Name="DesktopTrigger" IsInDesktopMode="True"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="EditorTopCommandBar.Visibility" Value="Visible"/>

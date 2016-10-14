@@ -263,5 +263,31 @@ namespace Portable_Anymap_Viewer
         {
             ExitPopup.IsOpen = !ExitPopup.IsOpen;
         }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            this.Unloaded -= this.Page_Unloaded;
+
+            this.EditorCanvas.CreateResources -= this.EditorCanvas_CreateResources;
+            this.EditorCanvas.Draw -= this.EditorCanvas_Draw;
+
+            this.EditorPreviewTop.Click -= this.EditorPreview_Click;
+            this.EditorUndoTop.Click -= this.EditorUndo_Click;
+            this.EditorRedoTop.Click -= this.EditorRedo_Click;
+            this.EditorSaveCopyTop.Click -= this.EditorSaveCopy_Click;
+            this.EditorSaveTop.Click -= this.EditorSave_Click;
+            this.EditorCancelTop.Click -= this.EditorCancel_Click;
+
+            this.EditorPreviewBottom.Click -= this.EditorPreview_Click;
+            this.EditorUndoBottom.Click -= this.EditorUndo_Click;
+            this.EditorRedoBottom.Click -= this.EditorRedo_Click;
+            this.EditorSaveCopyBottom.Click -= this.EditorSaveCopy_Click;
+            this.EditorSaveBottom.Click -= this.EditorSave_Click;
+            this.EditorCancelBottom.Click -= this.EditorCancel_Click;
+
+            this.MobileTrigger.Detach();
+            this.DesktopTrigger.Detach();
+            GC.Collect();
+        }
     }
 }

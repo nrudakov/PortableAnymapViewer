@@ -27,8 +27,8 @@ namespace Portable_Anymap_Viewer
         public MainPage()
         {
             this.InitializeComponent();
-            Folders = new ObservableCollection<ExplorerItem>();
-            SelectedFolders = new List<ExplorerItem>();
+            //Folders = new ObservableCollection<ExplorerItem>();
+            //SelectedFolders = new List<ExplorerItem>();
             readSavedFolders();
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
         }
@@ -63,21 +63,21 @@ namespace Portable_Anymap_Viewer
                 folder.DisplayType = storageFolder.DisplayType;
                 folder.Path = storageFolder.Path;
                 folder.Token = faToken;
-                Folders.Add(folder);
+                FolderList.Items.Add(folder);
                 saveFolder(faToken);
             }
         }
 
         private void foldersListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            foreach(ExplorerItem item in e.RemovedItems)
-            {
-                SelectedFolders.Remove(item);
-            }
-            foreach(ExplorerItem item in e.AddedItems)
-            {
-                SelectedFolders.Add(item);
-            }
+            //foreach(ExplorerItem item in e.RemovedItems)
+            //{
+            //    SelectedFolders.Remove(item);
+            //}
+            //foreach(ExplorerItem item in e.AddedItems)
+            //{
+            //    SelectedFolders.Add(item);
+            //}
         }
 
         private async void readSavedFolders()
@@ -117,9 +117,6 @@ namespace Portable_Anymap_Viewer
             return new Rect(point, new Size(element.ActualWidth, element.ActualHeight));
         }
 
-        private ObservableCollection<ExplorerItem> Folders;
-        private List<ExplorerItem> SelectedFolders;
-
         private void FolderList_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (FolderList.SelectionMode == ListViewSelectionMode.None)
@@ -132,7 +129,7 @@ namespace Portable_Anymap_Viewer
         {
             if (FolderList.SelectionMode == ListViewSelectionMode.None)
             {
-                SelectedFolders.Clear();
+                //SelectedFolders.Clear();
                 AddFolderTop.Visibility = Visibility.Collapsed;
                 RemoveFoldersTop.Visibility = Visibility.Visible;
                 SelectFoldersTop.Icon = new SymbolIcon(Symbol.List);
@@ -145,7 +142,7 @@ namespace Portable_Anymap_Viewer
             }
             else if (FolderList.SelectionMode == ListViewSelectionMode.Multiple)
             {
-                SelectedFolders.Clear();
+                //SelectedFolders.Clear();
                 AddFolderTop.Visibility = Visibility.Visible;
                 RemoveFoldersTop.Visibility = Visibility.Collapsed;
                 SelectFoldersTop.Icon = new SymbolIcon(Symbol.Bullets);
@@ -161,11 +158,11 @@ namespace Portable_Anymap_Viewer
         private async void RemoveFolders_Click(object sender, RoutedEventArgs e)
         {
             IList<string> FolderTokens = new List<string>();
-            for (int i = SelectedFolders.Count-1; i >= 0; --i)
+            foreach (ExplorerItem item in FolderList.SelectedItems)
             {
-                Folders.Remove(SelectedFolders[i]);
+                FolderList.Items.Remove(item);
             }
-            foreach(ExplorerItem item in Folders)
+            foreach(ExplorerItem item in FolderList.Items)
             {
                 FolderTokens.Add(item.Token);
             }
@@ -178,7 +175,6 @@ namespace Portable_Anymap_Viewer
             {
                 await FileIO.WriteLinesAsync(FolderFile, FolderTokens, Windows.Storage.Streams.UnicodeEncoding.Utf16LE);
             }
-            SelectedFolders.Clear();
             AddFolderTop.Visibility = Visibility.Visible;
             RemoveFoldersTop.Visibility = Visibility.Collapsed;
             SelectFoldersTop.Icon = new SymbolIcon(Symbol.Bullets);
@@ -204,6 +200,12 @@ namespace Portable_Anymap_Viewer
             {
                 OpenFileParams openFileParams = new OpenFileParams();
                 openFileParams.FileList = files;
+                var firstFile = openFileParams.FileList[0];
+                ExplorerItem ei = new ExplorerItem();
+                ei.Filename = firstFile.Name;
+                ei.DisplayName = firstFile.DisplayName;
+                ei.DisplayType = firstFile.DisplayType;
+                openFileParams.ClickedFile = ei;
                 Frame.Navigate(typeof(ViewerPage), openFileParams);
             }
         }
@@ -245,17 +247,8 @@ namespace Portable_Anymap_Viewer
             MobileTrigger.Detach();
             DesktopTrigger.Detach();
 
-
-
             FolderList.Items.Clear();
-            SelectedFolders.Clear();
             GC.Collect();
-
-            //this.Bindings.StopTracking();
-            //Folders.Clear();
-            //Folders = null;
-            //SelectedFolders.Clear();
-            //SelectedFolders = null;
         }
     }
 }

@@ -10,11 +10,13 @@ using Windows.Storage;
 using Windows.Storage.AccessCache;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
 
 namespace Portable_Anymap_Viewer
@@ -152,7 +154,7 @@ namespace Portable_Anymap_Viewer
             }
         }
 
-        private void ConverterCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void FileTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (MaxPixelValue != null)
             {
@@ -184,11 +186,10 @@ namespace Portable_Anymap_Viewer
             }
         }
 
-        private void MaxPixelValue_KeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+        private void MaxPixelValue_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             TextBox tb = sender as TextBox;
-            if (Windows.System.VirtualKey.Number0 <= e.Key &&
-                e.Key <= Windows.System.VirtualKey.Number9)
+            if (VirtualKey.Number0 <= e.Key && e.Key <= VirtualKey.Number9)
             {
                 String str = tb.Text + e.Key.ToString();
                 try
@@ -204,7 +205,7 @@ namespace Portable_Anymap_Viewer
                     e.Handled = true;
                 }
             }
-            else if (e.Key == Windows.System.VirtualKey.Delete || e.Key == Windows.System.VirtualKey.Back)
+            else if (e.Key == VirtualKey.Delete || e.Key == VirtualKey.Back)
             {
                 return;
             }
@@ -222,6 +223,24 @@ namespace Portable_Anymap_Viewer
                 bar.Visibility = Visibility.Collapsed;
             }
             this.FileListPivot.SelectedIndex = 1;
+        }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+            this.Unloaded -= this.Page_Unloaded;
+
+            this.FileTypeCombo.SelectionChanged -= this.FileTypeCombo_SelectionChanged;
+            this.MaxPixelValue.KeyDown -= this.MaxPixelValue_KeyDown;
+            this.FileProgressBar.ValueChanged -= this.ProgressBar_ValueChanged;
+
+            this.ChangeFolderTop.Click -= this.ChangeFolder_Click;
+            this.ConvertTop.Click -= this.Convert_Click;
+            this.ChangeFolderBottom.Click -= this.ChangeFolder_Click;
+            this.ConvertBottom.Click -= this.Convert_Click;
+
+            this.MobileTrigger.Detach();
+            this.DesktopTrigger.Detach();
+            GC.Collect();
         }
     }
 }

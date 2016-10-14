@@ -40,34 +40,11 @@
         
         <TextBlock x:Name="MainHeaderTitle" x:Uid="MainHeaderTitle" Margin="10" FontSize="24" Grid.Row="0">Folders</TextBlock>
         <ListView x:Name="FolderList"
-                 
                   IsItemClickEnabled="True"
                   ItemClick="FolderList_ItemClick"
                   SelectionMode="None"                  
                   SelectionChanged="foldersListView_SelectionChanged"
                   Grid.Row="1">
-            <!--<ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="data:ExplorerItem">
-                    <StackPanel x:Name="FolderItemMainPanel"
-                                Orientation="Horizontal" 
-                                HorizontalAlignment="Stretch">
-
-                        <Image x:Name="FolderItemThumbnail" Source="{x:Bind Thumbnail}" HorizontalAlignment="Center" Width="64" Height="64" />
-                        <StackPanel x:Name="FolderItemSecondaryPanel"
-                                    Margin="0,0,0,0"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Center">
-                            <TextBlock x:Name="FolderItemName" Text="{x:Bind Name}" HorizontalAlignment="Left" FontSize="16"/>
-                            <TextBlock x:Name="FolderItemPath" Text="{x:Bind Path}" HorizontalAlignment="Left" FontSize="10"/>
-                        </StackPanel>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>-->
         </ListView>
     </Grid>
 
