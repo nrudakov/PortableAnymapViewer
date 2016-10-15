@@ -39,37 +39,13 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <TextBlock x:Name="ExplorerHeaderTitle" Margin="10" FontSize="24" Grid.Row="0"></TextBlock>
+        <TextBlock x:Name="ExplorerHeaderTitle" Margin="10" FontSize="24" Grid.Row="0"/>
         <ListView x:Name="ExplorerItemList"
-                  
                   IsItemClickEnabled="True"
                   ItemClick="ExplorerItemList_ItemClick"
                   SelectionMode="None"                  
                   SelectionChanged="ExplorerItemList_SelectionChanged"
-                  Grid.Row="1">
-            <!--<ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="data:ExplorerItem">
-                    <StackPanel x:Name="ExplorerItemMainPanel"
-                                Orientation="Horizontal" 
-                                HorizontalAlignment="Stretch">
-
-                        <Image x:Name="ExplorerItemThumbnail" Source="{x:Bind Thumbnail}" HorizontalAlignment="Center" Width="48" Height="48" Margin="5" />
-                        <StackPanel x:Name="ExplorerItemSecondaryPanel"
-                                    Margin="10,0,0,0"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Center">
-                            <TextBlock x:Name="ExplorerItemName" Text="{x:Bind Name}" HorizontalAlignment="Left" FontSize="16" Margin="0,0,0,5" />
-                            <TextBlock x:Name="ExplorerItemType" Text="{x:Bind DisplayType}" HorizontalAlignment="Left" FontSize="10"/>
-                        </StackPanel>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>-->
-        </ListView>
+                  Grid.Row="1"/>
     </Grid>
 
     <Page.TopAppBar>
@@ -77,12 +53,13 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="AddFileTop" Icon="Add" Label="Create File" Click="AddFile_Click"/>
-            <!--<AppBarButton x:Name="AddFolderTop" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
-            <AppBarButton x:Name="RemoveFoldersTop" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
-            <AppBarButton x:Name="SelectFoldersTop" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>-->
+            <AppBarButton x:Name="CreateFileTop" x:Uid="MainCreateFile" Icon="Add" Label="Create File" Click="CreateFile_Click"/>
+            <AppBarButton x:Name="CreateFolderTop" x:Uid="ExplorerCreateFolder" Icon="NewFolder" Label="Create Folder" Click="CreateFolder_Click"/>
+            <AppBarButton x:Name="DeleteTop" x:Uid="ExplorerDeleteSelected" Icon="Delete" Label="Delete Selected" Visibility="Collapsed" Click="Delete_Click"/>
+            <AppBarButton x:Name="SelectTop" x:Uid="ExplorerSelect" Icon="Bullets" Label="Select" Click="Select_Click"/>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="AboutTop" Label="About"></AppBarButton>
+                <AppBarButton x:Name="RateTop" x:Uid="MainRate" Label="Rate the App"/>
+                <AppBarButton x:Name="AboutTop" x:Uid="MainAbout" Label="About"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.TopAppBar>
@@ -92,12 +69,13 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="AddFileBottom" Icon="Add" Label="Create File" Click="AddFile_Click"/>
-            <!--<AppBarButton x:Name="AddFolderBottom" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
-            <AppBarButton x:Name="RemoveFoldersBottom" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
-            <AppBarButton x:Name="SelectFoldersBottom" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>-->
+            <AppBarButton x:Name="CreateFileBottom" x:Uid="MainCreateFile" Icon="Add" Label="Create File" Click="CreateFile_Click"/>
+            <AppBarButton x:Name="CreateFolderBottom" x:Uid="ExplorerCreateFolder" Icon="NewFolder" Label="Create Folder" Click="CreateFolder_Click"/>
+            <AppBarButton x:Name="DeleteBottom" x:Uid="ExplorerDeleteSelected" Icon="Delete" Label="Delete Selected" Visibility="Collapsed" Click="Delete_Click"/>
+            <AppBarButton x:Name="SelectBottom" x:Uid="ExplorerSelect" Icon="Bullets" Label="Select" />
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="AboutBottom" Label="About"></AppBarButton>
+                <AppBarButton x:Name="RateBottom" x:Uid="MainRate" Label="Rate the App"/>
+                <AppBarButton x:Name="AboutBottom" x:Uid="MainAbout" Label="About"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

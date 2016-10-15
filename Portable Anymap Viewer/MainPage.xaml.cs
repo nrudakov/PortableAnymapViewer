@@ -27,8 +27,6 @@ namespace Portable_Anymap_Viewer
         public MainPage()
         {
             this.InitializeComponent();
-            //Folders = new ObservableCollection<ExplorerItem>();
-            //SelectedFolders = new List<ExplorerItem>();
             readSavedFolders();
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
         }
@@ -70,14 +68,7 @@ namespace Portable_Anymap_Viewer
 
         private void foldersListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //foreach(ExplorerItem item in e.RemovedItems)
-            //{
-            //    SelectedFolders.Remove(item);
-            //}
-            //foreach(ExplorerItem item in e.AddedItems)
-            //{
-            //    SelectedFolders.Add(item);
-            //}
+            
         }
 
         private async void readSavedFolders()
@@ -129,28 +120,30 @@ namespace Portable_Anymap_Viewer
         {
             if (FolderList.SelectionMode == ListViewSelectionMode.None)
             {
-                //SelectedFolders.Clear();
+                var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+                var str = loader.GetString("CancelSelection");
                 AddFolderTop.Visibility = Visibility.Collapsed;
                 RemoveFoldersTop.Visibility = Visibility.Visible;
                 SelectFoldersTop.Icon = new SymbolIcon(Symbol.List);
-                SelectFoldersTop.Label = "Folders List";
+                SelectFoldersTop.Label = str;
                 AddFolderBottom.Visibility = Visibility.Collapsed;
                 RemoveFoldersBottom.Visibility = Visibility.Visible;
                 SelectFoldersBottom.Icon = new SymbolIcon(Symbol.List);
-                SelectFoldersBottom.Label = "Folders List";
+                SelectFoldersBottom.Label = str;
                 FolderList.SelectionMode = ListViewSelectionMode.Multiple;
             }
             else if (FolderList.SelectionMode == ListViewSelectionMode.Multiple)
             {
-                //SelectedFolders.Clear();
+                var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+                var str = loader.GetString("SelectFolders");
                 AddFolderTop.Visibility = Visibility.Visible;
                 RemoveFoldersTop.Visibility = Visibility.Collapsed;
                 SelectFoldersTop.Icon = new SymbolIcon(Symbol.Bullets);
-                SelectFoldersTop.Label = "Select Folders";
+                SelectFoldersTop.Label = str;
                 AddFolderBottom.Visibility = Visibility.Visible;
                 RemoveFoldersBottom.Visibility = Visibility.Collapsed;
                 SelectFoldersBottom.Icon = new SymbolIcon(Symbol.Bullets);
-                SelectFoldersBottom.Label = "Select Folders";
+                SelectFoldersBottom.Label = str;
                 FolderList.SelectionMode = ListViewSelectionMode.None;
             }
         }
@@ -175,14 +168,16 @@ namespace Portable_Anymap_Viewer
             {
                 await FileIO.WriteLinesAsync(FolderFile, FolderTokens, Windows.Storage.Streams.UnicodeEncoding.Utf16LE);
             }
+            var loader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            var str = loader.GetString("SelectFolders");
             AddFolderTop.Visibility = Visibility.Visible;
             RemoveFoldersTop.Visibility = Visibility.Collapsed;
             SelectFoldersTop.Icon = new SymbolIcon(Symbol.Bullets);
-            SelectFoldersTop.Label = "Select Folders";
+            SelectFoldersTop.Label = str;
             AddFolderTop.Visibility = Visibility.Visible;
             RemoveFoldersBottom.Visibility = Visibility.Collapsed;
             SelectFoldersBottom.Icon = new SymbolIcon(Symbol.Bullets);
-            SelectFoldersBottom.Label = "Select Folders";
+            SelectFoldersBottom.Label = str;
             FolderList.SelectionMode = ListViewSelectionMode.None;
         }
 

@@ -37,15 +37,14 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-        
-        <TextBlock x:Name="MainHeaderTitle" x:Uid="MainHeaderTitle" Margin="10" FontSize="24" Grid.Row="0">Folders</TextBlock>
+
+        <TextBlock x:Name="HeaderTitle" x:Uid="MainHeaderTitle" Text="Folders" Margin="10" FontSize="24" Grid.Row="0"/>
         <ListView x:Name="FolderList"
                   IsItemClickEnabled="True"
                   ItemClick="FolderList_ItemClick"
                   SelectionMode="None"                  
                   SelectionChanged="foldersListView_SelectionChanged"
-                  Grid.Row="1">
-        </ListView>
+                  Grid.Row="1"/>
     </Grid>
 
     <Page.TopAppBar>
@@ -53,18 +52,20 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="AddFolderTop" x:Uid="MainAddFolderTop" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
-            <AppBarButton x:Name="RemoveFoldersTop" x:Uid="MainRemoveFoldersTop" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
-            <AppBarButton x:Name="SelectFoldersTop" x:Uid="MainSelectFoldersTop" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
+            <AppBarButton x:Name="AddFolderTop" x:Uid="MainAddFolder" Icon="NewFolder" Label="Add Folder" Click="AddFolder_Click"/>
+            <AppBarButton x:Name="RemoveFoldersTop" x:Uid="MainRemoveFolders" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
+            <AppBarButton x:Name="SelectFoldersTop" x:Uid="MainSelectFolders" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="OpenFileTop" x:Uid="MainOpenFileTop" Icon="OpenFile" Label="Open Anymap" Click="OpenFile_Click"/>
-            <AppBarButton x:Name="ConvertTop" x:Uid="MainConvertTop" Label="Convert to Anymap" Click="Convert_Click">
+            <AppBarButton x:Name="CreateFileTop" x:Uid="MainCreateFile" Icon="Add" Label="Create Anymap"/>
+            <AppBarButton x:Name="OpenFileTop" x:Uid="MainOpenFile" Icon="OpenFile" Label="Open Anymap" Click="OpenFile_Click"/>
+            <AppBarButton x:Name="ConvertTop" x:Uid="MainConvert" Label="Convert to Anymap" Click="Convert_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE2B0;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="AboutTop" x:Uid="MainAboutTop" Label="About"/>
+                <AppBarButton x:Name="RateTop" x:Uid="MainRate" Label="Rate the App"/>
+                <AppBarButton x:Name="AboutTop" x:Uid="MainAbout" Label="About"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.TopAppBar>
@@ -73,18 +74,20 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="AddFolderBottom" x:Uid="MainAddFolderBottom" Icon="Add" Label="Add Folder" Click="AddFolder_Click"/>
-            <AppBarButton x:Name="RemoveFoldersBottom" x:Uid="MainRemoveFoldersBottom" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
-            <AppBarButton x:Name="SelectFoldersBottom" x:Uid="MainSelectFoldersBottom" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
+            <AppBarButton x:Name="AddFolderBottom" x:Uid="MainAddFolder" Icon="NewFolder" Label="Add Folder" Click="AddFolder_Click"/>
+            <AppBarButton x:Name="RemoveFoldersBottom" x:Uid="MainRemoveFolders" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
+            <AppBarButton x:Name="SelectFoldersBottom" x:Uid="MainSelectFolders" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="OpenFileBottom" x:Uid="MainOpenFileBottom" Icon="OpenFile" Label="Open Anymap" Click="OpenFile_Click"/>
-            <AppBarButton x:Name="ConvertBottom" x:Uid="MainConvertBottom" Label="Convert to Anymap" Click="Convert_Click">
+            <AppBarButton x:Name="CreateFileBottom" x:Uid="MainCreateFile" Icon="Add" Label="Create Anymap"/>
+            <AppBarButton x:Name="OpenFileBottom" x:Uid="MainOpenFile" Icon="OpenFile" Label="Open Anymap" Click="OpenFile_Click"/>
+            <AppBarButton x:Name="ConvertBottom" x:Uid="MainConvert" Label="Convert to Anymap" Click="Convert_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE2B0;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="AboutBottom" x:Uid="MainAboutBottom" Label="About"/>
+                <AppBarButton x:Name="RateBottom" x:Uid="MainRate" Label="Rate the App"/>
+                <AppBarButton x:Name="AboutBottom" x:Uid="MainAbout" Label="About"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

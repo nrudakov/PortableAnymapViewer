@@ -46,9 +46,9 @@
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0">
                 <ComboBox x:Name="FileTypeCombo" x:Uid="ConverterFileTypeCombo" Header="Format" Margin="10" Width="110" SelectionChanged="FileTypeCombo_SelectionChanged">
-                    <ComboBoxItem x:Name="BitmapComboItem" x:Uid="ConverterBitmapComboItem" Content="Bitmap"/>
-                    <ComboBoxItem x:Name="GraymapComboItem" x:Uid="ConverterGraymapComboItem" Content="Graymap"/>
-                    <ComboBoxItem x:Name="PixmapComboItem" x:Uid="ConverterPixmapComboItem" Content="Pixmap" IsSelected="True"/>
+                    <ComboBoxItem x:Name="BitmapComboItem" Content="Bitmap"/>
+                    <ComboBoxItem x:Name="GraymapComboItem" Content="Graymap"/>
+                    <ComboBoxItem x:Name="PixmapComboItem" Content="Pixmap" IsSelected="True"/>
                 </ComboBox>
                 <ToggleSwitch x:Name="IsBinary" x:Uid="ConverterIsBinary" Header="Mode" OffContent="Text" OnContent="Binary" Margin="10"/>
             </StackPanel>
@@ -62,13 +62,13 @@
             <Pivot x:Name="FileListPivot" Margin="10" Grid.Row="4">
                 <PivotItem>
                     <PivotItem.Header>
-                        <controls:TabHeader Label="Waiting Files" Glyph="&#xE9F3;"/>
+                        <controls:TabHeader x:Uid="ConverterWaitingTabHeader" Label="Waiting Files" Glyph="&#xE9F3;"/>
                     </PivotItem.Header>
                     <ListView x:Name="InputFilesList" SelectionMode="None"/>
                 </PivotItem>
                 <PivotItem>
                     <PivotItem.Header>
-                        <controls:TabHeader Label="Converted Files" Glyph="&#xE73A;"/>
+                        <controls:TabHeader x:Uid="ConverterConvertedTabHeader" Label="Converted Files" Glyph="&#xE73A;"/>
                     </PivotItem.Header>
                     <ListView x:Name="OutputFilesList" SelectionMode="None"/>
                 </PivotItem>
@@ -83,12 +83,12 @@
             </CommandBar.Background>
             <CommandBar.Content>
                 <StackPanel x:Name="OutputFolderStackTop" Orientation="Horizontal">
-                    <TextBlock x:Name="OutputFolderLabelTop" x:Uid="ConverterOutputFolderLabelTop" Text="Output Folder: "/>
+                    <TextBlock x:Name="OutputFolderLabelTop" x:Uid="ConverterOutputFolderLabel" Text="Output Folder: "/>
                     <TextBlock x:Name="OutputFolderPathTop"/>
                 </StackPanel>
             </CommandBar.Content>
-            <AppBarButton x:Name="ChangeFolderTop" x:Uid="ConverterChangeFolderTop" Icon="MoveToFolder" Label="Output Folder" Click="ChangeFolder_Click"/>
-            <AppBarButton x:Name="ConvertTop" x:Uid="ConverterConvertTop" Icon="Accept" Label="Convert" Click="Convert_Click"/>
+            <AppBarButton x:Name="ChangeFolderTop" x:Uid="ConverterChangeFolder" Icon="MoveToFolder" Label="Output Folder" Click="ChangeFolder_Click"/>
+            <AppBarButton x:Name="ConvertTop" x:Uid="ConverterConvert" Icon="Accept" Label="Convert" Click="Convert_Click"/>
         </CommandBar>
     </Page.TopAppBar>
     <Page.BottomAppBar>
@@ -98,12 +98,12 @@
             </CommandBar.Background>
             <CommandBar.Content>
                 <StackPanel x:Name="OutputFolderStackBottom" Orientation="Horizontal">
-                    <TextBlock x:Name="OutputFolderLabelBottom" x:Uid="ConverterOutputFolderLabelBottom" Text="Output Folder: "/>
+                    <TextBlock x:Name="OutputFolderLabelBottom" x:Uid="ConverterOutputFolderLabel" Text="Output Folder: "/>
                     <TextBlock x:Name="OutputFolderPathBottom"/>
                 </StackPanel>
             </CommandBar.Content>
-            <AppBarButton x:Name="ChangeFolderBottom" x:Uid="ConverterChangeFolderBottom" Icon="MoveToFolder" Label="Output Folder" Click="ChangeFolder_Click"/>
-            <AppBarButton x:Name="ConvertBottom" x:Uid="ConverterConvertBottom" Icon="Accept" Label="Convert" Click="Convert_Click"/>
+            <AppBarButton x:Name="ChangeFolderBottom" x:Uid="ConverterChangeFolder" Icon="MoveToFolder" Label="Output Folder" Click="ChangeFolder_Click"/>
+            <AppBarButton x:Name="ConvertBottom" x:Uid="ConverterConvert" Icon="Accept" Label="Convert" Click="Convert_Click"/>
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

@@ -62,8 +62,8 @@
         <ProgressRing x:Name="EditorRing" IsActive="False" Visibility="Collapsed" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" Height="60"/>
         <Popup x:Name="ExitPopup" IsOpen="False" VerticalAlignment="Top" HorizontalAlignment="Right">
             <StackPanel BorderBrush="White" BorderThickness="2">
-                <TextBlock x:Name="ExitPopupText" Text="Unsaved changes will be lost when exit!"/>
-                <Button x:Name="ExitPopupButton" Content="Exit"/>
+                <TextBlock x:Name="ExitPopupText" x:Uid="EditorExitWarning" Text="Unsaved changes will be lost when exit!"/>
+                <Button x:Name="ExitPopupButton" x:Uid="EditorExit" Content="Exit"/>
             </StackPanel>
         </Popup>
     </Grid>
@@ -73,27 +73,27 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="EditorCompareTop" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)">
+            <AppBarButton x:Name="EditorCompareTop" x:Uid="EditorCompare" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13C;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="EditorPreviewTop" Label="Preview" ToolTipService.ToolTip="Preview" Click="EditorPreview_Click">
+            <AppBarButton x:Name="EditorPreviewTop" x:Uid="EditorPreview" Label="Preview" ToolTipService.ToolTip="Preview" Click="EditorPreview_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8FF;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarSeparator/>
-            <AppBarButton x:Name="EditorUndoTop" Label="Undo" Icon="Undo" Click="EditorUndo_Click"/>
-            <AppBarButton x:Name="EditorRedoTop" Label="Redo" Icon="Redo" Click="EditorRedo_Click"/>
+            <AppBarButton x:Name="EditorUndoTop" x:Uid="EditorUndo" Label="Undo" ToolTipService.ToolTip="Undo (Ctrl+Z)" Icon="Undo" Click="EditorUndo_Click"/>
+            <AppBarButton x:Name="EditorRedoTop" x:Uid="EditorRedo" Label="Redo" ToolTipService.ToolTip="Reso (Ctrl+Y)" Icon="Redo" Click="EditorRedo_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="EditorSaveCopyTop" Label="Save copy" ToolTipService.ToolTip="Save copy (Ctrl+S)" Click="EditorSaveCopy_Click">
+            <AppBarButton x:Name="EditorSaveCopyTop" x:Uid="EditorSaveCopy" Label="Save copy" ToolTipService.ToolTip="Save Copy (Ctrl+S)" Click="EditorSaveCopy_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA35;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="EditorSaveTop" Icon="Save" Label="Save" ToolTipService.ToolTip="Save" Click="EditorSave_Click"/>
-            <AppBarButton x:Name="EditorCancelTop" Icon="Cancel" Label="Cancel" ToolTipService.ToolTip="Cancel (Esc)" Click="EditorCancel_Click"/>
+            <AppBarButton x:Name="EditorSaveTop" x:Uid="EditorSave" Icon="Save" Label="Save" ToolTipService.ToolTip="Save" Click="EditorSave_Click"/>
+            <AppBarButton x:Name="EditorCancelTop" x:Uid="EditorCancel" Icon="Cancel" Label="Cancel" ToolTipService.ToolTip="Cancel (Esc)" Click="EditorCancel_Click"/>
         </CommandBar>
     </Page.TopAppBar>
     <Page.BottomAppBar>
@@ -101,27 +101,27 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="EditorCompareBottom" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)">
+            <AppBarButton x:Name="EditorCompareBottom" x:Uid="EditorCompare" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13C;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="EditorPreviewBottom" Label="Preview" ToolTipService.ToolTip="Preview" Click="EditorPreview_Click">
+            <AppBarButton x:Name="EditorPreviewBottom" x:Uid="EditorPreview" Label="Preview" ToolTipService.ToolTip="Preview" Click="EditorPreview_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8FF;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarSeparator/>
-            <AppBarButton x:Name="EditorUndoBottom" Label="Undo" Icon="Undo" Click="EditorUndo_Click"/>
-            <AppBarButton x:Name="EditorRedoBottom" Label="Redo" Icon="Redo" Click="EditorRedo_Click"/>
+            <AppBarButton x:Name="EditorUndoBottom" x:Uid="EditorUndo" Label="Undo" Icon="Undo" Click="EditorUndo_Click"/>
+            <AppBarButton x:Name="EditorRedoBottom" x:Uid="EditoRedo" Label="Redo" Icon="Redo" Click="EditorRedo_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="EditorSaveCopyBottom" Label="Save copy" ToolTipService.ToolTip="Save copy (Ctrl+S)" Click="EditorSaveCopy_Click">
+            <AppBarButton x:Name="EditorSaveCopyBottom" x:Uid="EditorSaveCopy" Label="Save copy" ToolTipService.ToolTip="Save copy (Ctrl+S)" Click="EditorSaveCopy_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA35;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="EditorSaveBottom" Icon="Save" Label="Save" ToolTipService.ToolTip="Save" Click="EditorSave_Click"/>
-            <AppBarButton x:Name="EditorCancelBottom" Icon="Cancel" Label="Cancel" ToolTipService.ToolTip="Cancel (Esc)" Click="EditorCancel_Click"/>
+            <AppBarButton x:Name="EditorSaveBottom" x:Uid="EditorSave" Icon="Save" Label="Save" ToolTipService.ToolTip="Save" Click="EditorSave_Click"/>
+            <AppBarButton x:Name="EditorCancelBottom" x:Uid="EditorCancel" Icon="Cancel" Label="Cancel" ToolTipService.ToolTip="Cancel (Esc)" Click="EditorCancel_Click"/>
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

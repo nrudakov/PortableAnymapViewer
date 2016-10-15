@@ -285,6 +285,11 @@ namespace Portable_Anymap_Viewer
             this.EditorSaveBottom.Click -= this.EditorSave_Click;
             this.EditorCancelBottom.Click -= this.EditorCancel_Click;
 
+            this.EditorCompareTop.PointerPressed -= this.EditorCompare_PointerPressed;
+            this.EditorCompareTop.PointerReleased -= this.EditorCompare_PointerReleased;
+            this.EditorCompareBottom.PointerPressed -= this.EditorCompare_PointerPressed;
+            this.EditorCompareBottom.PointerReleased -= this.EditorCompare_PointerReleased;
+
             this.MobileTrigger.Detach();
             this.DesktopTrigger.Detach();
             GC.Collect();

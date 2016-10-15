@@ -247,7 +247,7 @@ namespace Portable_Anymap_Viewer
             }
             else
             {
-                rootFrame.Navigate(typeof(ShareTargetPage), args.ShareOperation);
+                //rootFrame.Navigate(typeof(ShareTargetPage), args.ShareOperation);
             }
             Window.Current.Activate();
         }

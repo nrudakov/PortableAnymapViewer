@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Graphics.DirectX;
 using Windows.Storage;
@@ -39,15 +40,12 @@ namespace Portable_Anymap_Viewer
         private List<DecodeResult> imagesInfo = new List<DecodeResult>();
         private AnymapDecoder anymapDecoder = new AnymapDecoder();
         private bool isLoadingCompleted = false;
-        private int canvasLoadRange = 0;
-        private UInt64 memoryUsage = 0;
         
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
             openFileParams = e.Parameter as OpenFileParams;
             flipView.Visibility = Visibility.Collapsed;
-            int fileId = 0;
             for (int i = 0; i < openFileParams.FileList.Count; ++i)
             {
                 CanvasWrapper wrapper = new CanvasWrapper();
@@ -71,55 +69,6 @@ namespace Portable_Anymap_Viewer
                         break;
                 }
             }
-
-
-            
-
-            //foreach (StorageFile file in openFileParams.FileList)
-            //{
-            //    // Skip other extensions
-            //    if (file.FileType != ".pbm" && file.FileType != ".pgm" && file.FileType != ".ppm")
-            //    {
-            //        continue;
-            //    }
-
-            //    // Skip corrupted formats
-            //    DecodeResult result = await anymapDecoder.decode(file);
-            //    if (result.Bytes == null)
-            //    {
-            //        continue;
-            //    }
-
-            //    Double width = ApplicationView.GetForCurrentView().VisibleBounds.Width;
-            //    Double height = ApplicationView.GetForCurrentView().VisibleBounds.Height;
-            //    Double widthDiff = result.Width - width;
-            //    Double heightDiff = result.Height - height;
-            //    if (widthDiff > 0 || heightDiff > 0)
-            //    {
-            //        if (widthDiff > heightDiff)
-            //        {
-            //            result.CurrentZoom = (Single)width / result.Width;
-            //        }
-            //        else
-            //        {
-            //            result.CurrentZoom = (Single)height / result.Height;
-            //        }
-            //    }
-            //    // Create canvas
-            //    CanvasControl canvas = new CanvasControl();
-            //    canvas.Tag = result;
-            //    canvas.CreateResources += Img_CreateResources;
-            //    canvas.Draw += Img_Draw;
-            //    CanvasWrapper wrapper = new CanvasWrapper(result);
-            //    wrapper.Margin = new Thickness(0, 0, 0, 0);
-            //    wrapper.SetCanvas(canvas);
-            //    imagesInfo.Add(result);
-            //    flipView.Items.Add(wrapper);
-                
-                
-            //    ++fileId;
-            //}
-
 
             ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
             ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
@@ -260,14 +209,19 @@ namespace Portable_Anymap_Viewer
 
         private async void ViewerDelete_Click(object sender, RoutedEventArgs e)
         {
-            MessageDialog deleteConfirmation = new MessageDialog("Are you sure to delete the file?", "Delete file");
-            deleteConfirmation.Commands.Add(new UICommand("Yes"));
-            deleteConfirmation.Commands.Add(new UICommand("No"));
+            var loader = new ResourceLoader();
+            var warningTilte = loader.GetString("DeleteFileTitle");
+            var warningMesage = loader.GetString("DeleteFileWarning");
+            var yes = loader.GetString("Yes");
+            var no = loader.GetString("No");
+            MessageDialog deleteConfirmation = new MessageDialog(warningMesage, warningTilte);
+            deleteConfirmation.Commands.Add(new UICommand(yes));
+            deleteConfirmation.Commands.Add(new UICommand(no));
             deleteConfirmation.DefaultCommandIndex = 1;
 
             var selectedCommand = await deleteConfirmation.ShowAsync();
 
-            if (selectedCommand.Label == "Yes")
+            if (selectedCommand.Label == yes)
             {
                 await openFileParams.FileList[flipView.SelectedIndex].DeleteAsync();
                 int pos = flipView.SelectedIndex - 1;
@@ -359,6 +313,7 @@ namespace Portable_Anymap_Viewer
             }
 
             this.Unloaded -= Page_Unloaded;
+            DataTransferManager.GetForCurrentView().DataRequested -= ViewerPage_DataRequested;
 
             ViewerGrid.KeyDown -= ViewerGrid_KeyDown;
             flipView.KeyDown -= flipView_KeyDown;
