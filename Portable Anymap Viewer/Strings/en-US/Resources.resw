@@ -171,7 +171,7 @@
   <data name="EditorCancel.Label" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="EditorCancel.ToolTipSevice.ToolTip" xml:space="preserve">
+  <data name="EditorCancel.ToolTipService.ToolTip" xml:space="preserve">
     <value>Cancel (Esc)</value>
   </data>
   <data name="EditorCompare.Label" xml:space="preserve">
@@ -272,5 +272,17 @@
   </data>
   <data name="Yes" xml:space="preserve">
     <value>Yes</value>
+  </data>
+  <data name="EditorInputMode.Label" xml:space="preserve">
+    <value>Overwrite</value>
+  </data>
+  <data name="EditorInputMode.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Input Mode (Ins)</value>
+  </data>
+  <data name="InputModeInsert" xml:space="preserve">
+    <value>Insert</value>
+  </data>
+  <data name="InputModeOverwrite" xml:space="preserve">
+    <value>Overwrite</value>
   </data>
 </root>

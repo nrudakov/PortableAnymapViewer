@@ -1,21 +1,26 @@
-﻿using Portable_Anymap_Viewer.Classes;
+﻿using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Brushes;
+using Microsoft.Graphics.Canvas.UI;
+using Microsoft.Graphics.Canvas.UI.Xaml;
+using Portable_Anymap_Viewer.Classes;
 using Portable_Anymap_Viewer.Models;
 using System;
+using System.Diagnostics;
 using System.Text;
+using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Graphics.DirectX;
+using Windows.Graphics.Display;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.System;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Graphics.Canvas;
-using Microsoft.Graphics.Canvas.Brushes;
-using Microsoft.Graphics.Canvas.UI;
-using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace Portable_Anymap_Viewer
 {
@@ -32,6 +37,7 @@ namespace Portable_Anymap_Viewer
             EditorCompareTop.AddHandler(PointerReleasedEvent, new PointerEventHandler(EditorCompare_PointerReleased), true);
             EditorCompareBottom.AddHandler(PointerPressedEvent, new PointerEventHandler(EditorCompare_PointerPressed), true);
             EditorCompareBottom.AddHandler(PointerReleasedEvent, new PointerEventHandler(EditorCompare_PointerReleased), true);
+            Window.Current.CoreWindow.KeyDown += this.CoreWindow_KeyDown;
         }
 
         AnymapDecoder decoder;
@@ -39,8 +45,8 @@ namespace Portable_Anymap_Viewer
         CanvasBitmap cbm;
         CanvasImageBrush brush;
         DecodeResult lastDecodeResult;
-        string initialStrAll;
-        string currentStrAll;
+        String initialStrAll;
+        String currentStrAll;
         byte[] initialBytes;
         byte[] currentBytes;
         int editorRow;
@@ -60,14 +66,9 @@ namespace Portable_Anymap_Viewer
                     var streamT = await editFileParams.File.OpenAsync(FileAccessMode.Read);
                     var dataReaderT = new DataReader(streamT.GetInputStreamAt(0));
                     uint bytesLoadedT = await dataReaderT.LoadAsync((uint)(streamT.Size));
-
-                    byte[] bytesText = new byte[bytesLoadedT];
-                    dataReaderT.ReadBytes(bytesText);
-
-                    ASCIIEncoding ascii = new ASCIIEncoding();
+                    initialStrAll = dataReaderT.ReadString(bytesLoadedT);
                     char[] str = new char[bytesLoadedT];
-                    ascii.GetDecoder().GetChars(bytesText, 0, (int)bytesLoadedT, str, 0);
-                    initialStrAll = new String(str);
+                    initialStrAll. CopyTo(0, str, 0, initialStrAll.Length);
                     currentStrAll = new String(str);
                     EditorText.Text = initialStrAll;
                     break;
@@ -86,9 +87,15 @@ namespace Portable_Anymap_Viewer
                     EditorHex.Bytes = new byte[bytesLoadedB];
                     initialBytes.CopyTo(EditorHex.Bytes, 0);
                     EditorHex.Invalidate();
+                    DisplayInformation.AutoRotationPreferences = DisplayOrientations.Landscape;
                     break;
             }
             EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(1, GridUnitType.Star);
+        }
+
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            DisplayInformation.AutoRotationPreferences = DisplayOrientations.None;
         }
 
         private void EditorCanvas_CreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
@@ -105,8 +112,27 @@ namespace Portable_Anymap_Viewer
             args.DrawingSession.FillRectangle(new Rect(new Point(), sender.Size), brush);
         }
 
+        private void EditorInputMode_Checked(object sender, RoutedEventArgs e)
+        {
+            var loader = new ResourceLoader();
+            this.EditorInputModeTop.Label = loader.GetString("InputModeInsert");
+            this.EditorInputModeBottom.Label = loader.GetString("InputModeInsert");
+            (this.EditorInputModeTop.Icon as FontIcon).Glyph = "\u0049";
+            this.EditorHex.IsInputModeInsert = true;
+        }
+
+        private void EditorInputMode_Unchecked(object sender, RoutedEventArgs e)
+        {
+            var loader = new ResourceLoader();
+            this.EditorInputModeTop.Label = loader.GetString("InputModeOverwrite");
+            this.EditorInputModeBottom.Label = loader.GetString("InputModeOverwrite");
+            (this.EditorInputModeTop.Icon as FontIcon).Glyph = "\u004F";
+            this.EditorHex.IsInputModeInsert = false;
+        }
+
         private void EditorCompare_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
+            (sender as AppBarToggleButton).IsChecked = true;
             if (EditorCanvas.Visibility == Visibility.Visible)
             {
                 cbm = CanvasBitmap.CreateFromBytes(EditorCanvas, editFileParams.Bytes, editFileParams.Width, editFileParams.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
@@ -136,6 +162,7 @@ namespace Portable_Anymap_Viewer
 
         private void EditorCompare_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
+            (sender as AppBarToggleButton).IsChecked = false;
             if (EditorCanvas.Visibility == Visibility.Visible)
             {
                 cbm = CanvasBitmap.CreateFromBytes(EditorCanvas, lastDecodeResult.Bytes, lastDecodeResult.Width, lastDecodeResult.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
@@ -159,53 +186,45 @@ namespace Portable_Anymap_Viewer
                 }
             }
         }
-        
-        private async void EditorPreview_Click(object sender, RoutedEventArgs e)
+
+        private async void EditorPreview_Checked(object sender, RoutedEventArgs e)
         {
-            if (EditorCanvas.Visibility == Visibility.Collapsed)
+            if (EditorText.Visibility == Visibility.Visible)
             {
-                var uiSettings = new Windows.UI.ViewManagement.UISettings();
-                var color = uiSettings.GetColorValue(UIColorType.Accent);
-                (sender as AppBarButton).Background = new SolidColorBrush(color);
-
-                if (EditorText.Visibility == Visibility.Visible)
-                {
-                    lastDecodeResult = await decoder.decode(ASCIIEncoding.ASCII.GetBytes(EditorText.Text));
-                }
-                else if (EditorHex.Visibility == Visibility.Visible)
-                {
-                    lastDecodeResult = await decoder.decode(EditorHex.Bytes);
-                }
-                
-                cbm = CanvasBitmap.CreateFromBytes(EditorCanvas, lastDecodeResult.Bytes, lastDecodeResult.Width, lastDecodeResult.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
-                brush = new CanvasImageBrush(EditorCanvas, cbm);
-                brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
-                EditorCanvas.Width = editFileParams.Width;
-                EditorCanvas.Height = EditorCanvas.Height;
-
-                EditorCanvas.Visibility = Visibility.Visible;
-                EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(0, GridUnitType.Pixel);
-                EditorEditGrid.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
-                EditorCanvas.Invalidate();
+                lastDecodeResult = await decoder.decode(ASCIIEncoding.ASCII.GetBytes(EditorText.Text));
             }
-            else
+            else if (EditorHex.Visibility == Visibility.Visible)
             {
-                EditorCanvas.Visibility = Visibility.Collapsed;
-                EditorEditGrid.RowDefinitions[2].Height = new GridLength(0, GridUnitType.Pixel);
-                EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(1, GridUnitType.Star);
-                (sender as AppBarButton).Background = new SolidColorBrush(Windows.UI.Colors.Black);
+                lastDecodeResult = await decoder.decode(EditorHex.Bytes);
             }
+            cbm = CanvasBitmap.CreateFromBytes(EditorCanvas, lastDecodeResult.Bytes, lastDecodeResult.Width, lastDecodeResult.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
+            brush = new CanvasImageBrush(EditorCanvas, cbm);
+            brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
+            EditorCanvas.Width = editFileParams.Width;
+            EditorCanvas.Height = EditorCanvas.Height;
+
+            EditorCanvas.Visibility = Visibility.Visible;
+            EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(0, GridUnitType.Pixel);
+            EditorEditGrid.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
+            EditorCanvas.Invalidate();
         }
 
-        private void EditorUndo_Click(object sender, RoutedEventArgs e)
+        private void EditorPreview_Unchecked(object sender, RoutedEventArgs e)
         {
-
+            EditorCanvas.Visibility = Visibility.Collapsed;
+            EditorEditGrid.RowDefinitions[2].Height = new GridLength(0, GridUnitType.Pixel);
+            EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(1, GridUnitType.Star);
         }
 
-        private void EditorRedo_Click(object sender, RoutedEventArgs e)
-        {
+        //private void EditorUndo_Click(object sender, RoutedEventArgs e)
+        //{
+
+        //}
+
+        //private void EditorRedo_Click(object sender, RoutedEventArgs e)
+        //{
             
-        }
+        //}
 
         private async void EditorSaveCopy_Click(object sender, RoutedEventArgs e)
         {
@@ -264,23 +283,42 @@ namespace Portable_Anymap_Viewer
             ExitPopup.IsOpen = !ExitPopup.IsOpen;
         }
 
+        private void CoreWindow_KeyDown(CoreWindow sender, KeyEventArgs args)
+        {
+            if (args.VirtualKey == VirtualKey.Insert)
+            {
+                this.EditorInputModeTop.IsChecked = !this.EditorInputModeTop.IsChecked;
+                this.EditorInputModeBottom.IsChecked = !this.EditorInputModeBottom.IsChecked;
+                this.EditorHex.IsInputModeInsert = !this.EditorHex.IsInputModeInsert;
+            }
+        }
+
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             this.Unloaded -= this.Page_Unloaded;
+            Window.Current.CoreWindow.KeyDown -= this.CoreWindow_KeyDown;
+
+            this.EditorHex.Detach();
 
             this.EditorCanvas.CreateResources -= this.EditorCanvas_CreateResources;
             this.EditorCanvas.Draw -= this.EditorCanvas_Draw;
 
-            this.EditorPreviewTop.Click -= this.EditorPreview_Click;
-            this.EditorUndoTop.Click -= this.EditorUndo_Click;
-            this.EditorRedoTop.Click -= this.EditorRedo_Click;
+            this.EditorInputModeTop.Checked -= this.EditorInputMode_Checked;
+            this.EditorInputModeTop.Unchecked -= this.EditorInputMode_Unchecked;
+            this.EditorPreviewTop.Checked -= this.EditorPreview_Checked;
+            this.EditorPreviewTop.Unchecked -= this.EditorPreview_Unchecked;
+            //this.EditorUndoTop.Click -= this.EditorUndo_Click;
+            //this.EditorRedoTop.Click -= this.EditorRedo_Click;
             this.EditorSaveCopyTop.Click -= this.EditorSaveCopy_Click;
             this.EditorSaveTop.Click -= this.EditorSave_Click;
             this.EditorCancelTop.Click -= this.EditorCancel_Click;
 
-            this.EditorPreviewBottom.Click -= this.EditorPreview_Click;
-            this.EditorUndoBottom.Click -= this.EditorUndo_Click;
-            this.EditorRedoBottom.Click -= this.EditorRedo_Click;
+            this.EditorInputModeBottom.Checked -= this.EditorInputMode_Checked;
+            this.EditorInputModeBottom.Unchecked -= this.EditorInputMode_Unchecked;
+            this.EditorPreviewBottom.Checked -= this.EditorPreview_Checked;
+            this.EditorPreviewBottom.Unchecked -= this.EditorPreview_Unchecked;
+            //this.EditorUndoBottom.Click -= this.EditorUndo_Click;
+            //this.EditorRedoBottom.Click -= this.EditorRedo_Click;
             this.EditorSaveCopyBottom.Click -= this.EditorSaveCopy_Click;
             this.EditorSaveBottom.Click -= this.EditorSave_Click;
             this.EditorCancelBottom.Click -= this.EditorCancel_Click;

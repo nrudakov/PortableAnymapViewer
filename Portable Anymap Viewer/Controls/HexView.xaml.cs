@@ -34,7 +34,7 @@ namespace Portable_Anymap_Viewer.Controls
             Window.Current.CoreWindow.KeyDown += this.CoreWindow_KeyDown;
         }
 
-        ~HexView()
+        public void Detach()
         {
             Window.Current.CoreWindow.KeyDown -= this.CoreWindow_KeyDown;
 
@@ -56,6 +56,12 @@ namespace Portable_Anymap_Viewer.Controls
             this.Scroll.Scroll -= this.Scroll_Scroll;
         }
 
+        public bool IsInputModeInsert
+        {
+            get;
+            set;
+        }
+
         private void CoreWindow_KeyDown(CoreWindow sender, KeyEventArgs args)
         {
             if (this.selectedCanvas == 0 &&
@@ -71,6 +77,28 @@ namespace Portable_Anymap_Viewer.Controls
                 else if (VirtualKey.A <= args.VirtualKey && args.VirtualKey <= VirtualKey.F)
                 {
                     key -= 0x37;
+                }
+                else if (args.VirtualKey == VirtualKey.Delete)
+                {
+                    this.Bytes = HexView.RemoveFrom(this.Bytes, this.selectedIndex, 1);
+                    if (this.selectedIndex >= this.Bytes.Length)
+                    {
+                        this.selectedIndex = this.Bytes.Length - 1;
+                    }
+                    Debug.WriteLine("Delete");
+                    this.Invalidate();
+                    return;
+                }
+                else if (args.VirtualKey == VirtualKey.Back)
+                {
+                    this.Bytes = HexView.RemoveFrom(this.Bytes, this.selectedIndex, 1);
+                    if (this.selectedIndex > 0)
+                    {
+                        --this.selectedIndex;
+                    }
+                    Debug.WriteLine("Backspace");
+                    this.Invalidate();
+                    return;
                 }
                 else if (args.VirtualKey == VirtualKey.Left)
                 {
@@ -166,6 +194,16 @@ namespace Portable_Anymap_Viewer.Controls
                 }
             }
             this.Invalidate();
+        }
+
+        private static byte[] RemoveFrom(byte[] source, int startpos, int length)
+        {
+            byte[] head = new byte[startpos];
+            byte[] tail = new byte[source.Length - (startpos + length)];
+            Array.Copy(source, 0, head, 0, startpos);
+            Array.Copy(source, startpos + length, tail, 0, source.Length - (startpos + length));
+            byte[] res = head.Concat(tail).ToArray();
+            return res;
         }
 
         public static readonly DependencyProperty BytesProperty =

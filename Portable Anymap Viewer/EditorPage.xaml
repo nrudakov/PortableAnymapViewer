@@ -48,6 +48,7 @@
             ScrollViewer.VerticalScrollBarVisibility="Auto"
             FontFamily="Assets/consola.ttf#Consolas"
             Visibility="Collapsed"
+            IsReadOnly="True"
             Grid.Row="0"/>
         <controls:HexView
             x:Name="EditorHex"
@@ -73,19 +74,24 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="EditorCompareTop" x:Uid="EditorCompare" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)">
-                <AppBarButton.Icon>
+            <AppBarToggleButton x:Name="EditorInputModeTop" x:Uid="EditorInputMode" Label="Overwrite" ToolTipService.ToolTip="Input Mode (Ins)" Checked="EditorInputMode_Checked" Unchecked="EditorInputMode_Unchecked">
+                <AppBarToggleButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x004F;"/>
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <AppBarToggleButton x:Name="EditorCompareTop" x:Uid="EditorCompare" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)">
+                <AppBarToggleButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13C;"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Name="EditorPreviewTop" x:Uid="EditorPreview" Label="Preview" ToolTipService.ToolTip="Preview" Click="EditorPreview_Click">
-                <AppBarButton.Icon>
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <AppBarToggleButton x:Name="EditorPreviewTop" x:Uid="EditorPreview" Label="Preview" ToolTipService.ToolTip="Preview" Checked="EditorPreview_Checked" Unchecked="EditorPreview_Unchecked">
+                <AppBarToggleButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8FF;"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarSeparator/>
-            <AppBarButton x:Name="EditorUndoTop" x:Uid="EditorUndo" Label="Undo" ToolTipService.ToolTip="Undo (Ctrl+Z)" Icon="Undo" Click="EditorUndo_Click"/>
-            <AppBarButton x:Name="EditorRedoTop" x:Uid="EditorRedo" Label="Redo" ToolTipService.ToolTip="Reso (Ctrl+Y)" Icon="Redo" Click="EditorRedo_Click"/>
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <!--<AppBarSeparator/>-->
+            <!--<AppBarButton x:Name="EditorUndoTop" x:Uid="EditorUndo" Label="Undo" ToolTipService.ToolTip="Undo (Ctrl+Z)" Icon="Undo" Click="EditorUndo_Click"/>
+            <AppBarButton x:Name="EditorRedoTop" x:Uid="EditorRedo" Label="Redo" ToolTipService.ToolTip="Reso (Ctrl+Y)" Icon="Redo" Click="EditorRedo_Click"/>-->
             <AppBarSeparator/>
             <AppBarButton x:Name="EditorSaveCopyTop" x:Uid="EditorSaveCopy" Label="Save copy" ToolTipService.ToolTip="Save Copy (Ctrl+S)" Click="EditorSaveCopy_Click">
                 <AppBarButton.Icon>
@@ -101,19 +107,24 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="EditorCompareBottom" x:Uid="EditorCompare" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)">
-                <AppBarButton.Icon>
+            <AppBarToggleButton x:Name="EditorInputModeBottom" x:Uid="EditorInputMode" Label="Overwrite" ToolTipService.ToolTip="Input Mode (Ins)" Checked="EditorInputMode_Checked" Unchecked="EditorInputMode_Unchecked">
+                <AppBarToggleButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x004F;"/>
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <AppBarToggleButton x:Name="EditorCompareBottom" x:Uid="EditorCompare" Label="Compare" ToolTipService.ToolTip="Compare (Ctrl+/)">
+                <AppBarToggleButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE13C;"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarButton x:Name="EditorPreviewBottom" x:Uid="EditorPreview" Label="Preview" ToolTipService.ToolTip="Preview" Click="EditorPreview_Click">
-                <AppBarButton.Icon>
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <AppBarToggleButton x:Name="EditorPreviewBottom" x:Uid="EditorPreview" Label="Preview" ToolTipService.ToolTip="Preview" Checked="EditorPreview_Checked" Unchecked="EditorPreview_Unchecked">
+                <AppBarToggleButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8FF;"/>
-                </AppBarButton.Icon>
-            </AppBarButton>
-            <AppBarSeparator/>
-            <AppBarButton x:Name="EditorUndoBottom" x:Uid="EditorUndo" Label="Undo" Icon="Undo" Click="EditorUndo_Click"/>
-            <AppBarButton x:Name="EditorRedoBottom" x:Uid="EditoRedo" Label="Redo" Icon="Redo" Click="EditorRedo_Click"/>
+                </AppBarToggleButton.Icon>
+            </AppBarToggleButton>
+            <!--<AppBarSeparator/>-->
+            <!--<AppBarButton x:Name="EditorUndoBottom" x:Uid="EditorUndo" Label="Undo" Icon="Undo" Click="EditorUndo_Click"/>
+            <AppBarButton x:Name="EditorRedoBottom" x:Uid="EditoRedo" Label="Redo" Icon="Redo" Click="EditorRedo_Click"/>-->
             <AppBarSeparator/>
             <AppBarButton x:Name="EditorSaveCopyBottom" x:Uid="EditorSaveCopy" Label="Save copy" ToolTipService.ToolTip="Save copy (Ctrl+S)" Click="EditorSaveCopy_Click">
                 <AppBarButton.Icon>

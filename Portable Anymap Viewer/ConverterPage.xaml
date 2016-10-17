@@ -58,7 +58,7 @@
                 <ComboBoxItem x:Name="ReplaceComboItem" x:Uid="ConverterReplaceComboItem" Content="Replace Existing"/>
                 <ComboBoxItem x:Name="SkipComboItem" x:Uid="ConverterSkipComboItem" Content="Skip"/>
             </ComboBox>
-            <ProgressBar x:Name="FileProgressBar" Grid.Row="3" Visibility="Collapsed" ValueChanged="ProgressBar_ValueChanged"/>
+            <ProgressBar x:Name="FileProgressBar" Grid.Row="3" Visibility="Collapsed" Minimum="0" Value="0" ValueChanged="ProgressBar_ValueChanged"/>
             <Pivot x:Name="FileListPivot" Margin="10" Grid.Row="4">
                 <PivotItem>
                     <PivotItem.Header>

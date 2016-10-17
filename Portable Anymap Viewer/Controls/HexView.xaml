@@ -53,7 +53,7 @@
             Grid.Column="0"
             Draw="PrimaryOffsets_Draw"
             SizeChanged="PrimaryOffsets_SizeChanged"
-            ManipulationMode="TranslateY"
+            ManipulationMode="TranslateY,TranslateInertia"
             ManipulationDelta="HexDump_ManipulationDelta"
             PointerWheelChanged="HexDump_PointerWheelChanged"
             />
@@ -63,7 +63,7 @@
             Grid.Column="1"
             Draw="HexDump_Draw"
             PointerPressed="HexDump_PointerPressed"
-            ManipulationMode="TranslateY"
+            ManipulationMode="TranslateY,TranslateInertia"
             ManipulationDelta="HexDump_ManipulationDelta"
             PointerWheelChanged="HexDump_PointerWheelChanged"
             />
@@ -73,7 +73,7 @@
             Grid.Column="2"
             Draw="AsciiDump_Draw"
             PointerPressed="AsciiDump_PointerPressed"
-            ManipulationMode="TranslateY"
+            ManipulationMode="TranslateY,TranslateInertia"
             ManipulationDelta="HexDump_ManipulationDelta"
             PointerWheelChanged="HexDump_PointerWheelChanged"
             />
