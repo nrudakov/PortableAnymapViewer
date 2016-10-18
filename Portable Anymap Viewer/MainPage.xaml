@@ -11,10 +11,6 @@
     Unloaded="Page_Unloaded">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="65" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DisplayModeStates">
                 <VisualState x:Name="MobileMode">
@@ -38,13 +34,26 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <TextBlock x:Name="HeaderTitle" x:Uid="MainHeaderTitle" Text="Folders" Margin="10" FontSize="24" Grid.Row="0"/>
-        <ListView x:Name="FolderList"
-                  IsItemClickEnabled="True"
-                  ItemClick="FolderList_ItemClick"
-                  SelectionMode="None"                  
-                  SelectionChanged="foldersListView_SelectionChanged"
-                  Grid.Row="1"/>
+        <SplitView x:Name="Split" IsPaneOpen="False">
+            <SplitView.Pane>
+                <TextBlock>About</TextBlock>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="65" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="HeaderTitle" x:Uid="MainHeaderTitle" Text="Folders" Margin="10" FontSize="24" Grid.Row="0"/>
+                    <ListView x:Name="FolderList"
+                              IsItemClickEnabled="True"
+                              ItemClick="FolderList_ItemClick"
+                              SelectionMode="None"                  
+                              SelectionChanged="foldersListView_SelectionChanged"
+                              Grid.Row="1"/>
+                </Grid>
+            </SplitView.Content>
+        </SplitView>
     </Grid>
 
     <Page.TopAppBar>
@@ -64,8 +73,8 @@
                 </AppBarButton.Icon>
             </AppBarButton>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="RateTop" x:Uid="MainRate" Label="Rate the App"/>
-                <AppBarButton x:Name="AboutTop" x:Uid="MainAbout" Label="About"/>
+                <AppBarButton x:Name="RateTop" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
+                <AppBarButton x:Name="AboutTop" x:Uid="MainAbout" Label="About" Click="About_Click"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.TopAppBar>
@@ -86,8 +95,8 @@
                 </AppBarButton.Icon>
             </AppBarButton>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="RateBottom" x:Uid="MainRate" Label="Rate the App"/>
-                <AppBarButton x:Name="AboutBottom" x:Uid="MainAbout" Label="About"/>
+                <AppBarButton x:Name="RateBottom" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
+                <AppBarButton x:Name="AboutBottom" x:Uid="MainAbout" Label="About" Click="About_Click"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

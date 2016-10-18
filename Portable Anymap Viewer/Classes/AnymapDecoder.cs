@@ -16,10 +16,6 @@ namespace Portable_Anymap_Viewer.Classes
         private async Task<DecodeResult> decode(IRandomAccessStream stream, String filename)
         {
             ulong size = stream.Size;
-            stream.Seek(0);
-            var dataReader = new DataReader(stream);
-            await dataReader.LoadAsync((uint)2);
-            string formatType = dataReader.ReadString(2);
             DecodeResult result = new DecodeResult();
             result.Type = 0;
             result.Width = 0;
@@ -27,155 +23,136 @@ namespace Portable_Anymap_Viewer.Classes
             result.Bytes = null;
             result.Filename = filename;
             result.CurrentZoom = 1.0f;
-            if (formatType[0] != 'P')
+            if (size >= 2)
             {
-                return result;
-            }
-            AnymapProperties properties = null;
-            byte[] decodedAnymap = null;
-            uint bytesLoaded = 0;
-            switch (formatType[1])
-            {
-                case '1':
-                    properties = await GetImageProperties(stream, false);
-                    if (properties.MaxValue != 0)
-                    {
-                        decodedAnymap = new byte[properties.Width * properties.Height * 4];
-                        stream.Seek(properties.StreamPosition);
-                        dataReader = new DataReader(stream);
-                        bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
-                        String strAll = dataReader.ReadString(bytesLoaded);
-                        if (properties.BytesPerColor == 1)
+                stream.Seek(0);
+                var dataReader = new DataReader(stream);
+                await dataReader.LoadAsync((uint)2);
+                string formatType = dataReader.ReadString(2);
+                
+                if (formatType[0] != 'P')
+                {
+                    return result;
+                }
+                AnymapProperties properties = null;
+                byte[] decodedAnymap = null;
+                uint bytesLoaded = 0;
+                switch (formatType[1])
+                {
+                    case '1':
+                        properties = await GetImageProperties(stream, false);
+                        if (properties.MaxValue != 0)
                         {
-                            int resultIndex = 0;
-                            String[] strs = strAll.Split(new String[] { "\r", "\r\n", "\n" }, StringSplitOptions.None);
-                            MatchCollection mc = null;
-                            foreach (string str in strs)
+                            decodedAnymap = new byte[properties.Width * properties.Height * 4];
+                            stream.Seek(properties.StreamPosition);
+                            dataReader = new DataReader(stream);
+                            bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
+                            String strAll = dataReader.ReadString(bytesLoaded);
+                            if (properties.BytesPerColor == 1)
                             {
-                                mc = Regex.Matches(Regex.Match(str, @"[^#]{0,}").ToString(), @"\b\d+");
-                                for (int i = 0; i < mc.Count && resultIndex < decodedAnymap.Length; ++i)
+                                int resultIndex = 0;
+                                String[] strs = strAll.Split(new String[] { "\r", "\r\n", "\n" }, StringSplitOptions.None);
+                                MatchCollection mc = null;
+                                foreach (string str in strs)
                                 {
-                                    decodedAnymap[resultIndex] = (byte)((Convert.ToUInt32(mc[i].Value) ^ 0x01) * 255);
-                                    decodedAnymap[resultIndex + 1] = decodedAnymap[resultIndex];
-                                    decodedAnymap[resultIndex + 2] = decodedAnymap[resultIndex];
-                                    decodedAnymap[resultIndex + 3] = 255;
-                                    resultIndex += 4;
-                                }
-                            }
-                        }
-                    }
-                    result.Type = 1;
-                    result.Width = (Int32)properties.Width;
-                    result.Height = (Int32)properties.Height;
-                    result.Bytes = decodedAnymap;
-                    break;
-                case '2':
-                    properties = await GetImageProperties(stream, true);
-                    if (properties.MaxValue != 0)
-                    {
-                        decodedAnymap = new byte[properties.Width * properties.Height * 4];
-                        stream.Seek(properties.StreamPosition);
-                        dataReader = new DataReader(stream);
-                        bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
-                        String strAll = dataReader.ReadString(bytesLoaded);
-                        if (properties.BytesPerColor == 1)
-                        {
-                            int resultIndex = 0;
-                            String[] strs = strAll.Split(new String[] { "\r", "\r\n", "\n" }, StringSplitOptions.None);
-                            MatchCollection mc = null;
-                            foreach (string str in strs)
-                            {
-                                mc = Regex.Matches(Regex.Match(str, @"[^#]{0,}").ToString(), @"\b\d+");
-                                for (int i = 0; i < mc.Count && resultIndex < decodedAnymap.Length; ++i)
-                                {
-                                    decodedAnymap[resultIndex] = (byte)(Convert.ToUInt32(mc[i].Value) / (double)properties.MaxValue * 255);
-                                    decodedAnymap[resultIndex + 1] = decodedAnymap[resultIndex];
-                                    decodedAnymap[resultIndex + 2] = decodedAnymap[resultIndex];
-                                    decodedAnymap[resultIndex + 3] = 255;
-                                    resultIndex += 4;
-                                }
-                            }
-                        }
-                    }
-                    result.Type = 2;
-                    result.Width = (Int32)properties.Width;
-                    result.Height = (Int32)properties.Height;
-                    result.Bytes = decodedAnymap;
-                    break;
-                case '3':
-                    properties = await GetImageProperties(stream, true);
-                    if (properties.MaxValue != 0)
-                    {
-                        decodedAnymap = new byte[properties.Width * properties.Height * 4];
-                        stream.Seek(properties.StreamPosition);
-                        dataReader = new DataReader(stream);
-                        bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
-                        String strAll = dataReader.ReadString(bytesLoaded);
-                        if (properties.BytesPerColor == 1)
-                        {
-                            int resultIndex = 0;
-                            string[] strs = strAll.Split(new String[] { "\r", "\r\n", "\n" }, StringSplitOptions.None);
-                            int BgraIndex = 2;
-                            MatchCollection mc = null;
-                            foreach (string str in strs)
-                            {
-                                mc = Regex.Matches(Regex.Match(str, @"[^#]{0,}").ToString(), @"\b\d+");
-                                for (int i = 0; i < mc.Count; ++i)
-                                {
-                                    decodedAnymap[resultIndex + BgraIndex] = (byte)(Convert.ToUInt32(mc[i].Value) / (double)properties.MaxValue * 255);
-                                    --BgraIndex;
-                                    if (BgraIndex == -1)
+                                    mc = Regex.Matches(Regex.Match(str, @"[^#]{0,}").ToString(), @"\b\d+");
+                                    for (int i = 0; i < mc.Count && resultIndex < decodedAnymap.Length; ++i)
                                     {
-                                        BgraIndex = 3;
-                                        decodedAnymap[resultIndex + BgraIndex] = 255;
+                                        decodedAnymap[resultIndex] = (byte)((Convert.ToUInt32(mc[i].Value) ^ 0x01) * 255);
+                                        decodedAnymap[resultIndex + 1] = decodedAnymap[resultIndex];
+                                        decodedAnymap[resultIndex + 2] = decodedAnymap[resultIndex];
+                                        decodedAnymap[resultIndex + 3] = 255;
                                         resultIndex += 4;
-                                        --BgraIndex;
-                                        if (resultIndex >= decodedAnymap.Length)
-                                        {
-                                            break;
-                                        }
                                     }
                                 }
-                                if (resultIndex >= decodedAnymap.Length)
+                            }
+                        }
+                        result.Type = 1;
+                        result.Width = (Int32)properties.Width;
+                        result.Height = (Int32)properties.Height;
+                        result.Bytes = decodedAnymap;
+                        break;
+                    case '2':
+                        properties = await GetImageProperties(stream, true);
+                        if (properties.MaxValue != 0)
+                        {
+                            decodedAnymap = new byte[properties.Width * properties.Height * 4];
+                            stream.Seek(properties.StreamPosition);
+                            dataReader = new DataReader(stream);
+                            bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
+                            String strAll = dataReader.ReadString(bytesLoaded);
+                            if (properties.BytesPerColor == 1)
+                            {
+                                int resultIndex = 0;
+                                String[] strs = strAll.Split(new String[] { "\r", "\r\n", "\n" }, StringSplitOptions.None);
+                                MatchCollection mc = null;
+                                foreach (string str in strs)
                                 {
-                                    break;
+                                    mc = Regex.Matches(Regex.Match(str, @"[^#]{0,}").ToString(), @"\b\d+");
+                                    for (int i = 0; i < mc.Count && resultIndex < decodedAnymap.Length; ++i)
+                                    {
+                                        decodedAnymap[resultIndex] = (byte)(Convert.ToUInt32(mc[i].Value) / (double)properties.MaxValue * 255);
+                                        decodedAnymap[resultIndex + 1] = decodedAnymap[resultIndex];
+                                        decodedAnymap[resultIndex + 2] = decodedAnymap[resultIndex];
+                                        decodedAnymap[resultIndex + 3] = 255;
+                                        resultIndex += 4;
+                                    }
                                 }
                             }
                         }
-                    }
-                    result.Type = 3;
-                    result.Width = (Int32)properties.Width;
-                    result.Height = (Int32)properties.Height;
-                    result.Bytes = decodedAnymap;
-                    break;
-                case '4':
-                    properties = await GetImageProperties(stream, false);
-                    decodedAnymap = new byte[properties.Width * properties.Height * 4];
-                    stream.Seek(properties.StreamPosition);
-                    dataReader = new DataReader(stream);
-
-                    bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
-                    if (properties.BytesPerColor == 1)
-                    {
-                        int resultIndex = 0;
-                        int mod = (int)(properties.Width * properties.Height) % 8;
-                        
-                        for (uint i = 0; i < bytesLoaded - 1; ++i)
+                        result.Type = 2;
+                        result.Width = (Int32)properties.Width;
+                        result.Height = (Int32)properties.Height;
+                        result.Bytes = decodedAnymap;
+                        break;
+                    case '3':
+                        properties = await GetImageProperties(stream, true);
+                        if (properties.MaxValue != 0)
                         {
-                            unpackBitsPbm(decodedAnymap, resultIndex, 8, dataReader.ReadByte());
-                            resultIndex += 32;
+                            decodedAnymap = new byte[properties.Width * properties.Height * 4];
+                            stream.Seek(properties.StreamPosition);
+                            dataReader = new DataReader(stream);
+                            bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
+                            String strAll = dataReader.ReadString(bytesLoaded);
+                            if (properties.BytesPerColor == 1)
+                            {
+                                int resultIndex = 0;
+                                string[] strs = strAll.Split(new String[] { "\r", "\r\n", "\n" }, StringSplitOptions.None);
+                                int BgraIndex = 2;
+                                MatchCollection mc = null;
+                                foreach (string str in strs)
+                                {
+                                    mc = Regex.Matches(Regex.Match(str, @"[^#]{0,}").ToString(), @"\b\d+");
+                                    for (int i = 0; i < mc.Count; ++i)
+                                    {
+                                        decodedAnymap[resultIndex + BgraIndex] = (byte)(Convert.ToUInt32(mc[i].Value) / (double)properties.MaxValue * 255);
+                                        --BgraIndex;
+                                        if (BgraIndex == -1)
+                                        {
+                                            BgraIndex = 3;
+                                            decodedAnymap[resultIndex + BgraIndex] = 255;
+                                            resultIndex += 4;
+                                            --BgraIndex;
+                                            if (resultIndex >= decodedAnymap.Length)
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (resultIndex >= decodedAnymap.Length)
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
                         }
-                        unpackBitsPbm(decodedAnymap, resultIndex, mod == 0 ? 8 : mod, dataReader.ReadByte());
-                    }
-                    result.Type = 4;
-                    result.Width = (Int32)properties.Width;
-                    result.Height = (Int32)properties.Height;
-                    result.Bytes = decodedAnymap;
-                    break;
-                case '5':
-                    properties = await GetImageProperties(stream, true);
-                    if (properties.MaxValue != 0)
-                    {
+                        result.Type = 3;
+                        result.Width = (Int32)properties.Width;
+                        result.Height = (Int32)properties.Height;
+                        result.Bytes = decodedAnymap;
+                        break;
+                    case '4':
+                        properties = await GetImageProperties(stream, false);
                         decodedAnymap = new byte[properties.Width * properties.Height * 4];
                         stream.Seek(properties.StreamPosition);
                         dataReader = new DataReader(stream);
@@ -183,59 +160,86 @@ namespace Portable_Anymap_Viewer.Classes
                         bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
                         if (properties.BytesPerColor == 1)
                         {
-                            uint resultIndex = 0;
-                            for (int i = 0; i < properties.Height; ++i)
-                            {
-                                for (int j = 0; j < properties.Width && dataReader.UnconsumedBufferLength >= 1; ++j)
-                                {
-                                    decodedAnymap[resultIndex] = (byte)(dataReader.ReadByte() / (double)properties.MaxValue * 255);
-                                    decodedAnymap[resultIndex + 1] = decodedAnymap[resultIndex];
-                                    decodedAnymap[resultIndex + 2] = decodedAnymap[resultIndex];
-                                    decodedAnymap[resultIndex + 3] = 255;
-                                    resultIndex += 4;
-                                }
-                            }
-                        }
-                    }
-                    result.Type = 5;
-                    result.Width = (Int32)properties.Width;
-                    result.Height = (Int32)properties.Height;
-                    result.Bytes = decodedAnymap;
-                    break;
-                case '6':
-                    properties = await GetImageProperties(stream, true);
-                    if (properties.MaxValue != 0)
-                    {
-                        decodedAnymap = new byte[properties.Width * properties.Height * 4];
-                        stream.Seek(properties.StreamPosition);
-                        dataReader = new DataReader(stream);
+                            int resultIndex = 0;
+                            int mod = (int)(properties.Width * properties.Height) % 8;
 
-                        bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
-                        if (properties.BytesPerColor == 1)
-                        {
-                            uint resultIndex = 0;
-                            for (int i = 0; i < properties.Height; ++i)
+                            for (uint i = 0; i < bytesLoaded - 1; ++i)
                             {
-                                for (int j = 0; j < properties.Width && dataReader.UnconsumedBufferLength >= 3; ++j)
+                                unpackBitsPbm(decodedAnymap, resultIndex, 8, dataReader.ReadByte());
+                                resultIndex += 32;
+                            }
+                            unpackBitsPbm(decodedAnymap, resultIndex, mod == 0 ? 8 : mod, dataReader.ReadByte());
+                        }
+                        result.Type = 4;
+                        result.Width = (Int32)properties.Width;
+                        result.Height = (Int32)properties.Height;
+                        result.Bytes = decodedAnymap;
+                        break;
+                    case '5':
+                        properties = await GetImageProperties(stream, true);
+                        if (properties.MaxValue != 0)
+                        {
+                            decodedAnymap = new byte[properties.Width * properties.Height * 4];
+                            stream.Seek(properties.StreamPosition);
+                            dataReader = new DataReader(stream);
+
+                            bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
+                            if (properties.BytesPerColor == 1)
+                            {
+                                uint resultIndex = 0;
+                                for (int i = 0; i < properties.Height; ++i)
                                 {
-                                    decodedAnymap[resultIndex + 2] = (byte)(dataReader.ReadByte() / (double)properties.MaxValue * 255);
-                                    decodedAnymap[resultIndex + 1] = (byte)(dataReader.ReadByte() / (double)properties.MaxValue * 255);
-                                    decodedAnymap[resultIndex] = (byte)(dataReader.ReadByte() / (double)properties.MaxValue * 255);
-                                    decodedAnymap[resultIndex + 3] = 255;
-                                    resultIndex += 4;
+                                    for (int j = 0; j < properties.Width && dataReader.UnconsumedBufferLength >= 1; ++j)
+                                    {
+                                        decodedAnymap[resultIndex] = (byte)(dataReader.ReadByte() / (double)properties.MaxValue * 255);
+                                        decodedAnymap[resultIndex + 1] = decodedAnymap[resultIndex];
+                                        decodedAnymap[resultIndex + 2] = decodedAnymap[resultIndex];
+                                        decodedAnymap[resultIndex + 3] = 255;
+                                        resultIndex += 4;
+                                    }
                                 }
                             }
                         }
-                    }
-                    result.Type = 6;
-                    result.Width = (Int32)properties.Width;
-                    result.Height = (Int32)properties.Height;
-                    result.Bytes = decodedAnymap;
-                    break;
+                        result.Type = 5;
+                        result.Width = (Int32)properties.Width;
+                        result.Height = (Int32)properties.Height;
+                        result.Bytes = decodedAnymap;
+                        break;
+                    case '6':
+                        properties = await GetImageProperties(stream, true);
+                        if (properties.MaxValue != 0)
+                        {
+                            decodedAnymap = new byte[properties.Width * properties.Height * 4];
+                            stream.Seek(properties.StreamPosition);
+                            dataReader = new DataReader(stream);
+
+                            bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
+                            if (properties.BytesPerColor == 1)
+                            {
+                                uint resultIndex = 0;
+                                for (int i = 0; i < properties.Height; ++i)
+                                {
+                                    for (int j = 0; j < properties.Width && dataReader.UnconsumedBufferLength >= 3; ++j)
+                                    {
+                                        decodedAnymap[resultIndex + 2] = (byte)(dataReader.ReadByte() / (double)properties.MaxValue * 255);
+                                        decodedAnymap[resultIndex + 1] = (byte)(dataReader.ReadByte() / (double)properties.MaxValue * 255);
+                                        decodedAnymap[resultIndex] = (byte)(dataReader.ReadByte() / (double)properties.MaxValue * 255);
+                                        decodedAnymap[resultIndex + 3] = 255;
+                                        resultIndex += 4;
+                                    }
+                                }
+                            }
+                        }
+                        result.Type = 6;
+                        result.Width = (Int32)properties.Width;
+                        result.Height = (Int32)properties.Height;
+                        result.Bytes = decodedAnymap;
+                        break;
+                }
+                dataReader.DetachBuffer();
+                dataReader.DetachStream();
+                dataReader.Dispose();
             }
-            dataReader.DetachBuffer();
-            dataReader.DetachStream();
-            dataReader.Dispose();
             GC.Collect();
             return result;
         }
@@ -259,7 +263,10 @@ namespace Portable_Anymap_Viewer.Classes
             stream.Seek(0);
             var dataReader = new DataReader(stream);
             uint bytesLoaded = await dataReader.LoadAsync((uint)size);
-            String strAll = dataReader.ReadString(bytesLoaded);
+            byte[] bytes = new byte[bytesLoaded];
+            dataReader.ReadBytes(bytes);
+            ASCIIEncoding ascii = new ASCIIEncoding();
+            String strAll = ascii.GetString(bytes);
             uint[] imageProperties = new uint[3];
             uint imagePropertiesCounter = 0;
             string[] strs = strAll.Split(new String[] { "\r", "\r\n", "\n" }, StringSplitOptions.None);

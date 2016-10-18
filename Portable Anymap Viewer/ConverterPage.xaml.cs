@@ -104,32 +104,40 @@ namespace Portable_Anymap_Viewer
                     properties.MaxValue = maxPixelValue;
                     properties.StreamPosition = 0;
                     properties.BytesPerColor = maxPixelValue > 255 ? (UInt32)2 : (UInt32)1;
-                    StorageFile newFile = await outputFolder.CreateFileAsync(
-                        outputFiles[i], 
-                        collisionOption
-                    );
-                    if (isBinary)
+                    try
                     {
-                        byte[] anymapBytes = await anymapEncoder.encodeBinary(imageDecoder, properties);
-                        await FileIO.WriteBytesAsync(
-                            newFile,
-                            anymapBytes
+                        StorageFile newFile = await outputFolder.CreateFileAsync(
+                            outputFiles[i],
+                            collisionOption
                         );
-                    }
-                    else
-                    {
-                        await FileIO.WriteTextAsync(
-                            newFile,
-                            await anymapEncoder.encodeText(imageDecoder, properties)
-                        );
-                    }
+                        if (isBinary)
+                        {
+                            byte[] anymapBytes = await anymapEncoder.encodeBinary(imageDecoder, properties);
+                            await FileIO.WriteBytesAsync(
+                                newFile,
+                                anymapBytes
+                            );
+                        }
+                        else
+                        {
+                            await FileIO.WriteTextAsync(
+                                newFile,
+                                await anymapEncoder.encodeText(imageDecoder, properties)
+                            );
+                        }
 
-                    await CoreApplication.GetCurrentView().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                        await CoreApplication.GetCurrentView().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                        {
+                            (this.InputFilesList.Items[i] as TextBlock).Visibility = Visibility.Collapsed;
+                            (this.OutputFilesList.Items[i] as TextBlock).Visibility = Visibility.Visible;
+                            this.FileProgressBar.Value = this.FileProgressBar.Value + 1;
+                        });
+                    }
+                    catch (Exception ex)
                     {
                         (this.InputFilesList.Items[i] as TextBlock).Visibility = Visibility.Collapsed;
-                        (this.OutputFilesList.Items[i] as TextBlock).Visibility = Visibility.Visible;
                         this.FileProgressBar.Value = this.FileProgressBar.Value + 1;
-                    });
+                    }
                 }
             });
         }
@@ -137,6 +145,16 @@ namespace Portable_Anymap_Viewer
         private async void ChangeFolder_Click(object sender, RoutedEventArgs e)
         {
             await ChangeFolder();
+        }
+
+        private async void Rate_Click(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri(string.Format("ms-windows-store:REVIEW?PFN={0}", Windows.ApplicationModel.Package.Current.Id.FamilyName)));
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            this.Split.IsPaneOpen = !this.Split.IsPaneOpen;
         }
 
         private async Task ChangeFolder()
@@ -147,9 +165,9 @@ namespace Portable_Anymap_Viewer
             folderPicker.FileTypeFilter.Add(".ppm");
             folderPicker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
             outputFolder = await folderPicker.PickSingleFolderAsync();
-            StorageApplicationPermissions.FutureAccessList.Add(outputFolder);
             if (outputFolder != null)
             {
+                StorageApplicationPermissions.FutureAccessList.Add(outputFolder);
                 OutputFolderPathTop.Text = OutputFolderPathBottom.Text = outputFolder.Path;
             }
         }
@@ -235,8 +253,13 @@ namespace Portable_Anymap_Viewer
 
             this.ChangeFolderTop.Click -= this.ChangeFolder_Click;
             this.ConvertTop.Click -= this.Convert_Click;
+            this.RateTop.Click -= this.Rate_Click;
+            this.AboutTop.Click -= this.About_Click;
+
             this.ChangeFolderBottom.Click -= this.ChangeFolder_Click;
             this.ConvertBottom.Click -= this.Convert_Click;
+            this.RateBottom.Click -= this.Rate_Click;
+            this.AboutBottom.Click -= this.About_Click;
 
             this.MobileTrigger.Detach();
             this.DesktopTrigger.Detach();

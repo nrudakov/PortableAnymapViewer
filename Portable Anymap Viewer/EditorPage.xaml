@@ -10,13 +10,8 @@
     xmlns:triggers="using:Portable_Anymap_Viewer.Triggers"
     mc:Ignorable="d"
     Unloaded="Page_Unloaded">
-    
-    <Grid x:Name="EditorEditGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="0"/>
-            <RowDefinition Height="0"/>
-            <RowDefinition Height="0"/>
-        </Grid.RowDefinitions>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DisplayModeStates">
                 <VisualState x:Name="MobileMode">
@@ -39,34 +34,47 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
+        <SplitView x:Name="Split" IsPaneOpen="False">
+            <SplitView.Pane>
+                <TextBlock>About</TextBlock>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Grid x:Name="EditorEditGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0"/>
+                        <RowDefinition Height="0"/>
+                        <RowDefinition Height="0"/>
+                    </Grid.RowDefinitions>
+                    <TextBox
+                        x:Name="EditorText"
+                        AcceptsReturn="True"
+                        TextWrapping="NoWrap"
+                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        FontFamily="Assets/consola.ttf#Consolas"
+                        Visibility="Collapsed"
+                        Grid.Row="0"/>
+                    <controls:HexView
+                        x:Name="EditorHex"
+                        Visibility="Collapsed"
+                        Grid.Row="1"/>
+                    <canvas:CanvasControl
+                        x:Name="EditorCanvas"
+                        CreateResources="EditorCanvas_CreateResources"
+                        Draw="EditorCanvas_Draw"
+                        Visibility="Collapsed"
+                        Grid.Row="2"/>
+                    <ProgressRing x:Name="EditorRing" IsActive="False" Visibility="Collapsed" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" Height="60"/>
+                    <!--<Popup x:Name="ExitPopup" IsOpen="False" HorizontalAlignment="Right" HorizontalOffset="-300" VerticalOffset="60">
+                            <StackPanel BorderBrush="{ThemeResource SystemAccentColor}" BorderThickness="1" Padding="5">
+                                <TextBlock x:Name="ExitPopupText" x:Uid="EditorExitWarning" Text="Unsaved changes will be lost on exit!" Margin="0,0,0,5"/>
+                                <Button x:Name="ExitPopupButton" x:Uid="EditorExit" Content="Exit" HorizontalAlignment="Right"/>
+                            </StackPanel>
+                        </Popup>-->
+                </Grid>
+            </SplitView.Content>
+        </SplitView>
         
-        <TextBox
-            x:Name="EditorText"
-            AcceptsReturn="True"
-            TextWrapping="NoWrap"
-            ScrollViewer.HorizontalScrollBarVisibility="Auto"
-            ScrollViewer.VerticalScrollBarVisibility="Auto"
-            FontFamily="Assets/consola.ttf#Consolas"
-            Visibility="Collapsed"
-            IsReadOnly="True"
-            Grid.Row="0"/>
-        <controls:HexView
-            x:Name="EditorHex"
-            Visibility="Collapsed"
-            Grid.Row="1"/>
-        <canvas:CanvasControl
-            x:Name="EditorCanvas"
-            CreateResources="EditorCanvas_CreateResources"
-            Draw="EditorCanvas_Draw"
-            Visibility="Collapsed"
-            Grid.Row="2"/>
-        <ProgressRing x:Name="EditorRing" IsActive="False" Visibility="Collapsed" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" Height="60"/>
-        <Popup x:Name="ExitPopup" IsOpen="False" VerticalAlignment="Top" HorizontalAlignment="Right">
-            <StackPanel BorderBrush="White" BorderThickness="2">
-                <TextBlock x:Name="ExitPopupText" x:Uid="EditorExitWarning" Text="Unsaved changes will be lost when exit!"/>
-                <Button x:Name="ExitPopupButton" x:Uid="EditorExit" Content="Exit"/>
-            </StackPanel>
-        </Popup>
     </Grid>
 
     <Page.TopAppBar>
@@ -74,6 +82,9 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
+            <CommandBar.Content>
+                <TextBlock x:Name="EditorFilenameTop"/>
+            </CommandBar.Content>
             <AppBarToggleButton x:Name="EditorInputModeTop" x:Uid="EditorInputMode" Label="Overwrite" ToolTipService.ToolTip="Input Mode (Ins)" Checked="EditorInputMode_Checked" Unchecked="EditorInputMode_Unchecked">
                 <AppBarToggleButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x004F;"/>
@@ -99,7 +110,16 @@
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="EditorSaveTop" x:Uid="EditorSave" Icon="Save" Label="Save" ToolTipService.ToolTip="Save" Click="EditorSave_Click"/>
+            <AppBarButton x:Name="EditorSaveAsTop" x:Uid="EditorSaveAs" Label="Save As" ToolTipService.ToolTip="Save As" Click="EditorSaveAs_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE792;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
             <AppBarButton x:Name="EditorCancelTop" x:Uid="EditorCancel" Icon="Cancel" Label="Cancel" ToolTipService.ToolTip="Cancel (Esc)" Click="EditorCancel_Click"/>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="RateTop" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
+                <AppBarButton x:Name="AboutTop" x:Uid="MainAbout" Label="About" Click="About_Click"/>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.TopAppBar>
     <Page.BottomAppBar>
@@ -107,6 +127,9 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
+            <CommandBar.Content>
+                <TextBlock x:Name="EditorFilenameBottom"/>
+            </CommandBar.Content>
             <AppBarToggleButton x:Name="EditorInputModeBottom" x:Uid="EditorInputMode" Label="Overwrite" ToolTipService.ToolTip="Input Mode (Ins)" Checked="EditorInputMode_Checked" Unchecked="EditorInputMode_Unchecked">
                 <AppBarToggleButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x004F;"/>
@@ -132,7 +155,16 @@
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="EditorSaveBottom" x:Uid="EditorSave" Icon="Save" Label="Save" ToolTipService.ToolTip="Save" Click="EditorSave_Click"/>
+            <AppBarButton x:Name="EditorSaveAsBottom" x:Uid="EditorSaveAs" Label="Save As" ToolTipService.ToolTip="Save As" Click="EditorSaveAs_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE792;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
             <AppBarButton x:Name="EditorCancelBottom" x:Uid="EditorCancel" Icon="Cancel" Label="Cancel" ToolTipService.ToolTip="Cancel (Esc)" Click="EditorCancel_Click"/>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="RateBottom" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
+                <AppBarButton x:Name="AboutBottom" x:Uid="MainAbout" Label="About" Click="About_Click"/>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

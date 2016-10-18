@@ -22,6 +22,8 @@ using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.ViewManagement;
+using Windows.Storage.Search;
+using Windows.System;
 
 namespace Portable_Anymap_Viewer
 {
@@ -88,6 +90,7 @@ namespace Portable_Anymap_Viewer
 
             // Skip corrupted formats
             DecodeResult result = await anymapDecoder.decode(file);
+            imagesInfo[pos] = result;
             if (result.Bytes == null)
             {
                 return;
@@ -118,7 +121,6 @@ namespace Portable_Anymap_Viewer
             wrapper.SetImageInfo(result);
             wrapper.Margin = new Thickness(0, 0, 0, 0);
             wrapper.SetCanvas(canvas);
-            imagesInfo[pos] = result;
         }
 
         private void Img_CreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
@@ -204,13 +206,14 @@ namespace Portable_Anymap_Viewer
             editFileParams.Height = imagesInfo[flipView.SelectedIndex].Height;
             editFileParams.Type = imagesInfo[flipView.SelectedIndex].Type;
             editFileParams.File = openFileParams.FileList[flipView.SelectedIndex];
+            editFileParams.SaveMode = EditFileSaveMode.Save | EditFileSaveMode.SaveAs | EditFileSaveMode.SaveCopy;
             Frame.Navigate(typeof(EditorPage), editFileParams);
         }
 
         private async void ViewerDelete_Click(object sender, RoutedEventArgs e)
         {
             var loader = new ResourceLoader();
-            var warningTilte = loader.GetString("DeleteFileTitle");
+            var warningTilte = loader.GetString("DeleteFileTitle") + " " + openFileParams.FileList[flipView.SelectedIndex].Name;
             var warningMesage = loader.GetString("DeleteFileWarning");
             var yes = loader.GetString("Yes");
             var no = loader.GetString("No");
@@ -224,14 +227,27 @@ namespace Portable_Anymap_Viewer
             if (selectedCommand.Label == yes)
             {
                 await openFileParams.FileList[flipView.SelectedIndex].DeleteAsync();
-                int pos = flipView.SelectedIndex - 1;
-                if (pos < 0)
-                {
-                    pos = 0;
-                }
+                (flipView.SelectedItem as CanvasWrapper).RemoveCanvas();
                 flipView.Items.RemoveAt(flipView.SelectedIndex);
-                flipView.SelectedIndex = pos;
+                imagesInfo.RemoveAt(flipView.SelectedIndex);
+                List<string> fileTypeFilter = new List<string>();
+                fileTypeFilter.Add(".pbm");
+                fileTypeFilter.Add(".pgm");
+                fileTypeFilter.Add(".ppm");
+                QueryOptions queryOptions = new QueryOptions(CommonFileQuery.DefaultQuery, fileTypeFilter);
+                StorageFileQueryResult results = this.openFileParams.Folder.CreateFileQueryWithOptions(queryOptions);
+                openFileParams.FileList = await results.GetFilesAsync();
             }            
+        }
+
+        private async void Rate_Click(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri(string.Format("ms-windows-store:REVIEW?PFN={0}", Windows.ApplicationModel.Package.Current.Id.FamilyName)));
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            this.Split.IsPaneOpen = !this.Split.IsPaneOpen;
         }
 
         void ViewerPage_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)

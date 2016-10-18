@@ -9,6 +9,7 @@ using Windows.Storage;
 using Windows.Storage.AccessCache;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Pickers;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -221,6 +222,16 @@ namespace Portable_Anymap_Viewer
             }
         }
 
+        private async void Rate_Click(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri(string.Format("ms-windows-store:REVIEW?PFN={0}", Windows.ApplicationModel.Package.Current.Id.FamilyName)));
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            this.Split.IsPaneOpen = !this.Split.IsPaneOpen;
+        }
+
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             this.Unloaded -= Page_Unloaded;
@@ -232,12 +243,16 @@ namespace Portable_Anymap_Viewer
             SelectFoldersTop.Click -= SelectFolders_Click;
             OpenFileTop.Click -= OpenFile_Click;
             ConvertTop.Click -= Convert_Click;
+            RateTop.Click -= Rate_Click;
+            AboutTop.Click -= About_Click;
 
             AddFolderBottom.Click -= AddFolder_Click;
             RemoveFoldersBottom.Click -= RemoveFolders_Click;
             SelectFoldersBottom.Click -= SelectFolders_Click;
             OpenFileBottom.Click -= OpenFile_Click;
             ConvertBottom.Click -= Convert_Click;
+            RateBottom.Click -= Rate_Click;
+            AboutBottom.Click -= About_Click;
 
             MobileTrigger.Detach();
             DesktopTrigger.Detach();

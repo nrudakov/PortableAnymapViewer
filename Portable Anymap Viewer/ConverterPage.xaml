@@ -33,47 +33,55 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-        <Grid HorizontalAlignment="Left">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" Grid.Row="0">
-                <ComboBox x:Name="FileTypeCombo" x:Uid="ConverterFileTypeCombo" Header="Format" Margin="10" Width="110" SelectionChanged="FileTypeCombo_SelectionChanged">
-                    <ComboBoxItem x:Name="BitmapComboItem" Content="Bitmap"/>
-                    <ComboBoxItem x:Name="GraymapComboItem" Content="Graymap"/>
-                    <ComboBoxItem x:Name="PixmapComboItem" Content="Pixmap" IsSelected="True"/>
-                </ComboBox>
-                <ToggleSwitch x:Name="IsBinary" x:Uid="ConverterIsBinary" Header="Mode" OffContent="Text" OnContent="Binary" Margin="10"/>
-            </StackPanel>
-            <TextBox x:Name="MaxPixelValue" x:Uid="ConverterMaxPixelValue" Header="Maximum Pixel Value (0–255)" InputScope="Number" MaxLength="3" Text="255" HorizontalAlignment="Left" Width="205" Margin="10" Grid.Row="1" KeyDown="MaxPixelValue_KeyDown"/>
-            <ComboBox x:Name="NameCollisionCombo" x:Uid="ConverterNameCollisionCombo" Header="Name Collision Issue" Margin="10" Width="205" Grid.Row="2">
-                <ComboBoxItem x:Name="UniqueComboItem" x:Uid="ConverterUniqueComboItem" Content="Generate Unique Name" IsSelected="True"/>
-                <ComboBoxItem x:Name="ReplaceComboItem" x:Uid="ConverterReplaceComboItem" Content="Replace Existing"/>
-                <ComboBoxItem x:Name="SkipComboItem" x:Uid="ConverterSkipComboItem" Content="Skip"/>
-            </ComboBox>
-            <ProgressBar x:Name="FileProgressBar" Grid.Row="3" Visibility="Collapsed" Minimum="0" Value="0" ValueChanged="ProgressBar_ValueChanged"/>
-            <Pivot x:Name="FileListPivot" Margin="10" Grid.Row="4">
-                <PivotItem>
-                    <PivotItem.Header>
-                        <controls:TabHeader x:Uid="ConverterWaitingTabHeader" Label="Waiting Files" Glyph="&#xE9F3;"/>
-                    </PivotItem.Header>
-                    <ListView x:Name="InputFilesList" SelectionMode="None"/>
-                </PivotItem>
-                <PivotItem>
-                    <PivotItem.Header>
-                        <controls:TabHeader x:Uid="ConverterConvertedTabHeader" Label="Converted Files" Glyph="&#xE73A;"/>
-                    </PivotItem.Header>
-                    <ListView x:Name="OutputFilesList" SelectionMode="None"/>
-                </PivotItem>
-            </Pivot>
-        </Grid>
+
+        <SplitView x:Name="Split" IsPaneOpen="False">
+            <SplitView.Pane>
+                <TextBlock>About</TextBlock>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Grid HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" Grid.Row="0">
+                        <ComboBox x:Name="FileTypeCombo" x:Uid="ConverterFileTypeCombo" Header="Format" Margin="10" Width="110" SelectionChanged="FileTypeCombo_SelectionChanged">
+                            <ComboBoxItem x:Name="BitmapComboItem" Content="Bitmap"/>
+                            <ComboBoxItem x:Name="GraymapComboItem" Content="Graymap"/>
+                            <ComboBoxItem x:Name="PixmapComboItem" Content="Pixmap" IsSelected="True"/>
+                        </ComboBox>
+                        <ToggleSwitch x:Name="IsBinary" x:Uid="ConverterIsBinary" Header="Mode" OffContent="Text" OnContent="Binary" Margin="10"/>
+                    </StackPanel>
+                    <TextBox x:Name="MaxPixelValue" x:Uid="ConverterMaxPixelValue" Header="Maximum Pixel Value (0–255)" InputScope="Number" MaxLength="3" Text="255" HorizontalAlignment="Left" Width="205" Margin="10" Grid.Row="1" KeyDown="MaxPixelValue_KeyDown"/>
+                    <ComboBox x:Name="NameCollisionCombo" x:Uid="ConverterNameCollisionCombo" Header="Name Collision Issue" Margin="10" Width="205" Grid.Row="2">
+                        <ComboBoxItem x:Name="UniqueComboItem" x:Uid="ConverterUniqueComboItem" Content="Generate Unique Name" IsSelected="True"/>
+                        <ComboBoxItem x:Name="ReplaceComboItem" x:Uid="ConverterReplaceComboItem" Content="Replace Existing"/>
+                        <ComboBoxItem x:Name="SkipComboItem" x:Uid="ConverterSkipComboItem" Content="Skip"/>
+                    </ComboBox>
+                    <ProgressBar x:Name="FileProgressBar" Grid.Row="3" Visibility="Collapsed" Minimum="0" Value="0" ValueChanged="ProgressBar_ValueChanged"/>
+                    <Pivot x:Name="FileListPivot" Margin="10" Grid.Row="4">
+                        <PivotItem>
+                            <PivotItem.Header>
+                                <controls:TabHeader x:Uid="ConverterWaitingTabHeader" Label="Waiting Files" Glyph="&#xE9F3;"/>
+                            </PivotItem.Header>
+                            <ListView x:Name="InputFilesList" SelectionMode="None"/>
+                        </PivotItem>
+                        <PivotItem>
+                            <PivotItem.Header>
+                                <controls:TabHeader x:Uid="ConverterConvertedTabHeader" Label="Converted Files" Glyph="&#xE73A;"/>
+                            </PivotItem.Header>
+                            <ListView x:Name="OutputFilesList" SelectionMode="None"/>
+                        </PivotItem>
+                    </Pivot>
+                </Grid>
+            </SplitView.Content>
+        </SplitView>
     </Grid>
 
     <Page.TopAppBar>
@@ -89,6 +97,10 @@
             </CommandBar.Content>
             <AppBarButton x:Name="ChangeFolderTop" x:Uid="ConverterChangeFolder" Icon="MoveToFolder" Label="Output Folder" Click="ChangeFolder_Click"/>
             <AppBarButton x:Name="ConvertTop" x:Uid="ConverterConvert" Icon="Accept" Label="Convert" Click="Convert_Click"/>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="RateTop" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
+                <AppBarButton x:Name="AboutTop" x:Uid="MainAbout" Label="About" Click="About_Click"/>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.TopAppBar>
     <Page.BottomAppBar>
@@ -104,6 +116,10 @@
             </CommandBar.Content>
             <AppBarButton x:Name="ChangeFolderBottom" x:Uid="ConverterChangeFolder" Icon="MoveToFolder" Label="Output Folder" Click="ChangeFolder_Click"/>
             <AppBarButton x:Name="ConvertBottom" x:Uid="ConverterConvert" Icon="Accept" Label="Convert" Click="Convert_Click"/>
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="RateBottom" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
+                <AppBarButton x:Name="AboutBottom" x:Uid="MainAbout" Label="About" Click="About_Click"/>
+            </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

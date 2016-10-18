@@ -166,7 +166,7 @@
     <value>Delete File</value>
   </data>
   <data name="DeleteFileWarning" xml:space="preserve">
-    <value>Are you sure to delete the file?</value>
+    <value>Are you sure to delete this file?</value>
   </data>
   <data name="EditorCancel.Label" xml:space="preserve">
     <value>Cancel</value>
@@ -284,5 +284,17 @@
   </data>
   <data name="InputModeOverwrite" xml:space="preserve">
     <value>Overwrite</value>
+  </data>
+  <data name="EditorExitMessage" xml:space="preserve">
+    <value>Any unsaved changes will be lost. Are you shure to exit editor?</value>
+  </data>
+  <data name="EditorExitTitle" xml:space="preserve">
+    <value>Confirm exit</value>
+  </data>
+  <data name="NewFileDefaultName" xml:space="preserve">
+    <value>New Anymap</value>
+  </data>
+  <data name="NewFolderDefaultName" xml:space="preserve">
+    <value>New Folder</value>
   </data>
 </root>

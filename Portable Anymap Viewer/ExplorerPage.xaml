@@ -11,11 +11,6 @@
     Unloaded="Page_Unloaded">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="65" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DisplayModeStates">
                 <VisualState x:Name="MobileMode">
@@ -38,14 +33,55 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-
-        <TextBlock x:Name="ExplorerHeaderTitle" Margin="10" FontSize="24" Grid.Row="0"/>
-        <ListView x:Name="ExplorerItemList"
-                  IsItemClickEnabled="True"
-                  ItemClick="ExplorerItemList_ItemClick"
-                  SelectionMode="None"                  
-                  SelectionChanged="ExplorerItemList_SelectionChanged"
-                  Grid.Row="1"/>
+        <SplitView x:Name="Split" IsPaneOpen="False">
+            <SplitView.Pane>
+                <TextBlock>About</TextBlock>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="65" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="ExplorerHeaderTitle" Margin="10" FontSize="24" Grid.Row="0"/>
+                    <ListView x:Name="ExplorerItemList"
+                              IsItemClickEnabled="True"
+                              ItemClick="ExplorerItemList_ItemClick"
+                              Tapped="ExplorerItemList_Tapped"
+                              SelectionMode="None"                  
+                              SelectionChanged="ExplorerItemList_SelectionChanged"
+                              Grid.Row="1"/>
+                    <Popup x:Name="CreateFolderPopup" IsOpen="False" HorizontalAlignment="Right" HorizontalOffset="-300" VerticalOffset="60">
+                        <StackPanel BorderBrush="{ThemeResource SystemAccentColor}" BorderThickness="1" Background="Black" Padding="5">
+                            <TextBox x:Name="CreateFolderPopupName" x:Uid="CreateFolderPopupName" Header="Foldername" Margin="0,0,0,10"/>
+                            <ComboBox x:Name="FoldernameCollisionCombo" x:Uid="ConverterNameCollisionCombo" Header="Name Collision Issue" Width="205" Margin="0,0,0,10">
+                                <ComboBoxItem x:Uid="ConverterUniqueComboItem" Content="Generate Unique Name" IsSelected="True"/>
+                                <ComboBoxItem x:Uid="ConverterReplaceComboItem" Content="Replace Existing"/>
+                                <ComboBoxItem x:Uid="ConverterSkipComboItem" Content="Skip"/>
+                            </ComboBox>
+                            <Button x:Name="CreateFolderPopupButton" x:Uid="Create" Content="Create" HorizontalAlignment="Right" Click="CreateFolderPopupButton_Click"/>
+                        </StackPanel>
+                    </Popup>
+                    <Popup x:Name="CreateFilePopup" IsOpen="False" HorizontalAlignment="Right" HorizontalOffset="-300" VerticalOffset="60">
+                        <StackPanel BorderBrush="{ThemeResource SystemAccentColor}" BorderThickness="1" Background="Black" Padding="5">
+                            <ComboBox x:Name="FileTypeCombo" x:Uid="ConverterFileTypeCombo" Header="Format" Width="110" Margin="0,0,0,10" SelectionChanged="FileTypeCombo_SelectionChanged">
+                                <ComboBoxItem x:Name="BitmapComboItem" Content="Bitmap"/>
+                                <ComboBoxItem x:Name="GraymapComboItem" Content="Graymap"/>
+                                <ComboBoxItem x:Name="PixmapComboItem" Content="Pixmap" IsSelected="True"/>
+                            </ComboBox>
+                            <TextBox x:Name="CreateFilePopupName" x:Uid="CreateFilePopupName" Header="Filename" Margin="0,0,0,10"/>
+                            <ComboBox x:Name="FilenameCollisionCombo" x:Uid="ConverterNameCollisionCombo" Header="Name Collision Issue" Width="205" Margin="0,0,0,10">
+                                <ComboBoxItem x:Uid="ConverterUniqueComboItem" Content="Generate Unique Name" IsSelected="True"/>
+                                <ComboBoxItem x:Uid="ConverterReplaceComboItem" Content="Replace Existing"/>
+                                <ComboBoxItem x:Uid="ConverterSkipComboItem" Content="Skip"/>
+                            </ComboBox>
+                            <ToggleSwitch x:Name="IsBinary" x:Uid="ConverterIsBinary" Header="Mode" OffContent="Text" OnContent="Binary" Margin="0,0,0,10"/>
+                            <Button x:Name="CreateFilePopupButton" x:Uid="Create" Content="Create" HorizontalAlignment="Right" Click="CreateFilePopupButton_Click"/>
+                        </StackPanel>
+                    </Popup>
+                </Grid>
+            </SplitView.Content>
+        </SplitView>
     </Grid>
 
     <Page.TopAppBar>
@@ -58,8 +94,8 @@
             <AppBarButton x:Name="DeleteTop" x:Uid="ExplorerDeleteSelected" Icon="Delete" Label="Delete Selected" Visibility="Collapsed" Click="Delete_Click"/>
             <AppBarButton x:Name="SelectTop" x:Uid="ExplorerSelect" Icon="Bullets" Label="Select" Click="Select_Click"/>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="RateTop" x:Uid="MainRate" Label="Rate the App"/>
-                <AppBarButton x:Name="AboutTop" x:Uid="MainAbout" Label="About"/>
+                <AppBarButton x:Name="RateTop" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
+                <AppBarButton x:Name="AboutTop" x:Uid="MainAbout" Label="About" Click="About_Click"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.TopAppBar>
@@ -74,8 +110,8 @@
             <AppBarButton x:Name="DeleteBottom" x:Uid="ExplorerDeleteSelected" Icon="Delete" Label="Delete Selected" Visibility="Collapsed" Click="Delete_Click"/>
             <AppBarButton x:Name="SelectBottom" x:Uid="ExplorerSelect" Icon="Bullets" Label="Select" />
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="RateBottom" x:Uid="MainRate" Label="Rate the App"/>
-                <AppBarButton x:Name="AboutBottom" x:Uid="MainAbout" Label="About"/>
+                <AppBarButton x:Name="RateBottom" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
+                <AppBarButton x:Name="AboutBottom" x:Uid="MainAbout" Label="About" Click="About_Click"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

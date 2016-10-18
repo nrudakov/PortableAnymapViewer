@@ -10,6 +10,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.DataTransfer.ShareTarget;
+using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Globalization;
@@ -196,7 +197,7 @@ namespace Portable_Anymap_Viewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void App_BackRequested(object sender, BackRequestedEventArgs e)
+        private async void App_BackRequested(object sender, BackRequestedEventArgs e)
         {
             Frame rootFrame = Window.Current.Content as Frame;
             if (rootFrame == null)
@@ -205,8 +206,37 @@ namespace Portable_Anymap_Viewer
             // If we can go back and the event has not already been handled, do so.
             if (rootFrame.CanGoBack && e.Handled == false)
             {
-                e.Handled = true;
-                rootFrame.GoBack();
+                if (rootFrame.Content.GetType() == typeof(EditorPage))
+                {
+                    if ((rootFrame.Content as EditorPage).IsNeedToSave())
+                    {
+                        e.Handled = true;
+                        var loader = new ResourceLoader();
+                        var warningTilte = loader.GetString("EditorExitTitle");
+                        var warningMesage = loader.GetString("EditorExitMessage");
+                        var yes = loader.GetString("Yes");
+                        var no = loader.GetString("No");
+                        MessageDialog goBackConfirmation = new MessageDialog(warningMesage, warningTilte);
+                        goBackConfirmation.Commands.Add(new UICommand(yes));
+                        goBackConfirmation.Commands.Add(new UICommand(no));
+                        goBackConfirmation.DefaultCommandIndex = 1;
+                        var selectedCommand = await goBackConfirmation.ShowAsync();
+                        if (selectedCommand.Label == yes)
+                        {
+                            rootFrame.GoBack();
+                        }
+                    }
+                    else
+                    {
+                        e.Handled = true;
+                        rootFrame.GoBack();
+                    }
+                }
+                else
+                {
+                    e.Handled = true;
+                    rootFrame.GoBack();
+                }
             }
         }
 

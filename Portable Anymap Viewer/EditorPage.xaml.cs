@@ -6,6 +6,7 @@ using Portable_Anymap_Viewer.Classes;
 using Portable_Anymap_Viewer.Models;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
@@ -15,6 +16,7 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -49,12 +51,13 @@ namespace Portable_Anymap_Viewer
         String currentStrAll;
         byte[] initialBytes;
         byte[] currentBytes;
-        int editorRow;
+        int editorRow = -1;
         
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
             editFileParams = (e.Parameter as EditFileParams);
+            EditorFilenameTop.Text = EditorFilenameBottom.Text = editFileParams.File.Name;
             switch (editFileParams.Type)
             {
                 case 1:
@@ -66,10 +69,11 @@ namespace Portable_Anymap_Viewer
                     var streamT = await editFileParams.File.OpenAsync(FileAccessMode.Read);
                     var dataReaderT = new DataReader(streamT.GetInputStreamAt(0));
                     uint bytesLoadedT = await dataReaderT.LoadAsync((uint)(streamT.Size));
+
                     initialStrAll = dataReaderT.ReadString(bytesLoadedT);
-                    char[] str = new char[bytesLoadedT];
-                    initialStrAll. CopyTo(0, str, 0, initialStrAll.Length);
-                    currentStrAll = new String(str);
+                    //char[] str = new char[bytesLoadedT];
+                    //initialStrAll. CopyTo(0, str, 0, initialStrAll.Length);
+                    //currentStrAll = new String(str);
                     EditorText.Text = initialStrAll;
                     break;
                 case 4:
@@ -91,6 +95,21 @@ namespace Portable_Anymap_Viewer
                     break;
             }
             EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(1, GridUnitType.Star);
+            //var currentView = SystemNavigationManager.GetForCurrentView();
+            //currentView.BackRequested += CurrentView_BackRequested;
+        }
+
+        public bool IsNeedToSave()
+        {
+            switch (this.editorRow)
+            {
+                case 0:
+                    return !EditorText.Text.SequenceEqual(initialStrAll);
+                case 1:
+                    return !EditorHex.Bytes.SequenceEqual(initialBytes);
+                default:
+                    return false;
+            }
         }
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -200,8 +219,8 @@ namespace Portable_Anymap_Viewer
             cbm = CanvasBitmap.CreateFromBytes(EditorCanvas, lastDecodeResult.Bytes, lastDecodeResult.Width, lastDecodeResult.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
             brush = new CanvasImageBrush(EditorCanvas, cbm);
             brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
-            EditorCanvas.Width = editFileParams.Width;
-            EditorCanvas.Height = EditorCanvas.Height;
+            EditorCanvas.Width = lastDecodeResult.Width;
+            EditorCanvas.Height = lastDecodeResult.Height;
 
             EditorCanvas.Visibility = Visibility.Visible;
             EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(0, GridUnitType.Pixel);
@@ -251,6 +270,7 @@ namespace Portable_Anymap_Viewer
             EditorRing.Visibility = Visibility.Collapsed;
             EditorTopCommandBar.IsEnabled = true;
             EditorBottomCommandBar.IsEnabled = true;
+            (Window.Current.Content as Frame).GoBack();
         }
 
         private async void EditorSave_Click(object sender, RoutedEventArgs e)
@@ -276,11 +296,48 @@ namespace Portable_Anymap_Viewer
             EditorRing.Visibility = Visibility.Collapsed;
             EditorTopCommandBar.IsEnabled = true;
             EditorBottomCommandBar.IsEnabled = true;
+            (Window.Current.Content as Frame).GoBack();
         }
 
-        private void EditorCancel_Click(object sender, RoutedEventArgs e)
+        private void EditorSaveAs_Click(object sender, RoutedEventArgs e)
         {
-            ExitPopup.IsOpen = !ExitPopup.IsOpen;
+
+        }
+
+        private async void EditorCancel_Click(object sender, RoutedEventArgs e)
+        {
+            //ExitPopup.IsOpen = !ExitPopup.IsOpen;
+            if (this.IsNeedToSave())
+            {
+                var loader = new ResourceLoader();
+                var warningTilte = loader.GetString("EditorExitTitle");
+                var warningMesage = loader.GetString("EditorExitMessage");
+                var yes = loader.GetString("Yes");
+                var no = loader.GetString("No");
+                MessageDialog goBackConfirmation = new MessageDialog(warningMesage, warningTilte);
+                goBackConfirmation.Commands.Add(new UICommand(yes));
+                goBackConfirmation.Commands.Add(new UICommand(no));
+                goBackConfirmation.DefaultCommandIndex = 1;
+                var selectedCommand = await goBackConfirmation.ShowAsync();
+                if (selectedCommand.Label == yes)
+                {
+                    (Window.Current.Content as Frame).GoBack();
+                }
+            }
+            else
+            {
+                (Window.Current.Content as Frame).GoBack();
+            }
+        }
+
+        private async void Rate_Click(object sender, RoutedEventArgs e)
+        {
+            await Launcher.LaunchUriAsync(new Uri(string.Format("ms-windows-store:REVIEW?PFN={0}", Windows.ApplicationModel.Package.Current.Id.FamilyName)));
+        }
+
+        private void About_Click(object sender, RoutedEventArgs e)
+        {
+            this.Split.IsPaneOpen = !this.Split.IsPaneOpen;
         }
 
         private void CoreWindow_KeyDown(CoreWindow sender, KeyEventArgs args)
@@ -312,6 +369,8 @@ namespace Portable_Anymap_Viewer
             this.EditorSaveCopyTop.Click -= this.EditorSaveCopy_Click;
             this.EditorSaveTop.Click -= this.EditorSave_Click;
             this.EditorCancelTop.Click -= this.EditorCancel_Click;
+            this.RateTop.Click -= this.Rate_Click;
+            this.AboutTop.Click -= this.About_Click;
 
             this.EditorInputModeBottom.Checked -= this.EditorInputMode_Checked;
             this.EditorInputModeBottom.Unchecked -= this.EditorInputMode_Unchecked;
@@ -322,6 +381,8 @@ namespace Portable_Anymap_Viewer
             this.EditorSaveCopyBottom.Click -= this.EditorSaveCopy_Click;
             this.EditorSaveBottom.Click -= this.EditorSave_Click;
             this.EditorCancelBottom.Click -= this.EditorCancel_Click;
+            this.RateBottom.Click -= this.Rate_Click;
+            this.AboutBottom.Click -= this.About_Click;
 
             this.EditorCompareTop.PointerPressed -= this.EditorCompare_PointerPressed;
             this.EditorCompareTop.PointerReleased -= this.EditorCompare_PointerReleased;

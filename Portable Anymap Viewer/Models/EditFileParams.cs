@@ -15,5 +15,13 @@ namespace Portable_Anymap_Viewer.Models
         public int Height { get; set; }
         public int Type { get; set; }
         public StorageFile File { get; set; }
+        public EditFileSaveMode SaveMode { get; set; }
+    }
+
+    public enum EditFileSaveMode
+    {
+        SaveCopy = 1,
+        Save = 2,
+        SaveAs = 4
     }
 }
