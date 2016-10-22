@@ -36,36 +36,29 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <SplitView x:Name="Split" IsPaneOpen="False">
-            <SplitView.Pane>
-                <TextBlock>About</TextBlock>
-            </SplitView.Pane>
-            <SplitView.Content>
-                <Grid>
-                    <FlipView x:Name="flipView"  Margin="0" SelectionChanged="flipView_SelectionChanged" Tapped="flipView_Tapped" KeyDown="flipView_KeyDown" />
-                    <StackPanel x:Name="ViewerZoomStack" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 50, 50" Height="50" Width="Auto" Visibility="Collapsed">
-                        <StackPanel.Background>
-                            <SolidColorBrush Color="Black" Opacity="0.2"/>
-                        </StackPanel.Background>
-                        <AppBarButton x:Name="ViewerZoomReal" Click="ViewerZoomReal_Click">
-                            <AppBarButton.Icon>
-                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71E;"/>
-                            </AppBarButton.Icon>
-                        </AppBarButton>
-                        <AppBarButton x:Name="ViewerZoomOut" Click="ViewerZoomOut_Click">
-                            <AppBarButton.Icon>
-                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71F;"/>
-                            </AppBarButton.Icon>
-                        </AppBarButton>
-                        <AppBarButton x:Name="ViewerZoomIn" Click="ViewerZoomIn_Click">
-                            <AppBarButton.Icon>
-                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8A3;"/>
-                            </AppBarButton.Icon>
-                        </AppBarButton>
-                    </StackPanel>
-                </Grid>
-            </SplitView.Content>
-        </SplitView>
+        <Grid>
+            <FlipView x:Name="flipView"  Margin="0" SelectionChanged="flipView_SelectionChanged" Tapped="flipView_Tapped" KeyDown="flipView_KeyDown" />
+            <StackPanel x:Name="ViewerZoomStack" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 50, 50" Height="50" Width="Auto" Visibility="Collapsed">
+                <StackPanel.Background>
+                    <SolidColorBrush Color="Black" Opacity="0.2"/>
+                </StackPanel.Background>
+                <AppBarButton x:Name="ViewerZoomReal" Click="ViewerZoomReal_Click">
+                    <AppBarButton.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71E;"/>
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Name="ViewerZoomOut" Click="ViewerZoomOut_Click">
+                    <AppBarButton.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71F;"/>
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Name="ViewerZoomIn" Click="ViewerZoomIn_Click">
+                    <AppBarButton.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8A3;"/>
+                    </AppBarButton.Icon>
+                </AppBarButton>
+            </StackPanel>
+        </Grid>
     </Grid>
 
     <Page.TopAppBar>

@@ -11,13 +11,17 @@
     <AssemblyName>Portable Anymap Viewer</AssemblyName>
     <DefaultLanguage>en-us</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PackageCertificateKeyFile>Portable Anymap Viewer_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -105,11 +109,17 @@
     <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Classes\AnymapDecoder.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Classes\AnymapEncoder.cs" />
+    <Compile Include="Controls\AboutLayout.xaml.cs">
+      <DependentUpon>AboutLayout.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CanvasWrapper.cs" />
     <Compile Include="Controls\ConverterFilename.xaml.cs">
       <DependentUpon>ConverterFilename.xaml</DependentUpon>
@@ -138,6 +148,7 @@
     <Compile Include="Models\AnymapProperties.cs" />
     <Compile Include="Models\DecodeResult.cs" />
     <Compile Include="Models\EditFileParams.cs" />
+    <Compile Include="Models\ItemDetails.cs" />
     <Compile Include="Models\OpenFileParams.cs" />
     <Compile Include="Models\ViewInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -207,6 +218,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\AboutLayout.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ConverterFilename.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

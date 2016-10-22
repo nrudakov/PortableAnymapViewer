@@ -5,6 +5,7 @@
     xmlns:local="using:Portable_Anymap_Viewer"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Portable_Anymap_Viewer.Controls"
     xmlns:data="using:Portable_Anymap_Viewer.Models"
     xmlns:triggers="using:Portable_Anymap_Viewer.Triggers"
     mc:Ignorable="d"
@@ -33,27 +34,31 @@
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-
-        <SplitView x:Name="Split" IsPaneOpen="False">
-            <SplitView.Pane>
-                <TextBlock>About</TextBlock>
-            </SplitView.Pane>
-            <SplitView.Content>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="65" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <TextBlock x:Name="HeaderTitle" x:Uid="MainHeaderTitle" Text="Folders" Margin="10" FontSize="24" Grid.Row="0"/>
-                    <ListView x:Name="FolderList"
-                              IsItemClickEnabled="True"
-                              ItemClick="FolderList_ItemClick"
-                              SelectionMode="None"                  
-                              SelectionChanged="foldersListView_SelectionChanged"
-                              Grid.Row="1"/>
-                </Grid>
-            </SplitView.Content>
-        </SplitView>
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="65" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="HeaderTitle" 
+                       x:Uid="MainHeaderTitle" 
+                       Text="Folders" 
+                       Margin="10" FontSize="24" 
+                       Grid.Row="0"/>
+            <ListView x:Name="FolderList"
+                      IsItemClickEnabled="True"
+                      ItemClick="FolderList_ItemClick"
+                      Tapped="FolderList_Tapped"
+                      SelectionMode="None"                  
+                      SelectionChanged="foldersListView_SelectionChanged"
+                      Grid.Row="1"/>
+            <Popup x:Name="CreateFilePopup" IsOpen="False" HorizontalAlignment="Right" HorizontalOffset="-300" VerticalOffset="60">
+                <StackPanel BorderBrush="{ThemeResource SystemAccentColor}" BorderThickness="1" Background="Black" Padding="5">
+                    <ToggleSwitch x:Name="IsBinary" x:Uid="ConverterIsBinary" Header="Mode" OffContent="Text" OnContent="Binary" Margin="0,0,0,10"/>
+                    <Button x:Name="CreateFilePopupButton" x:Uid="Create" Content="Create" HorizontalAlignment="Right" Click="CreateFilePopupButton_Click"/>
+                </StackPanel>
+            </Popup>
+        </Grid>
     </Grid>
 
     <Page.TopAppBar>
@@ -65,7 +70,7 @@
             <AppBarButton x:Name="RemoveFoldersTop" x:Uid="MainRemoveFolders" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
             <AppBarButton x:Name="SelectFoldersTop" x:Uid="MainSelectFolders" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="CreateFileTop" x:Uid="MainCreateFile" Icon="Add" Label="Create Anymap"/>
+            <AppBarButton x:Name="CreateFileTop" x:Uid="MainCreateFile" Icon="Add" Label="Create Anymap" Click="CreateFile_Click"/>
             <AppBarButton x:Name="OpenFileTop" x:Uid="MainOpenFile" Icon="OpenFile" Label="Open Anymap" Click="OpenFile_Click"/>
             <AppBarButton x:Name="ConvertTop" x:Uid="MainConvert" Label="Convert to Anymap" Click="Convert_Click">
                 <AppBarButton.Icon>
@@ -87,7 +92,7 @@
             <AppBarButton x:Name="RemoveFoldersBottom" x:Uid="MainRemoveFolders" Icon="Remove" Label="Remove Selected" Click="RemoveFolders_Click" Visibility="Collapsed"/>
             <AppBarButton x:Name="SelectFoldersBottom" x:Uid="MainSelectFolders" Icon="Bullets" Label="Select Folders" Click="SelectFolders_Click"/>
             <AppBarSeparator/>
-            <AppBarButton x:Name="CreateFileBottom" x:Uid="MainCreateFile" Icon="Add" Label="Create Anymap"/>
+            <AppBarButton x:Name="CreateFileBottom" x:Uid="MainCreateFile" Icon="Add" Label="Create Anymap" Click="CreateFile_Click"/>
             <AppBarButton x:Name="OpenFileBottom" x:Uid="MainOpenFile" Icon="OpenFile" Label="Open Anymap" Click="OpenFile_Click"/>
             <AppBarButton x:Name="ConvertBottom" x:Uid="MainConvert" Label="Convert to Anymap" Click="Convert_Click">
                 <AppBarButton.Icon>

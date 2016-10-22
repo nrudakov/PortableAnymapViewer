@@ -247,7 +247,7 @@ namespace Portable_Anymap_Viewer
 
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            this.Split.IsPaneOpen = !this.Split.IsPaneOpen;
+            Frame.Navigate(typeof(AboutPage));
         }
 
         void ViewerPage_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)

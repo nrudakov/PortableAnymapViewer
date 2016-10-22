@@ -283,7 +283,7 @@ namespace Portable_Anymap_Viewer
 
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            this.Split.IsPaneOpen = !this.Split.IsPaneOpen;
+            Frame.Navigate(typeof(AboutPage));
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)

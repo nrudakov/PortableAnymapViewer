@@ -56,10 +56,73 @@ namespace Portable_Anymap_Viewer.Controls
             this.Scroll.Scroll -= this.Scroll_Scroll;
         }
 
+        public static readonly DependencyProperty IsInputModeInsertProperty =
+            DependencyProperty.Register("IsInputModeInsert", typeof(bool), typeof(HexView), null);
         public bool IsInputModeInsert
         {
-            get;
-            set;
+            get
+            {
+                return (bool)GetValue(IsInputModeInsertProperty);
+            }
+            set
+            {
+                SetValue(IsInputModeInsertProperty, value);
+                this.selectedSubIndex = 0;
+            }
+        }
+
+        public void ReceiveKey(VirtualKey virtualKey)
+        {
+            byte key = (byte)virtualKey;
+            if (VirtualKey.Number0 <= virtualKey && virtualKey <= VirtualKey.Number9)
+            {
+                key -= 0x30;
+            }
+            else if (VirtualKey.A <= virtualKey && virtualKey <= VirtualKey.F)
+            {
+                key -= 0x37;
+            }
+            else
+            {
+                return;
+            }
+            if (this.IsInputModeInsert)
+            {
+                this.InsertByte(key);
+            }
+            else
+            {
+                if (this.selectedIndex == this.Bytes.Length)
+                {
+                    this.InsertByte(key);
+                    this.selectedSubIndex = 1;
+                }
+                else
+                {
+                    if (selectedSubIndex == 0)
+                    {
+                        this.Bytes[this.selectedIndex] &= 0x0F;
+                        this.Bytes[this.selectedIndex] |= (key <<= 0x04);
+                        this.selectedSubIndex = 1;
+                    }
+                    else if (this.selectedSubIndex == 1)
+                    {
+                        this.Bytes[this.selectedIndex] &= 0xF0;
+                        this.Bytes[this.selectedIndex] |= key;
+                        if (this.selectedIndex < this.Bytes.Length)
+                        {
+                            this.selectedSubIndex = 0;
+                            ++this.selectedIndex;
+                        }
+                        this.IsByteShiftNeeded = true;
+                    }
+                }
+            }
+            if (this.selectedIndex >= this.offset + this.visibleRowsNum * 16)
+            {
+                ++this.Scroll.Value;
+            }
+            this.Invalidate();
         }
 
         private void CoreWindow_KeyDown(CoreWindow sender, KeyEventArgs args)
@@ -69,36 +132,27 @@ namespace Portable_Anymap_Viewer.Controls
                 (this.selectedSubIndex == 0 ||
                 this.selectedSubIndex == 1))
             {
-                byte key = (byte)args.VirtualKey;
-                if (VirtualKey.Number0 <= args.VirtualKey && args.VirtualKey <= VirtualKey.Number9)
+                this.ReceiveKey(args.VirtualKey);
+                if (args.VirtualKey == VirtualKey.Delete)
                 {
-                    key -= 0x30;
-                }
-                else if (VirtualKey.A <= args.VirtualKey && args.VirtualKey <= VirtualKey.F)
-                {
-                    key -= 0x37;
-                }
-                else if (args.VirtualKey == VirtualKey.Delete)
-                {
-                    this.Bytes = HexView.RemoveFrom(this.Bytes, this.selectedIndex, 1);
-                    if (this.selectedIndex >= this.Bytes.Length)
+                    if (0 <= this.selectedIndex && this.selectedIndex < this.Bytes.Length)
                     {
-                        this.selectedIndex = this.Bytes.Length - 1;
+                        this.Bytes = HexView.RemoveFrom(this.Bytes, this.selectedIndex, 1);
+                        if (this.selectedIndex >= this.Bytes.Length)
+                        {
+                            this.selectedIndex = this.Bytes.Length - 1;
+                        }
+                        this.IsByteShiftNeeded = true;
                     }
-                    Debug.WriteLine("Delete");
-                    this.Invalidate();
-                    return;
                 }
                 else if (args.VirtualKey == VirtualKey.Back)
                 {
-                    this.Bytes = HexView.RemoveFrom(this.Bytes, this.selectedIndex, 1);
+                    this.Bytes = HexView.RemoveFrom(this.Bytes, this.selectedIndex == this.Bytes.Length ? this.selectedIndex - 1 : this.selectedIndex, 1);
                     if (this.selectedIndex > 0)
                     {
                         --this.selectedIndex;
                     }
-                    Debug.WriteLine("Backspace");
-                    this.Invalidate();
-                    return;
+                    this.IsByteShiftNeeded = true;
                 }
                 else if (args.VirtualKey == VirtualKey.Left)
                 {
@@ -118,8 +172,7 @@ namespace Portable_Anymap_Viewer.Controls
                     {
                         --this.Scroll.Value;
                     }
-                    this.Invalidate();
-                    return;
+                    this.IsByteShiftNeeded = true;
                 }
                 else if (args.VirtualKey == VirtualKey.Right)
                 {
@@ -129,7 +182,7 @@ namespace Portable_Anymap_Viewer.Controls
                     }
                     else if (this.selectedSubIndex == 1)
                     {
-                        if (this.selectedIndex < (this.Bytes.Length - 1))
+                        if (this.selectedIndex < this.Bytes.Length)
                         {
                             this.selectedSubIndex = 0;
                             ++this.selectedIndex;
@@ -139,8 +192,7 @@ namespace Portable_Anymap_Viewer.Controls
                     {
                         ++this.Scroll.Value;
                     }
-                    this.Invalidate();
-                    return;
+                    this.IsByteShiftNeeded = true;
                 }
                 else if (args.VirtualKey == VirtualKey.Up)
                 {
@@ -152,8 +204,7 @@ namespace Portable_Anymap_Viewer.Controls
                     {
                         --this.Scroll.Value;
                     }
-                    this.Invalidate();
-                    return;
+                    this.IsByteShiftNeeded = true;
                 }
                 else if (args.VirtualKey == VirtualKey.Down)
                 {
@@ -165,35 +216,27 @@ namespace Portable_Anymap_Viewer.Controls
                     {
                         ++this.Scroll.Value;
                     }
-                    this.Invalidate();
-                    return;
-                }
-                else
-                {
-                    return;
-                }
-                if (selectedSubIndex == 0)
-                {
-                    this.Bytes[this.selectedIndex] &= 0x0F;
-                    this.Bytes[this.selectedIndex] |= (key <<= 0x04);
-                    this.selectedSubIndex = 1;
-                }
-                else if (this.selectedSubIndex == 1)
-                {
-                    this.Bytes[this.selectedIndex] &= 0xF0;
-                    this.Bytes[this.selectedIndex] |= key;
-                    if (this.selectedIndex < (this.Bytes.Length - 1))
-                    {
-                        this.selectedSubIndex = 0;
-                        ++this.selectedIndex;
-                    }
-                }
-                if (this.selectedIndex >= this.offset + this.visibleRowsNum * 16)
-                {
-                    ++this.Scroll.Value;
+                    this.IsByteShiftNeeded = true;
                 }
             }
             this.Invalidate();
+        }
+        
+        private void InsertByte(byte key)
+        {
+            if (this.IsByteShiftNeeded)
+            {
+                key <<= 0x04;
+                Byte[] values = new Byte[1] { key };
+                this.Bytes = HexView.InsertInto(this.Bytes, this.selectedIndex, values);
+            }
+            else
+            {
+                this.Bytes[this.selectedIndex] &= 0xF0;
+                this.Bytes[this.selectedIndex] |= key;
+                ++this.selectedIndex;
+            }
+            this.IsByteShiftNeeded = !this.IsByteShiftNeeded;
         }
 
         private static byte[] RemoveFrom(byte[] source, int startpos, int length)
@@ -204,6 +247,25 @@ namespace Portable_Anymap_Viewer.Controls
             Array.Copy(source, startpos + length, tail, 0, source.Length - (startpos + length));
             byte[] res = head.Concat(tail).ToArray();
             return res;
+        }
+
+        private static byte[] InsertInto(byte[] source, int startpos, byte[] values)
+        {
+            Byte[] newArray = new Byte[source.Length + 1];
+            if (source.Length > 0)
+            {
+                source.CopyTo(0, newArray.AsBuffer(), 0, startpos);
+                values.CopyTo(0, newArray.AsBuffer(), (uint)startpos, values.Length);
+                if (startpos < source.Length)
+                {
+                    source.CopyTo(startpos, newArray.AsBuffer(), (uint)(startpos + values.Length), source.Length - startpos);
+                }
+            }
+            else
+            {
+                values.CopyTo(0, newArray.AsBuffer(), (uint)startpos, values.Length);
+            }
+            return newArray;
         }
 
         public static readonly DependencyProperty BytesProperty =
@@ -226,6 +288,8 @@ namespace Portable_Anymap_Viewer.Controls
         private int visibleRowsNum;
         private Vector2 letterSize;
         private Vector2 blockSize;
+        private bool IsByteShiftNeeded = true;
+
         private CanvasTextFormat regularFormat = new CanvasTextFormat
         {
             FontFamily = "Assets/consola.ttf#Consolas",
@@ -314,6 +378,14 @@ namespace Portable_Anymap_Viewer.Controls
                 }
                 else
                 {
+                    if (selectedIndex == iOffset)
+                    {
+                        session.DrawText(" ..", position, Colors.Violet, regularFormat);
+                    }
+                    else
+                    {
+                        session.DrawText(" ..", position, Colors.White, regularFormat);
+                    }
                     break;
                 }
             }
@@ -420,6 +492,11 @@ namespace Portable_Anymap_Viewer.Controls
                     selectedSubIndex = -1;
                 }
             }
+            else if (preSelectedIndex == Bytes.Length)
+            {
+                selectedIndex = preSelectedIndex;
+                selectedSubIndex = 0;
+            }
             else
             {
                 HexDump.Focus(FocusState.Unfocused);
@@ -427,6 +504,7 @@ namespace Portable_Anymap_Viewer.Controls
                 selectedCanvas = -1;
                 selectedSubIndex = -1;
             }
+            this.IsByteShiftNeeded = true;
             this.Invalidate();
         }
 

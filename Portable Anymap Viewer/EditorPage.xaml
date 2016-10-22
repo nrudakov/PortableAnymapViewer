@@ -11,7 +11,13 @@
     mc:Ignorable="d"
     Unloaded="Page_Unloaded">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid x:Name="EditorEditGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0"/>
+            <RowDefinition Height="0"/>
+            <RowDefinition Height="0"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="DisplayModeStates">
                 <VisualState x:Name="MobileMode">
@@ -21,6 +27,7 @@
                     <VisualState.Setters>
                         <Setter Target="EditorTopCommandBar.Visibility" Value="Collapsed"/>
                         <Setter Target="EditorBottomCommandBar.Visibility" Value="Visible"/>
+                        <Setter Target="Keyboard.Visibility" Value="Visible"/>
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState x:Name="DesktopMode">
@@ -30,51 +37,120 @@
                     <VisualState.Setters>
                         <Setter Target="EditorTopCommandBar.Visibility" Value="Visible"/>
                         <Setter Target="EditorBottomCommandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="Keyboard.Visibility" Value="Collapsed"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
-        <SplitView x:Name="Split" IsPaneOpen="False">
-            <SplitView.Pane>
-                <TextBlock>About</TextBlock>
-            </SplitView.Pane>
-            <SplitView.Content>
-                <Grid x:Name="EditorEditGrid">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="0"/>
-                        <RowDefinition Height="0"/>
-                        <RowDefinition Height="0"/>
-                    </Grid.RowDefinitions>
-                    <TextBox
-                        x:Name="EditorText"
-                        AcceptsReturn="True"
-                        TextWrapping="NoWrap"
-                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        FontFamily="Assets/consola.ttf#Consolas"
-                        Visibility="Collapsed"
-                        Grid.Row="0"/>
-                    <controls:HexView
-                        x:Name="EditorHex"
-                        Visibility="Collapsed"
-                        Grid.Row="1"/>
-                    <canvas:CanvasControl
-                        x:Name="EditorCanvas"
-                        CreateResources="EditorCanvas_CreateResources"
-                        Draw="EditorCanvas_Draw"
-                        Visibility="Collapsed"
-                        Grid.Row="2"/>
-                    <ProgressRing x:Name="EditorRing" IsActive="False" Visibility="Collapsed" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" Height="60"/>
-                    <!--<Popup x:Name="ExitPopup" IsOpen="False" HorizontalAlignment="Right" HorizontalOffset="-300" VerticalOffset="60">
-                            <StackPanel BorderBrush="{ThemeResource SystemAccentColor}" BorderThickness="1" Padding="5">
-                                <TextBlock x:Name="ExitPopupText" x:Uid="EditorExitWarning" Text="Unsaved changes will be lost on exit!" Margin="0,0,0,5"/>
-                                <Button x:Name="ExitPopupButton" x:Uid="EditorExit" Content="Exit" HorizontalAlignment="Right"/>
-                            </StackPanel>
-                        </Popup>-->
-                </Grid>
-            </SplitView.Content>
-        </SplitView>
-        
+
+        <TextBox
+            x:Name="EditorText"
+            AcceptsReturn="True"
+            TextWrapping="NoWrap"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            FontFamily="Assets/consola.ttf#Consolas"
+            Visibility="Collapsed"
+            Grid.Row="0"/>
+        <controls:HexView
+            x:Name="EditorHex"
+            Visibility="Collapsed"
+            Grid.Row="1"/>
+        <canvas:CanvasControl
+            x:Name="EditorCanvas"
+            CreateResources="EditorCanvas_CreateResources"
+            Draw="EditorCanvas_Draw"
+            Visibility="Collapsed"
+            Grid.Row="2"/>
+        <StackPanel x:Name="Keyboard" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="3" Visibility="Collapsed">
+            <AppBarButton x:Name="Key0" Width="30" Height="40" Click="Key0_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0030;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="Key1"  Width="40" Height="40" Click="Key1_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0031;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="Key2"  Width="40" Height="40" Click="Key2_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0032;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="Key3"  Width="40" Height="40" Click="Key3_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0033;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="Key4"  Width="40" Height="40" Click="Key4_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0034;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="Key5"  Width="40" Height="40" Click="Key5_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0035;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="Key6"  Width="40" Height="40" Click="Key6_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0036;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="Key7"  Width="40" Height="40" Click="Key7_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0037;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="Key8"  Width="40" Height="40" Click="Key8_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0038;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="Key9"  Width="40" Height="40" Click="Key9_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0039;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="KeyA"  Width="40" Height="40" Click="KeyA_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0041;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="KeyB"  Width="40" Height="40" Click="KeyB_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0042;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="KeyC"  Width="40" Height="40" Click="KeyC_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0043;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="KeyD"  Width="40" Height="40" Click="KeyD_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0044;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="KeyE"  Width="40" Height="40" Click="KeyE_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0045;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="KeyF"  Width="40" Height="40" Click="KeyF_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Consolas" Glyph="&#x0046;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+        </StackPanel>
+        <ProgressRing x:Name="EditorRing" IsActive="False" Visibility="Collapsed" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Center" Width="60" Height="60"/>
+        <!--<Popup x:Name="ExitPopup" IsOpen="False" HorizontalAlignment="Right" HorizontalOffset="-300" VerticalOffset="60">
+                <StackPanel BorderBrush="{ThemeResource SystemAccentColor}" BorderThickness="1" Padding="5">
+                    <TextBlock x:Name="ExitPopupText" x:Uid="EditorExitWarning" Text="Unsaved changes will be lost on exit!" Margin="0,0,0,5"/>
+                    <Button x:Name="ExitPopupButton" x:Uid="EditorExit" Content="Exit" HorizontalAlignment="Right"/>
+                </StackPanel>
+            </Popup>-->
     </Grid>
 
     <Page.TopAppBar>
@@ -116,10 +192,10 @@
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="EditorCancelTop" x:Uid="EditorCancel" Icon="Cancel" Label="Cancel" ToolTipService.ToolTip="Cancel (Esc)" Click="EditorCancel_Click"/>
-            <CommandBar.SecondaryCommands>
+            <!--<CommandBar.SecondaryCommands>
                 <AppBarButton x:Name="RateTop" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
                 <AppBarButton x:Name="AboutTop" x:Uid="MainAbout" Label="About" Click="About_Click"/>
-            </CommandBar.SecondaryCommands>
+            </CommandBar.SecondaryCommands>-->
         </CommandBar>
     </Page.TopAppBar>
     <Page.BottomAppBar>
@@ -161,10 +237,10 @@
                 </AppBarButton.Icon>
             </AppBarButton>
             <AppBarButton x:Name="EditorCancelBottom" x:Uid="EditorCancel" Icon="Cancel" Label="Cancel" ToolTipService.ToolTip="Cancel (Esc)" Click="EditorCancel_Click"/>
-            <CommandBar.SecondaryCommands>
+            <!--<CommandBar.SecondaryCommands>
                 <AppBarButton x:Name="RateBottom" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
                 <AppBarButton x:Name="AboutBottom" x:Uid="MainAbout" Label="About" Click="About_Click"/>
-            </CommandBar.SecondaryCommands>
+            </CommandBar.SecondaryCommands>-->
         </CommandBar>
     </Page.BottomAppBar>
 </Page>

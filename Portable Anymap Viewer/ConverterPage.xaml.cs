@@ -152,11 +152,6 @@ namespace Portable_Anymap_Viewer
             await Launcher.LaunchUriAsync(new Uri(string.Format("ms-windows-store:REVIEW?PFN={0}", Windows.ApplicationModel.Package.Current.Id.FamilyName)));
         }
 
-        private void About_Click(object sender, RoutedEventArgs e)
-        {
-            this.Split.IsPaneOpen = !this.Split.IsPaneOpen;
-        }
-
         private async Task ChangeFolder()
         {
             FolderPicker folderPicker = new FolderPicker();
@@ -253,13 +248,9 @@ namespace Portable_Anymap_Viewer
 
             this.ChangeFolderTop.Click -= this.ChangeFolder_Click;
             this.ConvertTop.Click -= this.Convert_Click;
-            this.RateTop.Click -= this.Rate_Click;
-            this.AboutTop.Click -= this.About_Click;
 
             this.ChangeFolderBottom.Click -= this.ChangeFolder_Click;
             this.ConvertBottom.Click -= this.Convert_Click;
-            this.RateBottom.Click -= this.Rate_Click;
-            this.AboutBottom.Click -= this.About_Click;
 
             this.MobileTrigger.Detach();
             this.DesktopTrigger.Detach();

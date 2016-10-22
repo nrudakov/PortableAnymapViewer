@@ -178,7 +178,7 @@
     <value>Compare</value>
   </data>
   <data name="EditorCompare.ToolTipService.ToolTip" xml:space="preserve">
-    <value>Compare (Ctrl+/)</value>
+    <value>Compare</value>
   </data>
   <data name="EditorExit.Content" xml:space="preserve">
     <value>Exit</value>
@@ -286,7 +286,7 @@
     <value>Overwrite</value>
   </data>
   <data name="EditorExitMessage" xml:space="preserve">
-    <value>Any unsaved changes will be lost. Are you shure to exit editor?</value>
+    <value>Any unsaved changes will be lost. Are you sure to exit editor?</value>
   </data>
   <data name="EditorExitTitle" xml:space="preserve">
     <value>Confirm exit</value>
@@ -296,5 +296,38 @@
   </data>
   <data name="NewFolderDefaultName" xml:space="preserve">
     <value>New Folder</value>
+  </data>
+  <data name="DecodeFailureMessage" xml:space="preserve">
+    <value>Unable to decode this anymap</value>
+  </data>
+  <data name="DecodeFailureTitle" xml:space="preserve">
+    <value>Decode Failure</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Ok</value>
+  </data>
+  <data name="AboutDescription.Text" xml:space="preserve">
+    <value>Description:</value>
+  </data>
+  <data name="AboutHeader.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="AboutInstalledDate.Text" xml:space="preserve">
+    <value>Installed Date:</value>
+  </data>
+  <data name="AboutInstalledLocation.Text" xml:space="preserve">
+    <value>Installed Location:</value>
+  </data>
+  <data name="AboutBug.Content" xml:space="preserve">
+    <value>Report a Bug</value>
+  </data>
+  <data name="AboutFeedback.Content" xml:space="preserve">
+    <value>Send Feedback</value>
+  </data>
+  <data name="AboutPublisher.Text" xml:space="preserve">
+    <value>Publisher:</value>
+  </data>
+  <data name="StoreFailureTitle" xml:space="preserve">
+    <value>Store Connection Failure</value>
   </data>
 </root>

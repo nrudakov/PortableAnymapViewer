@@ -56,7 +56,7 @@ namespace Portable_Anymap_Viewer
 
                 ExplorerItem folder = new ExplorerItem();
                 folder.Thumbnail = thumbnailBitmap;
-                folder.Name = storageFolder.Name;
+                folder.Filename = storageFolder.Name;
                 folder.Type = null;
                 folder.DisplayName = storageFolder.DisplayName;
                 folder.DisplayType = storageFolder.DisplayType;
@@ -182,6 +182,33 @@ namespace Portable_Anymap_Viewer
             FolderList.SelectionMode = ListViewSelectionMode.None;
         }
 
+        private void CreateFile_Click(object sender, RoutedEventArgs e)
+        {
+            MainTopCommandBar.IsEnabled = !MainTopCommandBar.IsEnabled;
+            MainBottomCommandBar.IsEnabled = !MainBottomCommandBar.IsEnabled;
+            CreateFilePopup.IsOpen = !CreateFilePopup.IsOpen;
+        }
+
+        private void CreateFilePopupButton_Click(object sender, RoutedEventArgs e)
+        {
+            EditFileParams editParams = new EditFileParams();
+            editParams.Type = IsBinary.IsOn? 4 : 1;
+            editParams.Width = editParams.Height = 0;
+            editParams.File = null;
+            editParams.SaveMode = EditFileSaveMode.SaveAs;
+            this.Frame.Navigate(typeof(EditorPage), editParams);
+        }
+
+        private void FolderList_Tapped(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
+        {
+            if (CreateFilePopup.IsOpen)
+            {
+                CreateFilePopup.IsOpen = false;
+                MainTopCommandBar.IsEnabled = true;
+                MainBottomCommandBar.IsEnabled = true;
+            }
+        }
+
         private async void OpenFile_Click(object sender, RoutedEventArgs e)
         {
             FileOpenPicker picker = new FileOpenPicker();
@@ -229,18 +256,21 @@ namespace Portable_Anymap_Viewer
 
         private void About_Click(object sender, RoutedEventArgs e)
         {
-            this.Split.IsPaneOpen = !this.Split.IsPaneOpen;
+            Frame.Navigate(typeof(AboutPage));
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
             this.Unloaded -= Page_Unloaded;
 
+            FolderList.Tapped -= FolderList_Tapped;
             FolderList.SelectionChanged -= foldersListView_SelectionChanged;
+            CreateFilePopupButton.Click -= CreateFilePopupButton_Click;
 
             AddFolderTop.Click -= AddFolder_Click;
             RemoveFoldersTop.Click -= RemoveFolders_Click;
             SelectFoldersTop.Click -= SelectFolders_Click;
+            CreateFileTop.Click -= CreateFile_Click;
             OpenFileTop.Click -= OpenFile_Click;
             ConvertTop.Click -= Convert_Click;
             RateTop.Click -= Rate_Click;
@@ -249,6 +279,7 @@ namespace Portable_Anymap_Viewer
             AddFolderBottom.Click -= AddFolder_Click;
             RemoveFoldersBottom.Click -= RemoveFolders_Click;
             SelectFoldersBottom.Click -= SelectFolders_Click;
+            CreateFileBottom.Click -= CreateFile_Click;
             OpenFileBottom.Click -= OpenFile_Click;
             ConvertBottom.Click -= Convert_Click;
             RateBottom.Click -= Rate_Click;
