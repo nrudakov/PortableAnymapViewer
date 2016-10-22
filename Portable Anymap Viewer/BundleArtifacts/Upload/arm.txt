@@ -1,0 +1,5 @@
+MainPackage=C:\Users\Николай\Documents\Visual Studio 2015\Projects\Portable Anymap Viewer\Portable Anymap Viewer\bin\ARM\Release\Upload\Portable Anymap Viewer_1.1.0.0_ARM.appx
+ResourcePack=C:\Users\Николай\Documents\Visual Studio 2015\Projects\Portable Anymap Viewer\Portable Anymap Viewer\_scale-100.appx
+ResourcePack=C:\Users\Николай\Documents\Visual Studio 2015\Projects\Portable Anymap Viewer\Portable Anymap Viewer\_scale-125.appx
+ResourcePack=C:\Users\Николай\Documents\Visual Studio 2015\Projects\Portable Anymap Viewer\Portable Anymap Viewer\_scale-150.appx
+ResourcePack=C:\Users\Николай\Documents\Visual Studio 2015\Projects\Portable Anymap Viewer\Portable Anymap Viewer\_scale-400.appx

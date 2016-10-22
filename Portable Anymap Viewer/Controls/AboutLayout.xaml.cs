@@ -107,5 +107,38 @@ namespace Portable_Anymap_Viewer.Controls
             this.AboutBug.Click -= this.AboutBug_Click;
             this.AboutFeedback.Click -= this.AboutFeedback_Click;
         }
+
+        private async void Purchase_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (ItemDetails)ProductsListView.SelectedItem;
+            StorePurchaseResult result = await storeContext.RequestPurchaseAsync(item.StoreId);
+
+            switch (result.Status)
+            {
+                case StorePurchaseStatus.AlreadyPurchased:
+                    Result.Text = "You already bought this AddOn.";
+                    break;
+
+                case StorePurchaseStatus.Succeeded:
+                    Result.Text = "You bought {item.Title}.";
+                    break;
+
+                case StorePurchaseStatus.NotPurchased:
+                    Result.Text = "Product was not purchased, it may have been canceled.";
+                    break;
+
+                case StorePurchaseStatus.NetworkError:
+                    Result.Text = "Product was not purchased due to a network error.";
+                    break;
+
+                case StorePurchaseStatus.ServerError:
+                    Result.Text = "Product was not purchased due to a server error.";
+                    break;
+
+                default:
+                    Result.Text = "Product was not purchased due to an unknown error.";
+                    break;
+            }
+        }
     }
 }

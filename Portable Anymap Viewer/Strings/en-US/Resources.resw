@@ -330,4 +330,7 @@
   <data name="StoreFailureTitle" xml:space="preserve">
     <value>Store Connection Failure</value>
   </data>
+  <data name="Purchase.Content" xml:space="preserve">
+    <value>Purchase</value>
+  </data>
 </root>
