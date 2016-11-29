@@ -51,10 +51,12 @@
             ScrollViewer.VerticalScrollBarVisibility="Auto"
             FontFamily="Assets/consola.ttf#Consolas"
             Visibility="Collapsed"
+            Margin="0,10,0,10"
             Grid.Row="0"/>
         <controls:HexView
             x:Name="EditorHex"
             Visibility="Collapsed"
+            Margin="0,10,0,0"
             Grid.Row="1"/>
         <canvas:CanvasControl
             x:Name="EditorCanvas"
@@ -68,77 +70,77 @@
                     <FontIcon FontFamily="Consolas" Glyph="&#x0030;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="Key1"  Width="40" Height="40" Click="Key1_Click">
+            <AppBarButton x:Name="Key1" Width="40" Height="40" Click="Key1_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0031;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="Key2"  Width="40" Height="40" Click="Key2_Click">
+            <AppBarButton x:Name="Key2" Width="40" Height="40" Click="Key2_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0032;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="Key3"  Width="40" Height="40" Click="Key3_Click">
+            <AppBarButton x:Name="Key3" Width="40" Height="40" Click="Key3_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0033;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="Key4"  Width="40" Height="40" Click="Key4_Click">
+            <AppBarButton x:Name="Key4" Width="40" Height="40" Click="Key4_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0034;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="Key5"  Width="40" Height="40" Click="Key5_Click">
+            <AppBarButton x:Name="Key5" Width="40" Height="40" Click="Key5_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0035;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="Key6"  Width="40" Height="40" Click="Key6_Click">
+            <AppBarButton x:Name="Key6" Width="40" Height="40" Click="Key6_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0036;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="Key7"  Width="40" Height="40" Click="Key7_Click">
+            <AppBarButton x:Name="Key7" Width="40" Height="40" Click="Key7_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0037;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="Key8"  Width="40" Height="40" Click="Key8_Click">
+            <AppBarButton x:Name="Key8" Width="40" Height="40" Click="Key8_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0038;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="Key9"  Width="40" Height="40" Click="Key9_Click">
+            <AppBarButton x:Name="Key9" Width="40" Height="40" Click="Key9_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0039;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="KeyA"  Width="40" Height="40" Click="KeyA_Click">
+            <AppBarButton x:Name="KeyA" Width="40" Height="40" Click="KeyA_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0041;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="KeyB"  Width="40" Height="40" Click="KeyB_Click">
+            <AppBarButton x:Name="KeyB" Width="40" Height="40" Click="KeyB_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0042;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="KeyC"  Width="40" Height="40" Click="KeyC_Click">
+            <AppBarButton x:Name="KeyC" Width="40" Height="40" Click="KeyC_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0043;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="KeyD"  Width="40" Height="40" Click="KeyD_Click">
+            <AppBarButton x:Name="KeyD" Width="40" Height="40" Click="KeyD_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0044;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="KeyE"  Width="40" Height="40" Click="KeyE_Click">
+            <AppBarButton x:Name="KeyE" Width="40" Height="40" Click="KeyE_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0045;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="KeyF"  Width="40" Height="40" Click="KeyF_Click">
+            <AppBarButton x:Name="KeyF" Width="40" Height="40" Click="KeyF_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Consolas" Glyph="&#x0046;"/>
                 </AppBarButton.Icon>
@@ -154,7 +156,7 @@
     </Grid>
 
     <Page.TopAppBar>
-        <CommandBar x:Name="EditorTopCommandBar">
+        <CommandBar x:Name="EditorTopCommandBar" Visibility="Collapsed">
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
@@ -199,7 +201,7 @@
         </CommandBar>
     </Page.TopAppBar>
     <Page.BottomAppBar>
-        <CommandBar x:Name="EditorBottomCommandBar">
+        <CommandBar x:Name="EditorBottomCommandBar" Visibility="Collapsed">
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>

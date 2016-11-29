@@ -1,1 +1,1 @@
-C:\Users\Николай\Documents\Visual Studio 2015\Projects\Portable Anymap Viewer\Portable Anymap Viewer\AppPackages\Portable Anymap Viewer_1.1.0.0\Portable Anymap Viewer_1.1.0.0_x86_x64_arm.appxbundle
+C:\Users\Николай\Documents\Visual Studio 2015\Projects\Portable Anymap Viewer\Portable Anymap Viewer\AppPackages\Portable Anymap Viewer_1.1.1.0\Portable Anymap Viewer_1.1.1.0_x86_x64_arm.appxbundle

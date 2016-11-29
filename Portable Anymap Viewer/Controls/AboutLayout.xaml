@@ -23,7 +23,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -37,14 +36,13 @@
         <TextBlock x:Name="AboutVersion" Grid.Row="2" Grid.Column="1"/>
         <TextBlock x:Name="AboutArchitecture" Grid.Row="3" Grid.Column="1"/>
         
-        <TextBlock x:Uid="AboutDescription" Grid.Row="4" Grid.Column="0" Margin="5"/>
-        <TextBlock x:Uid="AboutInstalledDate" Grid.Row="5" Grid.Column="0" Margin="5"/>
-        <TextBlock x:Uid="AboutInstalledLocation" Grid.Row="6" Grid.Column="0" Margin="5"/>
-        <TextBlock x:Uid="AboutPublisher" Grid.Row="7" Grid.Column="0" Margin="5"/>
-        <TextBlock x:Name="AboutDescription" Grid.Row="4" Grid.Column="1" TextWrapping="Wrap" Margin="5"/>
-        <TextBlock x:Name="AboutInstalledDate" Grid.Row="5" Grid.Column="1" Margin="5"/>
-        <TextBlock x:Name="AboutInstalledLocation" Grid.Row="6" Grid.Column="1"/>
-        <TextBlock x:Name="AboutPublisher" Grid.Row="7" Grid.Column="1" Margin="5"/>
+        <TextBlock x:Uid="AboutInstalledDate" Grid.Row="4" Grid.Column="0" Margin="5"/>
+        <TextBlock x:Uid="AboutInstalledLocation" Grid.Row="5" Grid.Column="0" Margin="5"/>
+        <TextBlock x:Uid="AboutPublisher" Grid.Row="6" Grid.Column="0" Margin="5"/>
+
+        <TextBlock x:Name="AboutInstalledDate" Grid.Row="4" Grid.Column="1" Margin="5"/>
+        <TextBlock x:Name="AboutInstalledLocation" Grid.Row="5" Grid.Column="1" Margin="5"/>
+        <TextBlock x:Name="AboutPublisher" Grid.Row="6" Grid.Column="1" Margin="5"/>
 
         <StackPanel Orientation="Horizontal" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Margin="5">
             <Button x:Name="AboutBug" x:Uid="AboutBug" Click="AboutBug_Click" Margin="5"/>
@@ -52,6 +50,7 @@
         </StackPanel>
 
         <ListView x:Name="ProductsListView" 
+                  x:Uid="AboutProductsListView"
                   Grid.Row="9"
                   Grid.Column="0"
                   Grid.ColumnSpan="2"
@@ -59,7 +58,8 @@
                   BorderBrush="Black" 
                   BorderThickness="1" 
                   SelectionMode="Single"
-                  SingleSelectionFollowsFocus="False">
+                  SingleSelectionFollowsFocus="False"
+                  Header="In-app Purchases">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="12">
@@ -68,7 +68,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button x:Name="Purchase" x:Uid="Purchase" Grid.Row="10" Grid.Column="1" Click="Purchase_Click"/>
-        <TextBlock x:Name="Result" Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <Button x:Name="Purchase" x:Uid="Purchase" Grid.Row="10" Grid.Column="0" Margin="5" Click="Purchase_Click" Visibility="Collapsed"/>
+        <TextBlock x:Name="Result" Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" Margin="5"/>
     </Grid>
 </UserControl>

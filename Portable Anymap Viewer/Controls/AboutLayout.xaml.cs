@@ -44,7 +44,6 @@ namespace Portable_Anymap_Viewer.Controls
             this.AboutVersion.Text = String.Format("{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision);
             this.AboutArchitecture.Text = packageId.Architecture.ToString();
 
-            this.AboutDescription.Text = package.Description;
             this.AboutInstalledDate.Text = package.InstalledDate.ToString();
             this.AboutInstalledLocation.Text = package.InstalledLocation.Path;
             this.AboutPublisher.Text = package.PublisherDisplayName;
@@ -66,7 +65,7 @@ namespace Portable_Anymap_Viewer.Controls
             ProductsListView.ItemsSource = await CreateProductListFromQueryResult(addOns, "Add-Ons");
         }
 
-        public async static Task<ObservableCollection<ItemDetails>> CreateProductListFromQueryResult(StoreProductQueryResult addOns, string description)
+        public async Task<ObservableCollection<ItemDetails>> CreateProductListFromQueryResult(StoreProductQueryResult addOns, string description)
         {
             var productList = new ObservableCollection<ItemDetails>();
 
@@ -87,6 +86,7 @@ namespace Portable_Anymap_Viewer.Controls
                     productList.Add(new ItemDetails(product));
                 }
             }
+            this.Purchase.Visibility = Visibility.Visible;
             return productList;
         }
 

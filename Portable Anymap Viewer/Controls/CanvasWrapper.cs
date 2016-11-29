@@ -90,27 +90,32 @@ namespace Portable_Anymap_Viewer.Controls
         public bool IsZoomable(Single scale)
         {
             CanvasControl canvas = this.GetCanvas();
-            Single maxSize = canvas.ConvertPixelsToDips(canvas.Device.MaximumBitmapSizeInPixels);
-            return (canvas.Width * scale <= maxSize &&
-                canvas.Height * scale <= maxSize);
+            if (canvas != null)
+            {
+                Single maxSize = canvas.ConvertPixelsToDips(canvas.Device.MaximumBitmapSizeInPixels);
+                return (canvas.Width * scale <= maxSize &&
+                    canvas.Height * scale <= maxSize);
+            }
+            return false;
         }
 
         public bool IsUnzoomable()
         {
-            return !(this.imageInfo.CurrentZoom == this.initialZoom);
+            return !(this.imageInfo?.CurrentZoom == this.initialZoom);
         }
 
         public void Zoom(Single scale)
         {
             CanvasControl canvas = this.GetCanvas();
-            if (scale * this.imageInfo.CurrentZoom < this.initialZoom)
+            if (this.imageInfo != null)
             {
-                this.ZoomReal();
-            }
-            else
-            {
-                if (IsZoomable(scale))
+                if (scale * this.imageInfo.CurrentZoom < this.initialZoom)
                 {
+                    this.ZoomReal();
+                }
+                else if (IsZoomable(scale))
+                {
+
                     canvas.Width *= scale;
                     canvas.Height *= scale;
                     Double xp = this.translateTransform.X / ((canvas.ActualWidth - this.ActualWidth) / this.imageInfo.CurrentZoom);
@@ -129,15 +134,15 @@ namespace Portable_Anymap_Viewer.Controls
                     {
                         this.translateTransform.Y = 0;
                     }
-                    (canvas.Tag as CanvasImageBrush).Transform = 
+                    (canvas.Tag as CanvasImageBrush).Transform =
                         Matrix3x2.CreateTranslation
                         (
                             new Vector2
                             (
-                                (Single)this.translateTransform.X, 
+                                (Single)this.translateTransform.X,
                                 (Single)this.translateTransform.Y
                             )
-                        ) * 
+                        ) *
                         Matrix3x2.CreateScale(this.imageInfo.CurrentZoom);
                     canvas.Invalidate();
                     this.UpdateManipulationMode();
@@ -148,14 +153,17 @@ namespace Portable_Anymap_Viewer.Controls
         public void ZoomReal()
         {
             CanvasControl canvas = this.GetCanvas();
-            canvas.Width = this.imageInfo.Width * this.initialZoom;
-            canvas.Height = this.imageInfo.Height * this.initialZoom;
-            imageInfo.CurrentZoom = this.initialZoom;
-            this.translateTransform.X = 0;
-            this.translateTransform.Y = 0;
-            (canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale(this.imageInfo.CurrentZoom);
-            canvas.Invalidate();
-            this.UpdateManipulationMode();
+            if (canvas != null)
+            {
+                canvas.Width = this.imageInfo.Width * this.initialZoom;
+                canvas.Height = this.imageInfo.Height * this.initialZoom;
+                imageInfo.CurrentZoom = this.initialZoom;
+                this.translateTransform.X = 0;
+                this.translateTransform.Y = 0;
+                (canvas.Tag as CanvasImageBrush).Transform = Matrix3x2.CreateScale(this.imageInfo.CurrentZoom);
+                canvas.Invalidate();
+                this.UpdateManipulationMode();
+            }
         }
 
         private void Shift(Point translation)

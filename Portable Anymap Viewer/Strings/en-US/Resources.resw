@@ -333,4 +333,7 @@
   <data name="Purchase.Content" xml:space="preserve">
     <value>Purchase</value>
   </data>
+  <data name="AboutProductsListView.Header" xml:space="preserve">
+    <value>In-app Purchases</value>
+  </data>
 </root>

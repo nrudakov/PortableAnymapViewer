@@ -173,7 +173,7 @@ namespace Portable_Anymap_Viewer
             //BitmapImage thumbnailBitmap = new BitmapImage();
             //thumbnailBitmap.SetSource(thumbnail);
             item.Thumbnail = null;
-            item.Name = (args.Files.First<IStorageItem>() as StorageFile).Name;
+            item.Filename = (args.Files.First<IStorageItem>() as StorageFile).Name;
             item.Type = (args.Files.First<IStorageItem>() as StorageFile).FileType;
             item.DisplayName = (args.Files.First<IStorageItem>() as StorageFile).DisplayName;
             item.DisplayType = (args.Files.First<IStorageItem>() as StorageFile).DisplayType;

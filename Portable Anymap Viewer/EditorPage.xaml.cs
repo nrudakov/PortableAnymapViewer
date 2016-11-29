@@ -54,7 +54,31 @@ namespace Portable_Anymap_Viewer
         byte[] initialBytes;
         byte[] currentBytes;
         int editorRow = -1;
-        
+
+        //private static readonly DependencyProperty IsInMobileModeProperty = DependencyProperty.Register(
+        //    "IsInMobileMode",
+        //    typeof(Boolean),
+        //    typeof(EditorPage),
+        //    null
+        //);
+
+        //private Boolean IsInMobileMode
+        //{
+        //    get { return (Boolean)GetValue(IsInMobileModeProperty); }
+        //    set
+        //    {
+        //        SetValue(IsInMobileModeProperty, value);
+        //        if (value && editorRow == 1)
+        //        {
+        //            this.Keyboard.Visibility = Visibility.Visible;
+        //        }
+        //        else
+        //        {
+        //            this.Keyboard.Visibility = Visibility.Collapsed;
+        //        }
+        //    }
+        //}
+
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseVisible);
@@ -95,6 +119,7 @@ namespace Portable_Anymap_Viewer
                     //initialStrAll. CopyTo(0, str, 0, initialStrAll.Length);
                     //currentStrAll = new String(str);
                     EditorText.Text = initialStrAll;
+                    Keyboard.Visibility = Visibility.Collapsed;
                     break;
                 case 4:
                 case 5:
@@ -295,11 +320,16 @@ namespace Portable_Anymap_Viewer
             EditorCanvas.Visibility = Visibility.Visible;
             EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(0, GridUnitType.Pixel);
             EditorEditGrid.RowDefinitions[2].Height = new GridLength(1, GridUnitType.Star);
+            this.Keyboard.Visibility = Visibility.Collapsed;
             EditorCanvas.Invalidate();
         }
 
         private void EditorPreview_Unchecked(object sender, RoutedEventArgs e)
         {
+            if (this.MobileTrigger.IsActive && editorRow == 1)
+            {
+                this.Keyboard.Visibility = Visibility.Visible;
+            }
             EditorCanvas.Visibility = Visibility.Collapsed;
             EditorEditGrid.RowDefinitions[2].Height = new GridLength(0, GridUnitType.Pixel);
             EditorEditGrid.RowDefinitions[editorRow].Height = new GridLength(1, GridUnitType.Star);

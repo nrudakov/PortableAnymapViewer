@@ -41,6 +41,11 @@ namespace Portable_Anymap_Viewer.Triggers
             }
         }
 
+        public bool IsActive
+        {
+            get; private set;
+        }
+
         private async void Window_SizeChanged(object sender, WindowSizeChangedEventArgs e)
         {
             try
@@ -75,15 +80,18 @@ namespace Portable_Anymap_Viewer.Triggers
                         ProjectionManager.ProjectionDisplayAvailable)
                     {
                         SetActive(this.IsInDesktopMode);
+                        IsActive = this.IsInDesktopMode;
                     }
                     else
                     {
                         SetActive(!this.IsInDesktopMode);
+                        IsActive = !this.IsInDesktopMode;
                     }
                 }
                 else if (qualifiers.ContainsKey("DeviceFamily") && qualifiers["DeviceFamily"] == "Desktop")
                 {
                     SetActive(this.IsInDesktopMode);
+                    IsActive = this.IsInDesktopMode;
                 }
             }
             catch (Exception ex)
