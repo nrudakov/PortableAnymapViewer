@@ -24,7 +24,6 @@ namespace Portable_Anymap_Viewer.Controls
         private DecodeResult imageInfo;
         private Single initialZoom;
         private bool isInfoSet = false;
-        private bool isCanvasSet = false;
 
         public CanvasWrapper() {}
 
@@ -58,7 +57,11 @@ namespace Portable_Anymap_Viewer.Controls
         {
             get
             {
-                return this.isCanvasSet;
+                if (this.Children.Count > 0)
+                {
+                    return (this.Children[0] as CanvasControl).ReadyToDraw;
+                }
+                return false;
             }
         }
 
@@ -275,7 +278,6 @@ namespace Portable_Anymap_Viewer.Controls
             {
                 sensor.OrientationChanged += Sensor_OrientationChanged;
             }
-            this.isCanvasSet = true;
         }
 
         public void RemoveCanvas()
@@ -288,7 +290,6 @@ namespace Portable_Anymap_Viewer.Controls
             }
             this.GetCanvas()?.RemoveFromVisualTree();
             this.Children.Clear();
-            this.isCanvasSet = false;
         }
 
         private CanvasControl GetCanvas()

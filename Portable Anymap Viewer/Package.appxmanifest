@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="9747MrRNVZ.PortableAnymapViewer" Publisher="CN=43CFD336-4D79-46F1-96F8-AC7E816F76CE" Version="1.1.1.0" />
+  <Identity Name="9747MrRNVZ.PortableAnymapViewer" Publisher="CN=43CFD336-4D79-46F1-96F8-AC7E816F76CE" Version="1.1.3.0" />
   <mp:PhoneIdentity PhoneProductId="76ae3a02-337c-4a52-9f8c-27964c753241" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Portable Anymap Viewer</DisplayName>
@@ -27,23 +27,13 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="transparent" />
       </uap:VisualElements>
       <Extensions>
-        <uap:Extension Category="windows.shareTarget">
-          <uap:ShareTarget>
-            <uap:SupportedFileTypes>
-              <uap:FileType>.jpg</uap:FileType>
-              <uap:FileType>.jpeg</uap:FileType>
-              <uap:FileType>.png</uap:FileType>
-            </uap:SupportedFileTypes>
-            <uap:DataFormat>Bitmap</uap:DataFormat>
-          </uap:ShareTarget>
-        </uap:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="pbm">
-            <uap:DisplayName>Portable Bitmap</uap:DisplayName>
-            <uap:Logo>Assets\File_ext_B.png</uap:Logo>
-            <uap:InfoTip>Black &amp; White Anymap</uap:InfoTip>
+          <uap:FileTypeAssociation Name="ppm">
+            <uap:DisplayName>Portable Pixmap</uap:DisplayName>
+            <uap:Logo>Assets\File_ext_P.png</uap:Logo>
+            <uap:InfoTip>RGB Anymap</uap:InfoTip>
             <uap:SupportedFileTypes>
-              <uap:FileType ContentType="image/x-portable-bitmap">.pbm</uap:FileType>
+              <uap:FileType ContentType="image/x-portable-pixmap">.ppm</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>
@@ -58,21 +48,30 @@
           </uap:FileTypeAssociation>
         </uap:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="ppm">
-            <uap:DisplayName>Portable Pixmap</uap:DisplayName>
-            <uap:Logo>Assets\File_ext_P.png</uap:Logo>
-            <uap:InfoTip>RGB Anymap</uap:InfoTip>
+          <uap:FileTypeAssociation Name="pbm">
+            <uap:DisplayName>Portable Bitmap</uap:DisplayName>
+            <uap:Logo>Assets\File_ext_B.png</uap:Logo>
+            <uap:InfoTip>Black &amp; White Anymap</uap:InfoTip>
             <uap:SupportedFileTypes>
-              <uap:FileType ContentType="image/x-portable-pixmap">.ppm</uap:FileType>
+              <uap:FileType ContentType="image/x-portable-bitmap">.pbm</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
+        </uap:Extension>
+        <uap:Extension Category="windows.shareTarget">
+          <uap:ShareTarget>
+            <uap:SupportedFileTypes>
+              <uap:FileType>.jpg</uap:FileType>
+              <uap:FileType>.jpeg</uap:FileType>
+              <uap:FileType>.png</uap:FileType>
+            </uap:SupportedFileTypes>
+            <uap:DataFormat>Bitmap</uap:DataFormat>
+          </uap:ShareTarget>
         </uap:Extension>
       </Extensions>
     </Application>
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
-    <Capability Name="privateNetworkClientServer" />
     <uap:Capability Name="removableStorage" />
     <uap:Capability Name="picturesLibrary" />
   </Capabilities>

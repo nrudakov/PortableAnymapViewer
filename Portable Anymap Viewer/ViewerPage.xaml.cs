@@ -71,9 +71,12 @@ namespace Portable_Anymap_Viewer
                         break;
                 }
             }
-
-            ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
-            ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
+            if (imagesInfo[flipView.SelectedIndex] != null)
+            {
+                ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
+                ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
+            }
+            
             flipView.Visibility = Visibility.Visible;
             DataTransferManager.GetForCurrentView().DataRequested += ViewerPage_DataRequested;
             isLoadingCompleted = true;   
@@ -126,7 +129,7 @@ namespace Portable_Anymap_Viewer
         private void Img_CreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
         {
             var result = sender.Tag as DecodeResult;
-            CanvasBitmap cbm = CanvasBitmap.CreateFromBytes(sender, result.Bytes, result.Width, result.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
+            CanvasBitmap cbm = CanvasBitmap.CreateFromBytes(sender, result.Bytes, result.Width, result.Height, result.DoubleBytesPerColor ? DirectXPixelFormat.R16G16B16A16UIntNormalized : DirectXPixelFormat.B8G8R8A8UIntNormalized);
             CanvasImageBrush brush = new CanvasImageBrush(sender, cbm);
             brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;                    
             brush.Transform = Matrix3x2.CreateScale(result.CurrentZoom);
@@ -150,8 +153,11 @@ namespace Portable_Anymap_Viewer
                 {
                     await this.LoadCanvas(flipView.SelectedIndex);
                 }
-                ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
-                ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
+                if (imagesInfo[flipView.SelectedIndex] != null)
+                {
+                    ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
+                    ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
+                }
             }
         }
 

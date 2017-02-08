@@ -230,11 +230,28 @@ namespace Portable_Anymap_Viewer.Classes
 
         private void WriteP4(byte[] image, MemoryStream stream, UInt32 totalPixels, AnymapProperties properties)
         {
-            for (UInt32 i = 0; i < totalPixels; i += 8)
+            int colmod = (int)(properties.Width) % 8;
+            int col = 0;
+            int num = 0;
+            for (int i = 0; i < totalPixels;)
             {
-                stream.WriteByte(
-                    packBytePbm((int)properties.MaxValue, image, i, totalPixels - i > 8 ? 8 : (int)(totalPixels - i))
-                );
+                if (col == properties.Width - colmod)
+                {
+                    num = colmod == 0 ? 8 : colmod;
+                    stream.WriteByte(
+                        packBytePbm((int)properties.MaxValue, image, (UInt32)i, num)
+                    );
+                    col = 0;
+                    i += num;
+                }
+                else
+                {
+                    stream.WriteByte(
+                        packBytePbm((int)properties.MaxValue, image, (UInt32)i, totalPixels - i > 8 ? 8 : (int)(totalPixels - i))
+                    );
+                    col += 8;
+                    i += 8;
+                }
             }
         }
 

@@ -10,6 +10,6 @@ namespace Portable_Anymap_Viewer.Models
         public byte[] Bytes { get; set; }
         public String Filename { get; set; }
         public Single CurrentZoom { get; set; }
-       
+        public Boolean DoubleBytesPerColor { get; set; }
     }
 }
