@@ -28,7 +28,7 @@ namespace Portable_Anymap_Viewer
         public MainPage()
         {
             this.InitializeComponent();
-            readSavedFolders();
+            ReadSavedFolders();
             CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
         }
 
@@ -40,8 +40,10 @@ namespace Portable_Anymap_Viewer
 
         private async void AddFolder_Click(object sender, RoutedEventArgs e)
         {
-            FolderPicker folderPicker = new FolderPicker();
-            folderPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            FolderPicker folderPicker = new FolderPicker()
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary
+            };
             folderPicker.FileTypeFilter.Add(".pbm");
             folderPicker.FileTypeFilter.Add(".pgm");
             folderPicker.FileTypeFilter.Add(".ppm");
@@ -54,25 +56,27 @@ namespace Portable_Anymap_Viewer
                 BitmapImage thumbnailBitmap = new BitmapImage();
                 thumbnailBitmap.SetSource(thumbnail);
 
-                ExplorerItem folder = new ExplorerItem();
-                folder.Thumbnail = thumbnailBitmap;
-                folder.Filename = storageFolder.Name;
-                folder.Type = null;
-                folder.DisplayName = storageFolder.DisplayName;
-                folder.DisplayType = storageFolder.DisplayType;
-                folder.Path = storageFolder.Path;
-                folder.Token = faToken;
+                ExplorerItem folder = new ExplorerItem()
+                {
+                    Thumbnail = thumbnailBitmap,
+                    Filename = storageFolder.Name,
+                    Type = null,
+                    DisplayName = storageFolder.DisplayName,
+                    DisplayType = storageFolder.DisplayType,
+                    Path = storageFolder.Path,
+                    Token = faToken
+                };
                 FolderList.Items.Add(folder);
-                saveFolder(faToken);
+                SaveFolder(faToken);
             }
         }
 
-        private void foldersListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void FoldersListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             
         }
 
-        private async void readSavedFolders()
+        private async void ReadSavedFolders()
         {
             IList<string> folders = await FileIO.ReadLinesAsync(await ApplicationData.Current.LocalFolder.CreateFileAsync("FolderTokens.txt", CreationCollisionOption.OpenIfExists),Windows.Storage.Streams.UnicodeEncoding.Utf16LE);
             foreach (string token in folders)
@@ -84,20 +88,22 @@ namespace Portable_Anymap_Viewer
                     BitmapImage thumbnailBitmap = new BitmapImage();
                     thumbnailBitmap.SetSource(thumbnail);
 
-                    ExplorerItem folder = new ExplorerItem();
-                    folder.Thumbnail = thumbnailBitmap;
-                    folder.Filename = storageFolder.Name;
-                    folder.Type = null;
-                    folder.DisplayName = storageFolder.DisplayName;
-                    folder.DisplayType = storageFolder.DisplayType;
-                    folder.Path = storageFolder.Path;
-                    folder.Token = token;
+                    ExplorerItem folder = new ExplorerItem()
+                    {
+                        Thumbnail = thumbnailBitmap,
+                        Filename = storageFolder.Name,
+                        Type = null,
+                        DisplayName = storageFolder.DisplayName,
+                        DisplayType = storageFolder.DisplayType,
+                        Path = storageFolder.Path,
+                        Token = token
+                    };
                     FolderList.Items.Add(folder);
                 }
             }
         }
 
-        private async void saveFolder(string token)
+        private async void SaveFolder(string token)
         {
             await FileIO.AppendTextAsync(await ApplicationData.Current.LocalFolder.CreateFileAsync("FolderTokens.txt", CreationCollisionOption.OpenIfExists), token+"\n", Windows.Storage.Streams.UnicodeEncoding.Utf16LE);
         }
@@ -191,11 +197,14 @@ namespace Portable_Anymap_Viewer
 
         private void CreateFilePopupButton_Click(object sender, RoutedEventArgs e)
         {
-            EditFileParams editParams = new EditFileParams();
-            editParams.Type = IsBinary.IsOn? 4 : 1;
-            editParams.Width = editParams.Height = 0;
-            editParams.File = null;
-            editParams.SaveMode = EditFileSaveMode.SaveAs;
+            EditFileParams editParams = new EditFileParams()
+            {
+                Type = IsBinary.IsOn ? 4 : 1,
+                Width = 0,
+                Height = 0,
+                File = null,
+                SaveMode = EditFileSaveMode.SaveAs
+            };
             this.Frame.Navigate(typeof(EditorPage), editParams);
         }
 
@@ -211,9 +220,11 @@ namespace Portable_Anymap_Viewer
 
         private async void OpenFile_Click(object sender, RoutedEventArgs e)
         {
-            FileOpenPicker picker = new FileOpenPicker();
-            picker.ViewMode = PickerViewMode.Thumbnail;
-            picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+            FileOpenPicker picker = new FileOpenPicker()
+            {
+                ViewMode = PickerViewMode.Thumbnail,
+                SuggestedStartLocation = PickerLocationId.PicturesLibrary
+            };
             picker.FileTypeFilter.Add(".pbm");
             picker.FileTypeFilter.Add(".pgm");
             picker.FileTypeFilter.Add(".ppm");
@@ -221,23 +232,27 @@ namespace Portable_Anymap_Viewer
             IReadOnlyList<StorageFile> files = await picker.PickMultipleFilesAsync();
             if (files.Count > 0)
             {
-                OpenFileParams openFileParams = new OpenFileParams();
-                openFileParams.FileList = files;
-                var firstFile = openFileParams.FileList[0];
-                ExplorerItem ei = new ExplorerItem();
-                ei.Filename = firstFile.Name;
-                ei.DisplayName = firstFile.DisplayName;
-                ei.DisplayType = firstFile.DisplayType;
-                openFileParams.ClickedFile = ei;
+                OpenFileParams openFileParams = new OpenFileParams()
+                {
+                    FileList = files,
+                    ClickedFile = new ExplorerItem()
+                    {
+                        Filename = files[0].Name,
+                        DisplayName = files[0].DisplayName,
+                        DisplayType = files[0].DisplayType
+                    }
+                };
                 Frame.Navigate(typeof(ViewerPage), openFileParams);
             }
         }
 
         private async void Convert_Click(object sender, RoutedEventArgs e)
         {
-            FileOpenPicker picker = new FileOpenPicker();
-            picker.ViewMode = PickerViewMode.Thumbnail;
-            picker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+            FileOpenPicker picker = new FileOpenPicker()
+            {
+                ViewMode = PickerViewMode.Thumbnail,
+                SuggestedStartLocation = PickerLocationId.PicturesLibrary
+            };
             picker.FileTypeFilter.Add(".jpg");
             picker.FileTypeFilter.Add(".jpeg");
             picker.FileTypeFilter.Add(".png");
@@ -254,6 +269,11 @@ namespace Portable_Anymap_Viewer
             await Launcher.LaunchUriAsync(new Uri(string.Format("ms-windows-store:REVIEW?PFN={0}", Windows.ApplicationModel.Package.Current.Id.FamilyName)));
         }
 
+        private void Donate_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(DonatePage));
+        }
+
         private void About_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(AboutPage));
@@ -264,7 +284,7 @@ namespace Portable_Anymap_Viewer
             this.Unloaded -= Page_Unloaded;
 
             FolderList.Tapped -= FolderList_Tapped;
-            FolderList.SelectionChanged -= foldersListView_SelectionChanged;
+            FolderList.SelectionChanged -= FoldersListView_SelectionChanged;
             CreateFilePopupButton.Click -= CreateFilePopupButton_Click;
 
             AddFolderTop.Click -= AddFolder_Click;
@@ -274,6 +294,7 @@ namespace Portable_Anymap_Viewer
             OpenFileTop.Click -= OpenFile_Click;
             ConvertTop.Click -= Convert_Click;
             RateTop.Click -= Rate_Click;
+            DonateTop.Click -= Donate_Click;
             AboutTop.Click -= About_Click;
 
             AddFolderBottom.Click -= AddFolder_Click;
@@ -283,6 +304,7 @@ namespace Portable_Anymap_Viewer
             OpenFileBottom.Click -= OpenFile_Click;
             ConvertBottom.Click -= Convert_Click;
             RateBottom.Click -= Rate_Click;
+            DonateBottom.Click -= Donate_Click;
             AboutBottom.Click -= About_Click;
 
             MobileTrigger.Detach();

@@ -1,10 +1,14 @@
 ﻿using Portable_Anymap_Viewer.Models;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.Security.Cryptography;
+using Windows.Security.Cryptography.Core;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.ViewManagement;
@@ -29,7 +33,6 @@ namespace Portable_Anymap_Viewer.Classes
                 var dataReader = new DataReader(stream);
                 await dataReader.LoadAsync((uint)2);
                 string formatType = dataReader.ReadString(2);
-                
                 if (formatType[0] != 'P')
                 {
                     return result;
@@ -138,6 +141,17 @@ namespace Portable_Anymap_Viewer.Classes
                         result.DoubleBytesPerColor = properties.BytesPerColor == 2;
                         break;
                     case '3':
+                        result.HistogramValues = new List<List<HistogramValue>>(3);
+                        result.HistogramValues.Add(new List<HistogramValue>(256));
+                        result.HistogramValues.Add(new List<HistogramValue>(256));
+                        result.HistogramValues.Add(new List<HistogramValue>(256));
+                        foreach (List<HistogramValue> list in result.HistogramValues)
+                        {
+                            for (int i = 0; i < 256; ++i)
+                            {
+                                list.Add(new HistogramValue { Brightness = i, Level = 0.0 });
+                            }
+                        }
                         properties = await GetImageProperties(stream, true);
                         if (properties.MaxValue != 0)
                         {
@@ -158,6 +172,7 @@ namespace Portable_Anymap_Viewer.Classes
                                     for (int i = 0; i < mc.Count; ++i)
                                     {
                                         decodedAnymap[resultIndex + BgraIndex] = (byte)(Convert.ToUInt32(mc[i].Value) / (double)properties.MaxValue * 255);
+                                        result.HistogramValues[BgraIndex][decodedAnymap[resultIndex + BgraIndex]].Level += 1.0;
                                         --BgraIndex;
                                         if (BgraIndex == -1)
                                         {
@@ -219,10 +234,8 @@ namespace Portable_Anymap_Viewer.Classes
                         properties = await GetImageProperties(stream, false);
                         pixelsNum = properties.Width * properties.Height;
                         decodedAnymap = new byte[pixelsNum * 4];
-                        
                         stream.Seek(properties.StreamPosition);
                         dataReader = new DataReader(stream);
-
                         bytesLoaded = await dataReader.LoadAsync((uint)(stream.Size - properties.StreamPosition));
                         if (properties.BytesPerColor == 1)
                         {
@@ -237,6 +250,7 @@ namespace Portable_Anymap_Viewer.Classes
                                 if (col == properties.Width - colmod)
                                 {
                                     num = colmod == 0 ? 8 : colmod;
+                                    
                                     unpackBitsPbm(decodedAnymap, resultIndex, num, dataReader.ReadByte());
                                     col = 0;
                                     resultIndex += num * 4;
@@ -315,6 +329,17 @@ namespace Portable_Anymap_Viewer.Classes
                         result.DoubleBytesPerColor = properties.BytesPerColor == 2;
                         break;
                     case '6':
+                        result.HistogramValues = new List<List<HistogramValue>>(3);
+                        result.HistogramValues.Add(new List<HistogramValue>(256));
+                        result.HistogramValues.Add(new List<HistogramValue>(256));
+                        result.HistogramValues.Add(new List<HistogramValue>(256));
+                        foreach (List<HistogramValue> list in result.HistogramValues)
+                        {
+                            for (int i = 0; i < 256; ++i)
+                            {
+                                list.Add(new HistogramValue { Brightness = i, Level = 0.0 });
+                            }
+                        }
                         properties = await GetImageProperties(stream, true);
                         if (properties.MaxValue != 0)
                         {
@@ -334,6 +359,9 @@ namespace Portable_Anymap_Viewer.Classes
                                         decodedAnymap[resultIndex + 1] = (byte)(dataReader.ReadByte() / (double)properties.MaxValue * 255);
                                         decodedAnymap[resultIndex] = (byte)(dataReader.ReadByte() / (double)properties.MaxValue * 255);
                                         decodedAnymap[resultIndex + 3] = 255;
+                                        result.HistogramValues[0][decodedAnymap[resultIndex + 2]].Level += 1.0;
+                                        result.HistogramValues[1][decodedAnymap[resultIndex + 1]].Level += 1.0;
+                                        result.HistogramValues[2][decodedAnymap[resultIndex]].Level += 1.0;
                                         resultIndex += 4;
                                     }
                                 }
@@ -386,6 +414,13 @@ namespace Portable_Anymap_Viewer.Classes
                 dataReader.DetachStream();
                 dataReader.Dispose();
             }
+            //foreach (List<HistogramValue> list in result.HistogramValues)
+            //{
+            //    foreach (HistogramValue value in list)
+            //    {
+            //        value.Level /= result.Width * result.Height;
+            //    }
+            //}
             GC.Collect();
             return result;
         }
@@ -393,16 +428,57 @@ namespace Portable_Anymap_Viewer.Classes
         public async Task<DecodeResult> decode(StorageFile file)
         {
             var stream = await file.OpenAsync(FileAccessMode.Read);
-            return await decode(stream, file.Name);
+            var dataReader = new DataReader(stream);
+            var bytesLoaded = await dataReader.LoadAsync((uint)stream.Size);
+            stream.Seek(0);
+            var result = await decode(stream, file.Name);
+            // Hash sum
+            var iBuffer = dataReader.ReadBuffer(bytesLoaded);
+            var hasher = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5).CreateHash();
+            hasher.Append(iBuffer);
+            result.Md5 = CryptographicBuffer.EncodeToHexString(hasher.GetValueAndReset());
+            hasher = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1).CreateHash();
+            hasher.Append(iBuffer);
+            result.Sha1 = CryptographicBuffer.EncodeToHexString(hasher.GetValueAndReset());
+            //hasher = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha256).CreateHash();
+            //hasher.Append(iBuffer);
+            //result.Sha256 = CryptographicBuffer.EncodeToHexString(hasher.GetValueAndReset());
+            //hasher = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha384).CreateHash();
+            //hasher.Append(iBuffer);
+            //result.Sha384 = CryptographicBuffer.EncodeToHexString(hasher.GetValueAndReset());
+            //hasher = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha512).CreateHash();
+            //hasher.Append(iBuffer);
+            //result.Sha512 = CryptographicBuffer.EncodeToHexString(hasher.GetValueAndReset());
+            return result;
         }
 
         public async Task<DecodeResult> decode(byte[] bytes)
         {
-            DecodeResult result = new DecodeResult();
             var stream = (new MemoryStream(bytes)).AsRandomAccessStream();
-            return await decode(stream, "");
+            var dataReader = new DataReader(stream);
+            var bytesLoaded = await dataReader.LoadAsync((uint)stream.Size);
+            stream.Seek(0);
+            var result = await decode(stream, "");
+            // Hash sum
+            var iBuffer = dataReader.ReadBuffer(bytesLoaded);
+            var hasher = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Md5).CreateHash();
+            hasher.Append(iBuffer);
+            result.Md5 = CryptographicBuffer.EncodeToHexString(hasher.GetValueAndReset());
+            hasher = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha1).CreateHash();
+            hasher.Append(iBuffer);
+            result.Sha1 = CryptographicBuffer.EncodeToHexString(hasher.GetValueAndReset());
+            //hasher = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha256).CreateHash();
+            //hasher.Append(iBuffer);
+            //result.Sha256 = CryptographicBuffer.EncodeToHexString(hasher.GetValueAndReset());
+            //hasher = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha384).CreateHash();
+            //hasher.Append(iBuffer);
+            //result.Sha384 = CryptographicBuffer.EncodeToHexString(hasher.GetValueAndReset());
+            //hasher = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha512).CreateHash();
+            //hasher.Append(iBuffer);
+            //result.Sha512 = CryptographicBuffer.EncodeToHexString(hasher.GetValueAndReset());
+            return result;
         }
-        
+
         private async Task<AnymapProperties> GetImageProperties(IRandomAccessStream stream, bool isContainMaxValue)
         {
             ulong size = stream.Size;

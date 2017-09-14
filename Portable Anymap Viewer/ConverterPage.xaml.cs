@@ -2,9 +2,10 @@
 using Portable_Anymap_Viewer.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
+using Windows.ApplicationModel.Resources;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
@@ -52,11 +53,15 @@ namespace Portable_Anymap_Viewer
                 }
                 foreach (StorageFile file in files)
                 {
-                    TextBlock inputTextBlock = new TextBlock();
-                    inputTextBlock.Text = file.Name;
-                    TextBlock outputTextBlock = new TextBlock();
-                    outputTextBlock.Text = file.DisplayName + outputExtension;
-                    outputTextBlock.Visibility = Visibility.Collapsed;
+                    TextBlock inputTextBlock = new TextBlock()
+                    {
+                        Text = file.Name
+                    };
+                    TextBlock outputTextBlock = new TextBlock()
+                    {
+                        Text = file.DisplayName + outputExtension,
+                        Visibility = Visibility.Collapsed
+                    };
                     InputFilesList.Items.Add(inputTextBlock);
                     OutputFilesList.Items.Add(outputTextBlock);
                     inputFiles.Add(inputTextBlock.Text);
@@ -79,54 +84,55 @@ namespace Portable_Anymap_Viewer
             ConverterBottomCommandBar.IsEnabled = false;
             this.FileProgressBar.Visibility = Visibility.Visible;
             this.IsBinary.Visibility = Visibility.Collapsed;
+            this.Depth8_16.Visibility = Visibility.Collapsed;
             this.FileTypeCombo.Visibility = Visibility.Collapsed;
             this.MaxPixelValue.Visibility = Visibility.Collapsed;
+            this.ThresholdLevelTxt8.Visibility = Visibility.Collapsed;
+            this.ThresholdLevelTxt16.Visibility = Visibility.Collapsed;
             this.NameCollisionCombo.Visibility = Visibility.Collapsed;
             if (outputFolder == null)
             {
                 await this.ChangeFolder();
             }
-
-            var maxPixelValue = Convert.ToUInt32(MaxPixelValue.Text);
-            var type = (AnymapType)FileTypeCombo.SelectedIndex;
-            var isBinary = IsBinary.IsOn;
-            var collisionOption = (CreationCollisionOption)NameCollisionCombo.SelectedIndex;
-            Parallel.For(0, InputFilesList.Items.Count, async (i, state) =>
+            var anymapType = (AnymapType)FileTypeCombo.SelectedIndex;
+            var maxValue = Convert.ToUInt32(MaxPixelValue.Text);
+            var threshold8 = Convert.ToByte(ThresholdLevelTxt8.Text);
+            var threshold16 = Convert.ToUInt16(ThresholdLevelTxt16.Text);
+            var bytesPerColor = Depth8_16.IsOn ? 2u : 1u;
+            var creationCollisionOption = (CreationCollisionOption)NameCollisionCombo.SelectedIndex;
+            var filesNum = InputFilesList.Items.Count;
+            var isBinary = this.IsBinary.IsOn;
+            Parallel.For(0, filesNum, async (i, state) =>
             {
                 using (var stream = await RandomAccessStreamReference.CreateFromFile(files[i]).OpenReadAsync())
                 {
                     var imageDecoder = await BitmapDecoder.CreateAsync(stream);
-                    
-                    AnymapProperties properties = new AnymapProperties();
-                    properties.AnymapType = type;
-                    properties.Width = imageDecoder.OrientedPixelWidth;
-                    properties.Height = imageDecoder.OrientedPixelHeight;
-                    properties.MaxValue = maxPixelValue;
-                    properties.StreamPosition = 0;
-                    properties.BytesPerColor = maxPixelValue > 255 ? (UInt32)2 : (UInt32)1;
+
+                    AnymapProperties properties = new AnymapProperties()
+                    {
+                        AnymapType = anymapType,
+                        Width = imageDecoder.OrientedPixelWidth,
+                        Height = imageDecoder.OrientedPixelHeight,
+                        MaxValue = maxValue,
+                        Threshold8 = threshold8,
+                        Threshold16 = threshold16,
+                        BytesPerColor = bytesPerColor,
+                        StreamPosition = 0,
+                    };
                     try
                     {
-                        StorageFile newFile = await outputFolder.CreateFileAsync(
-                            outputFiles[i],
-                            collisionOption
-                        );
+                        StorageFile newFile = await outputFolder.CreateFileAsync(outputFiles[i], creationCollisionOption);
                         if (isBinary)
                         {
-                            byte[] anymapBytes = await anymapEncoder.encodeBinary(imageDecoder, properties);
-                            await FileIO.WriteBytesAsync(
-                                newFile,
-                                anymapBytes
-                            );
+                            byte[] anymapBytes = await anymapEncoder.EncodeBinary(imageDecoder, properties);
+                            await FileIO.WriteBytesAsync(newFile, anymapBytes);
                         }
                         else
                         {
-                            await FileIO.WriteTextAsync(
-                                newFile,
-                                await anymapEncoder.encodeText(imageDecoder, properties)
-                            );
+                            await FileIO.WriteTextAsync(newFile, await anymapEncoder.EncodeText(imageDecoder, properties));
                         }
 
-                        await CoreApplication.GetCurrentView().Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                         {
                             (this.InputFilesList.Items[i] as TextBlock).Visibility = Visibility.Collapsed;
                             (this.OutputFilesList.Items[i] as TextBlock).Visibility = Visibility.Visible;
@@ -135,8 +141,13 @@ namespace Portable_Anymap_Viewer
                     }
                     catch (Exception ex)
                     {
-                        (this.InputFilesList.Items[i] as TextBlock).Visibility = Visibility.Collapsed;
-                        this.FileProgressBar.Value = this.FileProgressBar.Value + 1;
+                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                        {
+                            (this.InputFilesList.Items[i] as TextBlock).Visibility = Visibility.Collapsed;
+                            this.FileProgressBar.Value = this.FileProgressBar.Value + 1;
+                            //ContentDialog convert
+                        });
+                        Debug.WriteLine(ex.Message);
                     }
                 }
             });
@@ -167,26 +178,57 @@ namespace Portable_Anymap_Viewer
             }
         }
 
+        private void Depth8_16_Toggled(object sender, RoutedEventArgs e)
+        {
+            this.UpdateTxtMaxPixelValue();
+        }
+
+        private void UpdateTxtMaxPixelValue()
+        {
+            var loader = new ResourceLoader();
+            if (this.Depth8_16.IsOn)
+            {
+                this.MaxPixelValue.Text = "65535";
+                this.MaxPixelValue.Header = loader.GetString("TxtMaxPixelValue16");
+                this.MaxPixelValue.MaxLength = 5;
+            }
+            else
+            {
+                this.MaxPixelValue.Text = "255";
+                this.MaxPixelValue.Header = loader.GetString("TxtMaxPixelValue8");
+                this.MaxPixelValue.MaxLength = 3;
+            }
+        }
+
         private void FileTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (MaxPixelValue != null)
             {
+                var loader = new ResourceLoader();
                 switch (((sender as ComboBox).SelectedValue as ComboBoxItem).Content as String)
                 {
                     case "Bitmap":
                         outputExtension = ".pbm";
-                        this.MaxPixelValue.Header = "Threshold level (0-255)";
-                        this.MaxPixelValue.Text = "127";
+                        this.Depth8_16.Visibility = Visibility.Collapsed;
+                        this.MaxPixelValue.Visibility = Visibility.Collapsed;
+                        this.ThresholdLevelTxt8.Visibility = Visibility.Visible;
+                        this.ThresholdLevelTxt16.Visibility = Visibility.Visible;
                         break;
                     case "Graymap":
                         outputExtension = ".pgm";
-                        this.MaxPixelValue.Header = "Maximum pixel value (0-255)";
-                        this.MaxPixelValue.Text = "255";
+                        this.UpdateTxtMaxPixelValue();
+                        this.Depth8_16.Visibility = Visibility.Visible;
+                        this.MaxPixelValue.Visibility = Visibility.Visible;
+                        this.ThresholdLevelTxt8.Visibility = Visibility.Collapsed;
+                        this.ThresholdLevelTxt16.Visibility = Visibility.Collapsed;
                         break;
                     case "Pixmap":
                         outputExtension = ".ppm";
-                        this.MaxPixelValue.Header = "Maximum pixel value (0-255)";
-                        this.MaxPixelValue.Text = "255";
+                        this.UpdateTxtMaxPixelValue();
+                        this.Depth8_16.Visibility = Visibility.Visible;
+                        this.MaxPixelValue.Visibility = Visibility.Visible;
+                        this.ThresholdLevelTxt8.Visibility = Visibility.Collapsed;
+                        this.ThresholdLevelTxt16.Visibility = Visibility.Collapsed;
                         break;
                     default:
                         outputExtension = "";
@@ -207,13 +249,20 @@ namespace Portable_Anymap_Viewer
                 String str = tb.Text + e.Key.ToString();
                 try
                 {
-                    Byte i = Convert.ToByte(tb.Text + Convert.ToChar(e.Key));
+                    if (this.Depth8_16.IsOn)
+                    {
+                        UInt16 i = Convert.ToUInt16(tb.Text + Convert.ToChar(e.Key));
+                    }
+                    else
+                    {
+                        Byte i = Convert.ToByte(tb.Text + Convert.ToChar(e.Key));
+                    }
                 }
-                catch (FormatException ex)
+                catch (FormatException)
                 {
                     e.Handled = true;
                 }
-                catch (OverflowException ex)
+                catch (OverflowException)
                 {
                     e.Handled = true;
                 }
@@ -225,6 +274,98 @@ namespace Portable_Anymap_Viewer
             else
             {
                 e.Handled = true;
+            }
+        }
+
+        private void ThresholdLevelTxt8_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            TextBox tb = sender as TextBox;
+            if (VirtualKey.Number0 <= e.Key && e.Key <= VirtualKey.Number9)
+            {
+                String str = tb.Text + e.Key.ToString();
+                try
+                {
+                    Byte i = Convert.ToByte(tb.Text + Convert.ToChar(e.Key));
+                }
+                catch (FormatException)
+                {
+                    e.Handled = true;
+                }
+                catch (OverflowException)
+                {
+                    e.Handled = true;
+                }
+            }
+            else if (e.Key == VirtualKey.Delete || e.Key == VirtualKey.Back)
+            {
+                return;
+            }
+            else
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void ThresholdLevelTxt16_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            TextBox tb = sender as TextBox;
+            if (VirtualKey.Number0 <= e.Key && e.Key <= VirtualKey.Number9)
+            {
+                String str = tb.Text + e.Key.ToString();
+                try
+                {
+                    UInt16 i = Convert.ToUInt16(tb.Text + Convert.ToChar(e.Key));
+                }
+                catch (FormatException)
+                {
+                    e.Handled = true;
+                }
+                catch (OverflowException)
+                {
+                    e.Handled = true;
+                }
+            }
+            else if (e.Key == VirtualKey.Delete || e.Key == VirtualKey.Back)
+            {
+                return;
+            }
+            else
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void MaxPixelValue_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var txt = sender as TextBox;
+            if (txt.Text == "")
+            {
+                if (this.Depth8_16.IsOn)
+                {
+                    txt.Text = "65535";
+                }
+                else
+                {
+                    txt.Text = "255";
+                }
+            }
+        }
+
+        private void ThresholdLevelTxt8_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var txt = sender as TextBox;
+            if (txt.Text == "")
+            {
+                txt.Text = "127";
+            }
+        }
+
+        private void ThresholdLevelTxt16_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var txt = sender as TextBox;
+            if (txt.Text == "")
+            {
+                txt.Text = "32767";
             }
         }
 
@@ -242,8 +383,14 @@ namespace Portable_Anymap_Viewer
         {
             this.Unloaded -= this.Page_Unloaded;
 
+            this.Depth8_16.Toggled -= this.Depth8_16_Toggled;
             this.FileTypeCombo.SelectionChanged -= this.FileTypeCombo_SelectionChanged;
             this.MaxPixelValue.KeyDown -= this.MaxPixelValue_KeyDown;
+            this.ThresholdLevelTxt8.KeyDown -= this.ThresholdLevelTxt8_KeyDown;
+            this.ThresholdLevelTxt16.KeyDown -= this.ThresholdLevelTxt16_KeyDown;
+            this.MaxPixelValue.LostFocus -= this.MaxPixelValue_LostFocus;
+            this.ThresholdLevelTxt8.LostFocus -= this.ThresholdLevelTxt8_LostFocus;
+            this.ThresholdLevelTxt16.LostFocus -= this.ThresholdLevelTxt16_LostFocus;
             this.FileProgressBar.ValueChanged -= this.ProgressBar_ValueChanged;
 
             this.ChangeFolderTop.Click -= this.ChangeFolder_Click;

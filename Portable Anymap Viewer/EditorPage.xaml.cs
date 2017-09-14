@@ -6,7 +6,6 @@ using Portable_Anymap_Viewer.Classes;
 using Portable_Anymap_Viewer.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Windows.ApplicationModel.Resources;
@@ -30,7 +29,7 @@ namespace Portable_Anymap_Viewer
     /// <summary>
     /// Page for editing anymap files
     /// </summary>
-    public sealed partial class EditorPage : Page
+    public partial class EditorPage : Page, IDisposable
     {
         public EditorPage()
         {
@@ -173,8 +172,10 @@ namespace Portable_Anymap_Viewer
         private void EditorCanvas_CreateResources(CanvasControl sender, CanvasCreateResourcesEventArgs args)
         {
             cbm = CanvasBitmap.CreateFromBytes(sender, editFileParams.Bytes, editFileParams.Width, editFileParams.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
-            brush = new CanvasImageBrush(sender, cbm);
-            brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
+            brush = new CanvasImageBrush(sender, cbm)
+            {
+                Interpolation = CanvasImageInterpolation.NearestNeighbor
+            };
             sender.Width = editFileParams.Width;
             sender.Height = editFileParams.Height;
         }
@@ -204,18 +205,20 @@ namespace Portable_Anymap_Viewer
 
         private void EditorCompare_PointerPressed(object sender, PointerRoutedEventArgs e)
         {
-            this.onEditorComparePointerPressed();
+            this.OnEditorComparePointerPressed();
         }
 
-        private void onEditorComparePointerPressed()
+        private void OnEditorComparePointerPressed()
         {
             EditorCompareTop.IsChecked = true;
             EditorCompareBottom.IsChecked = true;
             if (EditorCanvas.Visibility == Visibility.Visible)
             {
                 cbm = CanvasBitmap.CreateFromBytes(EditorCanvas, editFileParams.Bytes, editFileParams.Width, editFileParams.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
-                brush = new CanvasImageBrush(EditorCanvas, cbm);
-                brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
+                brush = new CanvasImageBrush(EditorCanvas, cbm)
+                {
+                    Interpolation = CanvasImageInterpolation.NearestNeighbor
+                };
                 EditorCanvas.Width = editFileParams.Width;
                 EditorCanvas.Height = editFileParams.Height;
                 EditorCanvas.Invalidate();
@@ -240,18 +243,20 @@ namespace Portable_Anymap_Viewer
 
         private void EditorCompare_PointerReleased(object sender, PointerRoutedEventArgs e)
         {
-            this.onEditorComparePointerReleased();
+            this.OnEditorComparePointerReleased();
         }
 
-        private void onEditorComparePointerReleased()
+        private void OnEditorComparePointerReleased()
         {
             EditorCompareTop.IsChecked = false;
             EditorCompareBottom.IsChecked = false;
             if (EditorCanvas.Visibility == Visibility.Visible)
             {
                 cbm = CanvasBitmap.CreateFromBytes(EditorCanvas, lastDecodeResult.Bytes, lastDecodeResult.Width, lastDecodeResult.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
-                brush = new CanvasImageBrush(EditorCanvas, cbm);
-                brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
+                brush = new CanvasImageBrush(EditorCanvas, cbm)
+                {
+                    Interpolation = CanvasImageInterpolation.NearestNeighbor
+                };
                 EditorCanvas.Width = lastDecodeResult.Width;
                 EditorCanvas.Height = lastDecodeResult.Height;
                 EditorCanvas.Invalidate();
@@ -298,7 +303,7 @@ namespace Portable_Anymap_Viewer
                 {
                     lastDecodeResult = await decoder.decode(EditorHex.Bytes);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     var loader = new ResourceLoader();
                     var warningTilte = loader.GetString("DecodeFailureTitle");
@@ -312,8 +317,10 @@ namespace Portable_Anymap_Viewer
                 }
             }
             cbm = CanvasBitmap.CreateFromBytes(EditorCanvas, lastDecodeResult.Bytes, lastDecodeResult.Width, lastDecodeResult.Height, DirectXPixelFormat.B8G8R8A8UIntNormalized);
-            brush = new CanvasImageBrush(EditorCanvas, cbm);
-            brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;
+            brush = new CanvasImageBrush(EditorCanvas, cbm)
+            {
+                Interpolation = CanvasImageInterpolation.NearestNeighbor
+            };
             EditorCanvas.Width = lastDecodeResult.Width;
             EditorCanvas.Height = lastDecodeResult.Height;
 
@@ -345,7 +352,7 @@ namespace Portable_Anymap_Viewer
             
         //}
 
-        private async void onSaveCopyClick()
+        private async void OnSaveCopyClick()
         {
             EditorTopCommandBar.IsEnabled = false;
             EditorBottomCommandBar.IsEnabled = false;
@@ -372,9 +379,10 @@ namespace Portable_Anymap_Viewer
             EditorBottomCommandBar.IsEnabled = true;
             (Window.Current.Content as Frame).GoBack();
         }
+
         private void EditorSaveCopy_Click(object sender, RoutedEventArgs e)
         {
-            onSaveCopyClick();
+            OnSaveCopyClick();
         }
 
         private async void EditorSave_Click(object sender, RoutedEventArgs e)
@@ -405,9 +413,11 @@ namespace Portable_Anymap_Viewer
 
         private async void EditorSaveAs_Click(object sender, RoutedEventArgs e)
         {
-            var saveAsPicker = new FileSavePicker();
-            saveAsPicker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
-            saveAsPicker.SuggestedFileName = "New Anymap";
+            var saveAsPicker = new FileSavePicker()
+            {
+                SuggestedStartLocation = PickerLocationId.ComputerFolder,
+                SuggestedFileName = "New Anymap"
+            };
             saveAsPicker.FileTypeChoices.Add("Bitmap", new List<String>() { ".pbm"});
             saveAsPicker.FileTypeChoices.Add("Graymap", new List<String>() { ".pgm" });
             saveAsPicker.FileTypeChoices.Add("Pixmap", new List<String>() { ".ppm" });
@@ -430,20 +440,18 @@ namespace Portable_Anymap_Viewer
 
         private async void EditorCancel_Click(object sender, RoutedEventArgs e)
         {
-            //ExitPopup.IsOpen = !ExitPopup.IsOpen;
             if (this.IsNeedToSave())
             {
                 var loader = new ResourceLoader();
-                var warningTilte = loader.GetString("EditorExitTitle");
-                var warningMesage = loader.GetString("EditorExitMessage");
-                var yes = loader.GetString("Yes");
-                var no = loader.GetString("No");
-                MessageDialog goBackConfirmation = new MessageDialog(warningMesage, warningTilte);
-                goBackConfirmation.Commands.Add(new UICommand(yes));
-                goBackConfirmation.Commands.Add(new UICommand(no));
-                goBackConfirmation.DefaultCommandIndex = 1;
-                var selectedCommand = await goBackConfirmation.ShowAsync();
-                if (selectedCommand.Label == yes)
+                ContentDialog unsavedDialog = new ContentDialog()
+                {
+                    Title = loader.GetString("UnsavedDialogTitle"),
+                    Content = loader.GetString("UnsavedDialogContent"),
+                    CloseButtonText = loader.GetString("UnsavedDialogClose"),
+                    SecondaryButtonText = loader.GetString("UnsavedDialogSecondary"),
+                    DefaultButton = ContentDialogButton.Close
+                };
+                if (await unsavedDialog.ShowAsync() == ContentDialogResult.Secondary)
                 {
                     (Window.Current.Content as Frame).GoBack();
                 }
@@ -465,6 +473,8 @@ namespace Portable_Anymap_Viewer
         }
 
         private bool isCtrlPressed = false;
+        public bool isEscButtonBlocked = false;
+
         private void CoreWindow_KeyDown(CoreWindow sender, KeyEventArgs args)
         {
             switch (args.VirtualKey)
@@ -473,7 +483,10 @@ namespace Portable_Anymap_Viewer
                     this.isCtrlPressed = true;
                     break;
                 case VirtualKey.Escape:
-                    EditorCancel_Click(this, new RoutedEventArgs());
+                    if (!this.isEscButtonBlocked)
+                    {
+                        EditorCancel_Click(this, new RoutedEventArgs());
+                    }
                     break;
                 case VirtualKey.Insert:
                     this.EditorInputModeTop.IsChecked = !this.EditorInputModeTop.IsChecked;
@@ -483,7 +496,7 @@ namespace Portable_Anymap_Viewer
                 case VirtualKey.S:
                     if (this.isCtrlPressed)
                     {
-                        this.onSaveCopyClick();
+                        this.OnSaveCopyClick();
                     }
                     break;
             }
@@ -560,6 +573,24 @@ namespace Portable_Anymap_Viewer
             GC.Collect();
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (brush != null)
+                {
+                    brush.Dispose();
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+#region VirtualKeyboard
         private void Key0_Click(object sender, RoutedEventArgs e)
         {
             this.EditorHex.ReceiveKey(VirtualKey.Number0);
@@ -639,5 +670,6 @@ namespace Portable_Anymap_Viewer
         {
             this.EditorHex.ReceiveKey(VirtualKey.F);
         }
+#endregion VirtualKeyboard
     }
 }

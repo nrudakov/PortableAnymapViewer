@@ -22,13 +22,17 @@ using Microsoft.Graphics.Canvas.Brushes;
 using Microsoft.Graphics.Canvas.UI;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.ViewManagement;
+using Windows.Security.Cryptography;
 using Windows.Storage.Search;
 using Windows.System;
+using WinRTXamlToolkit.Controls.DataVisualization.Charting;
+using System.IO;
+using Windows.Security.Cryptography.Core;
 
 namespace Portable_Anymap_Viewer
 {
     /// <summary>
-    /// Displays anymap images in flipview gallery
+    /// Displays anymap images in FlipView gallery
     /// </summary>
     public sealed partial class ViewerPage : Page
     {
@@ -42,50 +46,51 @@ namespace Portable_Anymap_Viewer
         private List<DecodeResult> imagesInfo = new List<DecodeResult>();
         private AnymapDecoder anymapDecoder = new AnymapDecoder();
         private bool isLoadingCompleted = false;
-        
+
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             ApplicationView.GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode.UseCoreWindow);
             openFileParams = e.Parameter as OpenFileParams;
-            flipView.Visibility = Visibility.Collapsed;
+            FlipView.Visibility = Visibility.Collapsed;
             for (int i = 0; i < openFileParams.FileList.Count; ++i)
             {
                 CanvasWrapper wrapper = new CanvasWrapper();
-                flipView.Items.Add(wrapper);
+                FlipView.Items.Add(wrapper);
                 imagesInfo.Add(null);
                 switch (e.NavigationMode)
                 {
                     case NavigationMode.New:
                         if (openFileParams.ClickedFile != null && openFileParams.FileList[i].Name == openFileParams.ClickedFile.Filename)
                         {
-                            flipView.SelectedIndex = i;
+                            FlipView.SelectedIndex = i;
                             await this.LoadCanvas(i);
                         }
                         break;
                     case NavigationMode.Back:
                         if (openFileParams.FileList[i].Name == openFileParams.NavigateBackFilename)
                         {
-                            flipView.SelectedIndex = i;
+                            FlipView.SelectedIndex = i;
                             await this.LoadCanvas(i);
                         }
                         break;
+                    case NavigationMode.Refresh:
+                        break;
                 }
             }
-            if (imagesInfo[flipView.SelectedIndex] != null)
+            if (imagesInfo[FlipView.SelectedIndex] != null)
             {
-                ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
-                ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
+                this.UpdateInfo();
             }
             
-            flipView.Visibility = Visibility.Visible;
+            FlipView.Visibility = Visibility.Visible;
             DataTransferManager.GetForCurrentView().DataRequested += ViewerPage_DataRequested;
             isLoadingCompleted = true;   
         }
 
-        private async Task LoadCanvas(int pos)
+        private async Task LoadCanvas(int position)
         {
             // Skip other extensions
-            var file = openFileParams.FileList[pos];
+            var file = openFileParams.FileList[position];
             if (file.FileType != ".pbm" && file.FileType != ".pgm" && file.FileType != ".ppm")
             {
                 return;
@@ -93,7 +98,7 @@ namespace Portable_Anymap_Viewer
 
             // Skip corrupted formats
             DecodeResult result = await anymapDecoder.decode(file);
-            imagesInfo[pos] = result;
+            imagesInfo[position] = result;
             if (result.Bytes == null)
             {
                 return;
@@ -115,12 +120,14 @@ namespace Portable_Anymap_Viewer
                 }
             }
             // Create canvas
-            CanvasControl canvas = new CanvasControl();
-            canvas.Tag = result;
+            CanvasControl canvas = new CanvasControl()
+            {
+                Tag = result
+            };
             canvas.CreateResources += Img_CreateResources;
             canvas.Draw += Img_Draw;
 
-            var wrapper = (flipView.Items[pos] as CanvasWrapper);
+            var wrapper = (FlipView.Items[position] as CanvasWrapper);
             wrapper.SetImageInfo(result);
             wrapper.Margin = new Thickness(0, 0, 0, 0);
             wrapper.SetCanvas(canvas);
@@ -130,9 +137,11 @@ namespace Portable_Anymap_Viewer
         {
             var result = sender.Tag as DecodeResult;
             CanvasBitmap cbm = CanvasBitmap.CreateFromBytes(sender, result.Bytes, result.Width, result.Height, result.DoubleBytesPerColor ? DirectXPixelFormat.R16G16B16A16UIntNormalized : DirectXPixelFormat.B8G8R8A8UIntNormalized);
-            CanvasImageBrush brush = new CanvasImageBrush(sender, cbm);
-            brush.Interpolation = CanvasImageInterpolation.NearestNeighbor;                    
-            brush.Transform = Matrix3x2.CreateScale(result.CurrentZoom);
+            CanvasImageBrush brush = new CanvasImageBrush(sender, cbm)
+            {
+                Interpolation = CanvasImageInterpolation.NearestNeighbor,
+                Transform = Matrix3x2.CreateScale(result.CurrentZoom)
+            };
             sender.Width = result.Width * result.CurrentZoom;
             sender.Height = result.Height * result.CurrentZoom;
             sender.Tag = brush;
@@ -143,25 +152,24 @@ namespace Portable_Anymap_Viewer
             args.DrawingSession.FillRectangle(new Rect(new Point(), sender.Size), sender.Tag as CanvasImageBrush);
         }
 
-        private async void flipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void FlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (flipView.Visibility == Visibility.Visible &&
-                0 <= flipView.SelectedIndex &&
-                flipView.SelectedIndex < flipView.Items.Count)
+            if (FlipView.Visibility == Visibility.Visible &&
+                0 <= FlipView.SelectedIndex &&
+                FlipView.SelectedIndex < FlipView.Items.Count)
             {
-                if (!(flipView.SelectedItem as CanvasWrapper).IsCanvasSet)
+                if (!(FlipView.SelectedItem as CanvasWrapper).IsCanvasSet)
                 {
-                    await this.LoadCanvas(flipView.SelectedIndex);
+                    await this.LoadCanvas(FlipView.SelectedIndex);
                 }
-                if (imagesInfo[flipView.SelectedIndex] != null)
+                if (imagesInfo[FlipView.SelectedIndex] != null)
                 {
-                    ViewerFilenameTop.Text = imagesInfo[flipView.SelectedIndex].Filename;
-                    ViewerFilenameBottom.Text = imagesInfo[flipView.SelectedIndex].Filename;
+                    this.UpdateInfo();
                 }
             }
         }
 
-        private void flipView_Tapped(object sender, TappedRoutedEventArgs e)
+        private void FlipView_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (e.OriginalSource.GetType() == typeof(CanvasWrapper) ||
                 e.OriginalSource.GetType() == typeof(Image))
@@ -193,9 +201,28 @@ namespace Portable_Anymap_Viewer
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("ViewerPage flipView_Tapped: {0}", ex.Message);
+                    Debug.WriteLine("ViewerPage FlipView_Tapped: {0}", ex.Message);
                 }
             }
+        }
+
+        private void UpdateInfo()
+        {
+            ViewerFilenameTop.Text = imagesInfo[FlipView.SelectedIndex].Filename;
+            ViewerFilenameBottom.Text = imagesInfo[FlipView.SelectedIndex].Filename;
+            FilenameValue.Text = imagesInfo[FlipView.SelectedIndex].Filename;
+            WidthValue.Text = imagesInfo[FlipView.SelectedIndex].Width.ToString() + " px";
+            HeightValue.Text = imagesInfo[FlipView.SelectedIndex].Height.ToString() + " px";
+            DepthValue.Text = imagesInfo[FlipView.SelectedIndex].DoubleBytesPerColor ? "16 bit" : "8 bit";
+            Md5Value.Text = imagesInfo[FlipView.SelectedIndex].Md5;
+            Sha1Value.Text = imagesInfo[FlipView.SelectedIndex].Sha1;
+            //Sha256Value.Text = imagesInfo[FlipView.SelectedIndex].Sha256;
+            //Sha384Value.Text = imagesInfo[FlipView.SelectedIndex].Sha384;
+            //Sha512Value.Text = imagesInfo[FlipView.SelectedIndex].Sha512;
+            //Histogram.Title = "Histogram";
+            //HistogramPlotR.ItemsSource = imagesInfo[FlipView.SelectedIndex].HistogramValues[2];
+            //HistogramPlotG.ItemsSource = imagesInfo[FlipView.SelectedIndex].HistogramValues[1];
+            //HistogramPlotB.ItemsSource = imagesInfo[FlipView.SelectedIndex].HistogramValues[0];
         }
 
         private void ViewerShare_Click(object sender, RoutedEventArgs e)
@@ -205,50 +232,61 @@ namespace Portable_Anymap_Viewer
 
         private void ViewerEdit_Click(object sender, RoutedEventArgs e)
         {
-            openFileParams.NavigateBackFilename = openFileParams.FileList[flipView.SelectedIndex].Name;
-            EditFileParams editFileParams = new EditFileParams();
-            editFileParams.Bytes = imagesInfo[flipView.SelectedIndex].Bytes;
-            editFileParams.Width = imagesInfo[flipView.SelectedIndex].Width;
-            editFileParams.Height = imagesInfo[flipView.SelectedIndex].Height;
-            editFileParams.Type = imagesInfo[flipView.SelectedIndex].Type;
-            editFileParams.File = openFileParams.FileList[flipView.SelectedIndex];
-            editFileParams.SaveMode = EditFileSaveMode.Save | EditFileSaveMode.SaveAs | EditFileSaveMode.SaveCopy;
+            openFileParams.NavigateBackFilename = openFileParams.FileList[FlipView.SelectedIndex].Name;
+            EditFileParams editFileParams = new EditFileParams()
+            {
+                Bytes = imagesInfo[FlipView.SelectedIndex].Bytes,
+                Width = imagesInfo[FlipView.SelectedIndex].Width,
+                Height = imagesInfo[FlipView.SelectedIndex].Height,
+                Type = imagesInfo[FlipView.SelectedIndex].Type,
+                File = openFileParams.FileList[FlipView.SelectedIndex],
+                SaveMode = EditFileSaveMode.Save | EditFileSaveMode.SaveAs | EditFileSaveMode.SaveCopy
+            };
             Frame.Navigate(typeof(EditorPage), editFileParams);
         }
 
         private async void ViewerDelete_Click(object sender, RoutedEventArgs e)
         {
             var loader = new ResourceLoader();
-            var warningTilte = loader.GetString("DeleteFileTitle") + " " + openFileParams.FileList[flipView.SelectedIndex].Name;
-            var warningMesage = loader.GetString("DeleteFileWarning");
-            var yes = loader.GetString("Yes");
-            var no = loader.GetString("No");
-            MessageDialog deleteConfirmation = new MessageDialog(warningMesage, warningTilte);
-            deleteConfirmation.Commands.Add(new UICommand(yes));
-            deleteConfirmation.Commands.Add(new UICommand(no));
-            deleteConfirmation.DefaultCommandIndex = 1;
-
-            var selectedCommand = await deleteConfirmation.ShowAsync();
-
-            if (selectedCommand.Label == yes)
+            var stringWriter = new StringWriter();
+            stringWriter.Write(loader.GetString("DeleteDialogContent"), imagesInfo[FlipView.SelectedIndex].Filename);
+            ContentDialog deleteDialog = new ContentDialog()
             {
-                await openFileParams.FileList[flipView.SelectedIndex].DeleteAsync();
-                (flipView.SelectedItem as CanvasWrapper).RemoveCanvas();
-                flipView.Items.RemoveAt(flipView.SelectedIndex);
-                imagesInfo.RemoveAt(flipView.SelectedIndex);
-                List<string> fileTypeFilter = new List<string>();
-                fileTypeFilter.Add(".pbm");
-                fileTypeFilter.Add(".pgm");
-                fileTypeFilter.Add(".ppm");
-                QueryOptions queryOptions = new QueryOptions(CommonFileQuery.DefaultQuery, fileTypeFilter);
-                StorageFileQueryResult results = this.openFileParams.Folder.CreateFileQueryWithOptions(queryOptions);
-                openFileParams.FileList = await results.GetFilesAsync();
-            }            
+                Title = loader.GetString("DeleteDialogTitle"),
+                Content = stringWriter.ToString(),
+                CloseButtonText = loader.GetString("DeleteDialogClose"),
+                SecondaryButtonText = loader.GetString("DeleteDialogSecondary"),
+                DefaultButton = ContentDialogButton.Close
+            };
+            if (await deleteDialog.ShowAsync() == ContentDialogResult.Secondary)
+            {
+                await openFileParams.FileList[FlipView.SelectedIndex].DeleteAsync();
+                (FlipView.SelectedItem as CanvasWrapper).RemoveCanvas();
+                imagesInfo.RemoveAt(FlipView.SelectedIndex);
+                List<StorageFile> tempList = new List<StorageFile>();
+                foreach (var file in openFileParams.FileList)
+                {
+                    tempList.Add(file);
+                }
+                tempList.RemoveAt(FlipView.SelectedIndex);
+                FlipView.Items.RemoveAt(FlipView.SelectedIndex);
+                openFileParams.FileList = tempList;
+            }         
+        }
+
+        private void Properties_Click(object sender, RoutedEventArgs e)
+        {
+            PropertiesPane.IsPaneOpen = !PropertiesPane.IsPaneOpen;
         }
 
         private async void Rate_Click(object sender, RoutedEventArgs e)
         {
             await Launcher.LaunchUriAsync(new Uri(string.Format("ms-windows-store:REVIEW?PFN={0}", Windows.ApplicationModel.Package.Current.Id.FamilyName)));
+        }
+
+        private void Donate_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(DonatePage));
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
@@ -261,7 +299,7 @@ namespace Portable_Anymap_Viewer
             if (!string.IsNullOrEmpty(ViewerFilenameTop.Text))
             {
                 List<StorageFile> shareFiles = new List<StorageFile>();
-                shareFiles.Insert(0, openFileParams.FileList.ElementAt<StorageFile>(flipView.SelectedIndex));
+                shareFiles.Insert(0, openFileParams.FileList.ElementAt<StorageFile>(FlipView.SelectedIndex));
                 args.Request.Data.Properties.Title = ViewerFilenameTop.Text;
                 args.Request.Data.Properties.Description = "Portable Anymap Sharing";
                 args.Request.Data.SetStorageItems(shareFiles);
@@ -274,17 +312,17 @@ namespace Portable_Anymap_Viewer
 
         private void ViewerZoomReal_Click(object sender, RoutedEventArgs e)
         {
-            (flipView.SelectedItem as CanvasWrapper).ZoomReal();
+            (FlipView.SelectedItem as CanvasWrapper).ZoomReal();
         }
 
         private void ViewerZoomOut_Click(object sender, RoutedEventArgs e)
         {
-            (flipView.SelectedItem as CanvasWrapper).Zoom(0.8f);
+            (FlipView.SelectedItem as CanvasWrapper).Zoom(0.8f);
         }
 
         private void ViewerZoomIn_Click(object sender, RoutedEventArgs e)
         {
-            (flipView.SelectedItem as CanvasWrapper).Zoom(1.25f);
+            (FlipView.SelectedItem as CanvasWrapper).Zoom(1.25f);
         }
 
         private void ViewerGrid_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -292,34 +330,34 @@ namespace Portable_Anymap_Viewer
             switch (e.Key)
             {
                 case Windows.System.VirtualKey.Right:
-                    if (flipView.SelectedIndex + 1 < flipView.Items.Count)
+                    if (FlipView.SelectedIndex + 1 < FlipView.Items.Count)
                     {
-                        ++flipView.SelectedIndex;
+                        ++FlipView.SelectedIndex;
                     }
                     break;
                 case Windows.System.VirtualKey.Left:
-                    if (flipView.SelectedIndex > 0)
+                    if (FlipView.SelectedIndex > 0)
                     {
-                        --flipView.SelectedIndex;
+                        --FlipView.SelectedIndex;
                     }
                     break;
             }
         }
 
-        private void flipView_KeyDown(object sender, KeyRoutedEventArgs e)
+        private void FlipView_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             switch (e.Key)
             {
                 case Windows.System.VirtualKey.Right:
-                    if (flipView.SelectedIndex + 1 < flipView.Items.Count)
+                    if (FlipView.SelectedIndex + 1 < FlipView.Items.Count)
                     {
-                        ++flipView.SelectedIndex;
+                        ++FlipView.SelectedIndex;
                     }
                     break;
                 case Windows.System.VirtualKey.Left:
-                    if (flipView.SelectedIndex > 0)
+                    if (FlipView.SelectedIndex > 0)
                     {
-                        --flipView.SelectedIndex;
+                        --FlipView.SelectedIndex;
                     }
                     break;
             }
@@ -338,9 +376,9 @@ namespace Portable_Anymap_Viewer
             DataTransferManager.GetForCurrentView().DataRequested -= ViewerPage_DataRequested;
 
             ViewerGrid.KeyDown -= ViewerGrid_KeyDown;
-            flipView.KeyDown -= flipView_KeyDown;
-            flipView.Tapped -= flipView_Tapped;
-            flipView.SelectionChanged -= flipView_SelectionChanged;
+            FlipView.KeyDown -= FlipView_KeyDown;
+            FlipView.Tapped -= FlipView_Tapped;
+            FlipView.SelectionChanged -= FlipView_SelectionChanged;
             ViewerZoomReal.Click -= ViewerZoomReal_Click;
             ViewerZoomIn.Click -= ViewerZoomIn_Click;
             ViewerZoomOut.Click -= ViewerZoomOut_Click;
@@ -348,20 +386,28 @@ namespace Portable_Anymap_Viewer
             ViewerShareTop.Click -= ViewerShare_Click;
             ViewerEditTop.Click -= ViewerEdit_Click;
             ViewerDeleteTop.Click -= ViewerDelete_Click;
+            this.PropertiesTop.Click -= Properties_Click;
+            this.RateTop.Click -= Rate_Click;
+            this.DonateTop.Click -= Donate_Click;
+            this.AboutTop.Click -= About_Click;
 
             ViewerShareBottom.Click -= ViewerShare_Click;
             ViewerEditBottom.Click -= ViewerEdit_Click;
             ViewerDeleteBottom.Click -= ViewerDelete_Click;
+            this.PropertiesBottom.Click -= Properties_Click;
+            this.RateBottom.Click -= Rate_Click;
+            this.DonateBottom.Click -= Donate_Click;
+            this.AboutBottom.Click -= About_Click;
 
             this.MobileTrigger.Detach();
             this.DesktopTrigger.Detach();
 
-            foreach (CanvasWrapper wrapper in this.flipView.Items)
+            foreach (CanvasWrapper wrapper in this.FlipView.Items)
             {
                 wrapper.RemoveCanvas();
             }
 
-            flipView.Items.Clear();
+            FlipView.Items.Clear();
             imagesInfo.Clear();
             GC.Collect();
         }

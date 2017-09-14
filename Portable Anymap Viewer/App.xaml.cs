@@ -2,32 +2,18 @@
 using Portable_Anymap_Viewer.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.ApplicationModel.DataTransfer.ShareTarget;
 using Windows.ApplicationModel.Resources;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Globalization;
 using Windows.Storage;
-using Windows.Storage.AccessCache;
-using Windows.Storage.FileProperties;
-using Windows.Storage.Pickers;
-using Windows.Storage.Search;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace Portable_Anymap_Viewer
@@ -111,8 +97,10 @@ namespace Portable_Anymap_Viewer
             Frame rootFrame = Window.Current.Content as Frame;
             if (rootFrame == null)
             {
-                rootFrame = new Frame();
-                rootFrame.Language = ApplicationLanguages.Languages[0];
+                rootFrame = new Frame()
+                {
+                    Language = ApplicationLanguages.Languages[0]
+                };
                 rootFrame.NavigationFailed += OnNavigationFailed;
                 Window.Current.Content = rootFrame;
             }
@@ -160,30 +148,35 @@ namespace Portable_Anymap_Viewer
                 Window.Current.Content = rootFrame;
                 Window.Current.Activate();
             }
-            //switch (args.)
-            IReadOnlyList<StorageFile> FileList = await args.NeighboringFilesQuery.GetFilesAsync();
-            //foreach (StorageFile file in FileList)
-            //{
-            //    MessageDialog dlg = new MessageDialog(file.Name);
-            //    await dlg.ShowAsync();
-            //}
-
-            ExplorerItem item = new ExplorerItem();
+            List<StorageFile> filteredFileList = new List<StorageFile>();
+            foreach (StorageFile file in await args.NeighboringFilesQuery.GetFilesAsync())
+            {
+                if (file.FileType == ".pbm" ||
+                    file.FileType == ".pgm" ||
+                    file.FileType == ".ppm")
+                {
+                    filteredFileList.Add(file);
+                }
+            }
             //StorageItemThumbnail thumbnail = await openFileParams.FileList.ElementAt<StorageFile>(0).GetThumbnailAsync(ThumbnailMode.SingleItem);
             //BitmapImage thumbnailBitmap = new BitmapImage();
             //thumbnailBitmap.SetSource(thumbnail);
-            item.Thumbnail = null;
-            item.Filename = (args.Files.First<IStorageItem>() as StorageFile).Name;
-            item.Type = (args.Files.First<IStorageItem>() as StorageFile).FileType;
-            item.DisplayName = (args.Files.First<IStorageItem>() as StorageFile).DisplayName;
-            item.DisplayType = (args.Files.First<IStorageItem>() as StorageFile).DisplayType;
-            item.Path = (args.Files.First<IStorageItem>() as StorageFile).Path;
-            item.Token = "";
-
-            OpenFileParams openFileParams = new OpenFileParams();
-            openFileParams.ClickedFile = item;
-            openFileParams.FileList = FileList;
-
+            ExplorerItem item = new ExplorerItem()
+            {
+                Thumbnail = null,
+                Filename = (args.Files.First<IStorageItem>() as StorageFile).Name,
+                Type = (args.Files.First<IStorageItem>() as StorageFile).FileType,
+                DisplayName = (args.Files.First<IStorageItem>() as StorageFile).DisplayName,
+                DisplayType = (args.Files.First<IStorageItem>() as StorageFile).DisplayType,
+                Path = (args.Files.First<IStorageItem>() as StorageFile).Path,
+                Token = ""
+            };
+            OpenFileParams openFileParams = new OpenFileParams()
+            {
+                ClickedFile = item,
+                FileList = filteredFileList,
+                Folder = await (args.Files.First<IStorageItem>() as StorageFile).GetParentAsync()
+            };
             rootFrame.Navigate(typeof(ViewerPage), openFileParams);
             Window.Current.Content = rootFrame;
             Window.Current.Activate();
@@ -208,22 +201,27 @@ namespace Portable_Anymap_Viewer
             {
                 if (rootFrame.Content.GetType() == typeof(EditorPage))
                 {
-                    if ((rootFrame.Content as EditorPage).IsNeedToSave())
+                    var editorPage = rootFrame.Content as EditorPage;
+                    if (editorPage.IsNeedToSave())
                     {
                         e.Handled = true;
+                        editorPage.isEscButtonBlocked = true;
                         var loader = new ResourceLoader();
-                        var warningTilte = loader.GetString("EditorExitTitle");
-                        var warningMesage = loader.GetString("EditorExitMessage");
-                        var yes = loader.GetString("Yes");
-                        var no = loader.GetString("No");
-                        MessageDialog goBackConfirmation = new MessageDialog(warningMesage, warningTilte);
-                        goBackConfirmation.Commands.Add(new UICommand(yes));
-                        goBackConfirmation.Commands.Add(new UICommand(no));
-                        goBackConfirmation.DefaultCommandIndex = 1;
-                        var selectedCommand = await goBackConfirmation.ShowAsync();
-                        if (selectedCommand.Label == yes)
+                        ContentDialog saveDialog = new ContentDialog()
+                        {
+                            Title = loader.GetString("UnsavedDialogTitle"),
+                            Content = loader.GetString("UnsavedDialogContent"),
+                            CloseButtonText = loader.GetString("UnsavedDialogClose"),
+                            SecondaryButtonText = loader.GetString("UnsavedDialogSecondary"),
+                            DefaultButton = ContentDialogButton.Close
+                        };
+                        if (await saveDialog.ShowAsync() == ContentDialogResult.Secondary)
                         {
                             rootFrame.GoBack();
+                        }
+                        else
+                        {
+                            editorPage.isEscButtonBlocked = false;
                         }
                     }
                     else
@@ -271,8 +269,10 @@ namespace Portable_Anymap_Viewer
             {
                 IReadOnlyList<IStorageItem> fileList = await args.ShareOperation.Data.GetStorageItemsAsync();
                 StorageFile file = fileList.First() as StorageFile;
-                List<StorageFile> ff = new List<StorageFile>();
-                ff.Add(file);
+                List<StorageFile> ff = new List<StorageFile>
+                {
+                    file
+                };
                 rootFrame.Navigate(typeof(ConverterPage), ff);
             }
             else

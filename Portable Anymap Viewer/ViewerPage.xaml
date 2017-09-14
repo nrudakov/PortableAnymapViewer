@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    xmlns:charting="using:WinRTXamlToolkit.Controls.DataVisualization.Charting"
     xmlns:triggers="using:Portable_Anymap_Viewer.Triggers"
     mc:Ignorable="d"
     Unloaded="Page_Unloaded">
@@ -37,27 +38,133 @@
         </VisualStateManager.VisualStateGroups>
 
         <Grid>
-            <FlipView x:Name="flipView"  Margin="0" SelectionChanged="flipView_SelectionChanged" Tapped="flipView_Tapped" KeyDown="flipView_KeyDown" />
-            <StackPanel x:Name="ViewerZoomStack" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 50, 50" Height="50" Width="Auto" Visibility="Collapsed">
-                <StackPanel.Background>
-                    <SolidColorBrush Color="Black" Opacity="0.2"/>
-                </StackPanel.Background>
-                <AppBarButton x:Name="ViewerZoomReal" Click="ViewerZoomReal_Click">
-                    <AppBarButton.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71E;"/>
-                    </AppBarButton.Icon>
-                </AppBarButton>
-                <AppBarButton x:Name="ViewerZoomOut" Click="ViewerZoomOut_Click">
-                    <AppBarButton.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71F;"/>
-                    </AppBarButton.Icon>
-                </AppBarButton>
-                <AppBarButton x:Name="ViewerZoomIn" Click="ViewerZoomIn_Click">
-                    <AppBarButton.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8A3;"/>
-                    </AppBarButton.Icon>
-                </AppBarButton>
-            </StackPanel>
+            <SplitView x:Name="PropertiesPane" IsPaneOpen="False" PanePlacement="Right" DisplayMode="Inline" OpenPaneLength="400">
+                <SplitView.Pane>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <!--<RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>-->
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="FilenameHeader" x:Uid="TxtFilenameHeader" Grid.Row="1" Grid.Column="0" Margin="0,0,5,0"/>
+                        <TextBlock x:Name="WidthHeader" x:Uid="TxtWidthHeader" Grid.Row="2" Grid.Column="0" Margin="0,0,5,0"/>
+                        <TextBlock x:Name="HeightHeader" x:Uid="TxtHeightHeader" Grid.Row="3" Grid.Column="0" Margin="0,0,5,0"/>
+                        <TextBlock x:Name="DepthHeader" x:Uid="TxtDepthHeader" Grid.Row="4" Grid.Column="0" Margin="0,0,5,0"/>
+                        <TextBlock x:Name="Md5Header" x:Uid="TxtMd5Header" Grid.Row="5" Grid.Column="0" Margin="0,0,5,0"/>
+                        <TextBlock x:Name="Sha1Header" x:Uid="TxtSha1Header" Grid.Row="6" Grid.Column="0" Margin="0,0,5,0"/>
+                        <!--<TextBlock x:Name="Sha256Header" x:Uid="TxtSha256Header" Grid.Row="7" Grid.Column="0" Margin="0,0,5,0"/>
+                        <TextBlock x:Name="Sha384Header" x:Uid="TxtSha384Header" Grid.Row="8" Grid.Column="0" Margin="0,0,5,0"/>
+                        <TextBlock x:Name="Sha512Header" x:Uid="TxtSha512Header" Grid.Row="9" Grid.Column="0" Margin="0,0,5,0"/>-->
+                        <TextBlock x:Name="FilenameValue" Grid.Row="1" Grid.Column="1"/>
+                        <TextBlock x:Name="WidthValue" Grid.Row="2" Grid.Column="1"/>
+                        <TextBlock x:Name="HeightValue" Grid.Row="3" Grid.Column="1"/>
+                        <TextBlock x:Name="DepthValue" Grid.Row="4" Grid.Column="1"/>
+                        <TextBlock x:Name="Md5Value" Grid.Row="5" Grid.Column="1"/>
+                        <TextBlock x:Name="Sha1Value" Grid.Row="6" Grid.Column="1"/>
+                        <!--<TextBlock x:Name="Sha256Value" Grid.Row="7" Grid.Column="1"/>
+                        <TextBlock x:Name="Sha384Value" Grid.Row="8" Grid.Column="1"/>
+                        <TextBlock x:Name="Sha512Value" Grid.Row="9" Grid.Column="1"/>-->
+                        <!--<charting:AreaDataPoint >
+                            
+                        </charting:AreaDataPoint>
+                        <charting:Chart x:Name="Histogram" Title="Histogram" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Height="600">
+                            <charting:AreaSeries x:Name="HistogramPlotR" 
+                                                 IndependentValuePath="Brightness"
+                                                 DependentValuePath="Level">
+                                <charting:AreaSeries.DataPointStyle>
+                                    <Style TargetType="charting:AreaDataPoint">
+                                        <Setter Property="BorderThickness" Value="0" />        
+                                        <Setter Property="IsTabStop" Value="False" />
+                                        <Setter Property="Width" Value="0" />
+                                        <Setter Property="Height" Value="0" />
+                                        <Setter Property="Background" Value="Red"/>
+                                    </Style>
+                                </charting:AreaSeries.DataPointStyle>
+                                <charting:AreaSeries.LegendItemStyle>
+                                    <Style TargetType="charting:LegendItem">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Style>
+                                </charting:AreaSeries.LegendItemStyle>
+                            </charting:AreaSeries>
+
+                            <charting:AreaSeries x:Name="HistogramPlotG" 
+                                                 IndependentValuePath="Brightness"
+                                                 DependentValuePath="Level">
+                                <charting:AreaSeries.DataPointStyle>
+                                    <Style TargetType="charting:AreaDataPoint">
+                                        <Setter Property="BorderThickness" Value="0" />
+                                        <Setter Property="IsTabStop" Value="False" />
+                                        <Setter Property="Width" Value="0" />
+                                        <Setter Property="Height" Value="0" />
+                                        <Setter Property="Background" Value="Green"/>
+                                    </Style>
+                                </charting:AreaSeries.DataPointStyle>
+                                <charting:AreaSeries.LegendItemStyle>
+                                    <Style TargetType="charting:LegendItem">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Style>
+                                </charting:AreaSeries.LegendItemStyle>
+                            </charting:AreaSeries>
+                            
+                            <charting:AreaSeries x:Name="HistogramPlotB" 
+                                                 IndependentValuePath="Brightness"
+                                                 DependentValuePath="Level"
+                                                 >
+                                <charting:AreaSeries.DataPointStyle>
+                                    <Style TargetType="charting:AreaDataPoint">
+                                        <Setter Property="BorderThickness" Value="0" />
+                                        <Setter Property="IsTabStop" Value="False" />
+                                        <Setter Property="Width" Value="0" />
+                                        <Setter Property="Height" Value="0" />
+                                        <Setter Property="Background" Value="Blue"/>
+                                    </Style>
+                                </charting:AreaSeries.DataPointStyle>
+                                <charting:AreaSeries.LegendItemStyle>
+                                    <Style TargetType="charting:LegendItem">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Style>
+                                </charting:AreaSeries.LegendItemStyle>
+                            </charting:AreaSeries>
+                        </charting:Chart>-->
+                    </Grid>
+                </SplitView.Pane>
+                <SplitView.Content>
+                    <Grid>
+                        <FlipView x:Name="FlipView"  Margin="0" SelectionChanged="FlipView_SelectionChanged" Tapped="FlipView_Tapped" KeyDown="FlipView_KeyDown" />
+                        <StackPanel x:Name="ViewerZoomStack" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 50, 50" Height="50" Width="Auto" Visibility="Collapsed">
+                            <StackPanel.Background>
+                                <SolidColorBrush Color="Black" Opacity="0.2"/>
+                            </StackPanel.Background>
+                            <AppBarButton x:Name="ViewerZoomReal" Click="ViewerZoomReal_Click">
+                                <AppBarButton.Icon>
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71E;"/>
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+                            <AppBarButton x:Name="ViewerZoomOut" Click="ViewerZoomOut_Click">
+                                <AppBarButton.Icon>
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE71F;"/>
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+                            <AppBarButton x:Name="ViewerZoomIn" Click="ViewerZoomIn_Click">
+                                <AppBarButton.Icon>
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8A3;"/>
+                                </AppBarButton.Icon>
+                            </AppBarButton>
+                        </StackPanel>
+                    </Grid>
+                </SplitView.Content>
+            </SplitView>
         </Grid>
     </Grid>
 
@@ -69,16 +176,22 @@
             <CommandBar.Content>
                 <TextBlock x:Name="ViewerFilenameTop"/>
             </CommandBar.Content>
-            <AppBarButton x:Name="ViewerShareTop" x:Uid="ViewerShare" Label="Share" Click="ViewerShare_Click">
+            <AppBarButton x:Name="ViewerShareTop" x:Uid="AppBarBtnShare" Click="ViewerShare_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72D;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="ViewerEditTop" x:Uid="ViewerEdit" Icon="Edit" Label="Edit" Click="ViewerEdit_Click"/>
-            <AppBarButton x:Name="ViewerDeleteTop" x:Uid="ViewerDelete" Icon="Delete" Label="Delete" Click="ViewerDelete_Click"/>
+            <AppBarButton x:Name="ViewerEditTop" x:Uid="AppBarBtnEdit" Icon="Edit" Click="ViewerEdit_Click"/>
+            <AppBarButton x:Name="ViewerDeleteTop" x:Uid="AppBarBtnDelete" Icon="Delete" Click="ViewerDelete_Click"/>
+            <AppBarButton x:Name="PropertiesTop" x:Uid="AppBarBtnProperties" Click="Properties_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE783;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="RateTop" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
-                <AppBarButton x:Name="AboutTop" x:Uid="MainAbout" Label="About" Click="About_Click"/>
+                <AppBarButton x:Name="RateTop" x:Uid="AppBarBtnRate" Click="Rate_Click"/>
+                <AppBarButton x:Name="DonateTop" x:Uid="AppBarBtnDonate" Click="Donate_Click"/>
+                <AppBarButton x:Name="AboutTop" x:Uid="AppBarBtnAbout" Click="About_Click"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.TopAppBar>
@@ -90,16 +203,22 @@
             <CommandBar.Content>
                 <TextBlock x:Name="ViewerFilenameBottom"/>
             </CommandBar.Content>
-            <AppBarButton x:Name="ViewerShareBottom" x:Uid="ViewerShare" Label="Share" Click="ViewerShare_Click">
+            <AppBarButton x:Name="ViewerShareBottom" x:Uid="AppBarBtnShare" Label="Share" Click="ViewerShare_Click">
                 <AppBarButton.Icon>
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72D;"/>
                 </AppBarButton.Icon>
             </AppBarButton>
-            <AppBarButton x:Name="ViewerEditBottom" x:Uid="ViewerEdit" Icon="Edit" Label="Edit" Click="ViewerEdit_Click"/>
-            <AppBarButton x:Name="ViewerDeleteBottom" x:Uid="ViewerDelete" Icon="Delete" Label="Delete" Click="ViewerDelete_Click"/>
+            <AppBarButton x:Name="ViewerEditBottom" x:Uid="AppBarBtnEdit" Icon="Edit" Label="Edit" Click="ViewerEdit_Click"/>
+            <AppBarButton x:Name="ViewerDeleteBottom" x:Uid="AppBarBtnDelete" Icon="Delete" Label="Delete" Click="ViewerDelete_Click"/>
+            <AppBarButton x:Name="PropertiesBottom" x:Uid="AppBarBtnProperties" Label="Properties" Click="Properties_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE783;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="RateBottom" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
-                <AppBarButton x:Name="AboutBottom" x:Uid="MainAbout" Label="About" Click="About_Click"/>
+                <AppBarButton x:Name="RateBottom" x:Uid="AppBarBtnRate" Click="Rate_Click"/>
+                <AppBarButton x:Name="DonateBottom" x:Uid="AppBarBtnDonate" Click="Donate_Click"/>
+                <AppBarButton x:Name="AboutBottom" x:Uid="AppBarBtnAbout" Click="About_Click"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

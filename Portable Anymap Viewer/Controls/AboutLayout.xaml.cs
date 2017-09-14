@@ -10,7 +10,6 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.Services.Store;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -34,7 +33,6 @@ namespace Portable_Anymap_Viewer.Controls
             PackageId packageId = package.Id;
             PackageVersion version = packageId.Version;
 
-
             BitmapImage bitmap = new BitmapImage();
             bitmap.UriSource = package.Logo;
             this.AboutLogo.Width = bitmap.DecodePixelWidth = 50;
@@ -47,48 +45,9 @@ namespace Portable_Anymap_Viewer.Controls
             this.AboutInstalledDate.Text = package.InstalledDate.ToString();
             this.AboutInstalledLocation.Text = package.InstalledLocation.Path;
             this.AboutPublisher.Text = package.PublisherDisplayName;
-
-            this.LoadStoreItems();
-           
         }
 
-        private StoreContext storeContext = StoreContext.GetDefault();
-
-        public async void LoadStoreItems()
-        {
-            // Create a filtered list of the product AddOns I care about
-            string[] filterList = new string[] { "Consumable", "Durable", "UnmanagedConsumable" };
-
-            // Get list of Add Ons this app can sell, filtering for the types we know about
-            StoreProductQueryResult addOns = await storeContext.GetAssociatedStoreProductsAsync(filterList);
-
-            ProductsListView.ItemsSource = await CreateProductListFromQueryResult(addOns, "Add-Ons");
-        }
-
-        public async Task<ObservableCollection<ItemDetails>> CreateProductListFromQueryResult(StoreProductQueryResult addOns, string description)
-        {
-            var productList = new ObservableCollection<ItemDetails>();
-
-            if (addOns.ExtendedError != null)
-            {
-                var loader = new ResourceLoader();
-                var warningTitle = loader.GetString("StoreFailureTitle");
-                var ok = loader.GetString("Ok");
-                MessageDialog decodeFailedDialog = new MessageDialog(addOns.ExtendedError.Message, warningTitle);
-                decodeFailedDialog.Commands.Add(new UICommand(ok));
-                decodeFailedDialog.DefaultCommandIndex = 0;
-                await decodeFailedDialog.ShowAsync();
-            }
-            else
-            {
-                foreach (StoreProduct product in addOns.Products.Values)
-                {
-                    productList.Add(new ItemDetails(product));
-                }
-            }
-            this.Purchase.Visibility = Visibility.Visible;
-            return productList;
-        }
+        
 
         private async void AboutBug_Click(object sender, RoutedEventArgs e)
         {
@@ -106,39 +65,6 @@ namespace Portable_Anymap_Viewer.Controls
         {
             this.AboutBug.Click -= this.AboutBug_Click;
             this.AboutFeedback.Click -= this.AboutFeedback_Click;
-        }
-
-        private async void Purchase_Click(object sender, RoutedEventArgs e)
-        {
-            var item = (ItemDetails)ProductsListView.SelectedItem;
-            StorePurchaseResult result = await storeContext.RequestPurchaseAsync(item.StoreId);
-
-            switch (result.Status)
-            {
-                case StorePurchaseStatus.AlreadyPurchased:
-                    Result.Text = "You already bought this AddOn.";
-                    break;
-
-                case StorePurchaseStatus.Succeeded:
-                    Result.Text = "You bought {item.Title}.";
-                    break;
-
-                case StorePurchaseStatus.NotPurchased:
-                    Result.Text = "Product was not purchased, it may have been canceled.";
-                    break;
-
-                case StorePurchaseStatus.NetworkError:
-                    Result.Text = "Product was not purchased due to a network error.";
-                    break;
-
-                case StorePurchaseStatus.ServerError:
-                    Result.Text = "Product was not purchased due to a server error.";
-                    break;
-
-                default:
-                    Result.Text = "Product was not purchased due to an unknown error.";
-                    break;
-            }
         }
     }
 }

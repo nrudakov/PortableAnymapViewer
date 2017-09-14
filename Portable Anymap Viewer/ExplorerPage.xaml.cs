@@ -2,12 +2,10 @@
 using Portable_Anymap_Viewer.Models;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.Storage.FileProperties;
 using Windows.Storage.Search;
-using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -45,10 +43,12 @@ namespace Portable_Anymap_Viewer
 
             IReadOnlyList<StorageFolder> folderList = await this.currentStorageFolder.GetFoldersAsync();
 
-            List<string> fileTypeFilter = new List<string>();
-            fileTypeFilter.Add(".pbm");
-            fileTypeFilter.Add(".pgm");
-            fileTypeFilter.Add(".ppm");
+            List<string> fileTypeFilter = new List<string>
+            {
+                ".pbm",
+                ".pgm",
+                ".ppm"
+            };
             QueryOptions queryOptions = new QueryOptions(CommonFileQuery.DefaultQuery, fileTypeFilter);
             StorageFileQueryResult results = this.currentStorageFolder.CreateFileQueryWithOptions(queryOptions);
             this.FileList = await results.GetFilesAsync();
@@ -60,14 +60,16 @@ namespace Portable_Anymap_Viewer
                 BitmapImage thumbnailBitmap = new BitmapImage();
                 thumbnailBitmap.SetSource(thumbnail);
 
-                ExplorerItem explorerItem = new ExplorerItem();
-                explorerItem.Thumbnail = thumbnailBitmap;
-                explorerItem.Filename = storageFolder.Name;
-                explorerItem.Type = "Folder";
-                explorerItem.DisplayName = storageFolder.DisplayName;
-                explorerItem.DisplayType = storageFolder.DisplayType;
-                explorerItem.Path = storageFolder.Path;
-                explorerItem.Token = "";
+                ExplorerItem explorerItem = new ExplorerItem()
+                {
+                    Thumbnail = thumbnailBitmap,
+                    Filename = storageFolder.Name,
+                    Type = "Folder",
+                    DisplayName = storageFolder.DisplayName,
+                    DisplayType = storageFolder.DisplayType,
+                    Path = storageFolder.Path,
+                    Token = ""
+                };
                 this.ExplorerItemList.Items.Add(explorerItem);
             }
 
@@ -77,14 +79,16 @@ namespace Portable_Anymap_Viewer
                 BitmapImage thumbnailBitmap = new BitmapImage();
                 thumbnailBitmap.SetSource(thumbnail);
 
-                ExplorerItem explorerItem = new ExplorerItem();
-                explorerItem.Thumbnail = thumbnailBitmap;
-                explorerItem.Filename = file.Name;
-                explorerItem.Type = file.FileType;
-                explorerItem.DisplayName = file.DisplayName;
-                explorerItem.DisplayType = file.DisplayType;
-                explorerItem.Path = file.Path;
-                explorerItem.Token = "";
+                ExplorerItem explorerItem = new ExplorerItem()
+                {
+                    Thumbnail = thumbnailBitmap,
+                    Filename = file.Name,
+                    Type = file.FileType,
+                    DisplayName = file.DisplayName,
+                    DisplayType = file.DisplayType,
+                    Path = file.Path,
+                    Token = ""
+                };
                 this.ExplorerItemList.Items.Add(explorerItem);
             }
         }
@@ -114,10 +118,12 @@ namespace Portable_Anymap_Viewer
                 }
                 else
                 {
-                    OpenFileParams openFileParams = new OpenFileParams();
-                    openFileParams.ClickedFile = explorerItem;
-                    openFileParams.Folder = this.currentStorageFolder;
-                    openFileParams.FileList = FileList;
+                    OpenFileParams openFileParams = new OpenFileParams()
+                    {
+                        ClickedFile = explorerItem,
+                        Folder = this.currentStorageFolder,
+                        FileList = FileList
+                    };
                     Frame.Navigate(typeof(ViewerPage), openFileParams);
                 }
             }
@@ -204,7 +210,7 @@ namespace Portable_Anymap_Viewer
                     await this.currentStorageFolder.CreateFolderAsync(this.CreateFolderPopupName.Text, (CreationCollisionOption)FoldernameCollisionCombo.SelectedIndex);
                     
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -224,15 +230,19 @@ namespace Portable_Anymap_Viewer
                     newFile = await this.currentStorageFolder.CreateFileAsync(this.CreateFilePopupName.Text + newFileExtension, (CreationCollisionOption)FilenameCollisionCombo.SelectedIndex);
                     await FileIO.WriteBytesAsync(newFile, new Byte[4] { 0x50, type, 0x0D, 0x0A });
                     this.GetItemsInCurentFolder();
-                    this.CreateFilePopup.IsOpen = false;                   
-                    EditFileParams editParams = new EditFileParams();
-                    editParams.Type = type - 0x30;
-                    editParams.Width = editParams.Height = 0;
-                    editParams.File = newFile;
-                    editParams.SaveMode = EditFileSaveMode.Save;
+                    this.CreateFilePopup.IsOpen = false;
+                    EditFileParams editParams = new EditFileParams()
+                    {
+                        Type = type - 0x30,
+                        Width = 0,
+                        Height = 0,
+                        File = newFile,
+                        SaveMode = EditFileSaveMode.Save
+
+                    };
                     this.Frame.Navigate(typeof(EditorPage), editParams);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -246,13 +256,17 @@ namespace Portable_Anymap_Viewer
             {
                 var loader = new ResourceLoader();
                 var str = loader.GetString("CancelSelection");
+                // Top
                 this.CreateFileTop.Visibility = Visibility.Collapsed;
                 this.CreateFolderTop.Visibility = Visibility.Collapsed;
+                this.ConvertTop.Visibility = Visibility.Visible;
                 this.DeleteTop.Visibility = Visibility.Visible;
                 this.SelectTop.Icon = new SymbolIcon(Symbol.List);
                 this.SelectTop.Label = str;
+                // Bottom
                 this.CreateFileBottom.Visibility = Visibility.Collapsed;
                 this.CreateFolderBottom.Visibility = Visibility.Collapsed;
+                this.ConvertBottom.Visibility = Visibility.Visible;
                 this.DeleteBottom.Visibility = Visibility.Visible;
                 this.SelectBottom.Icon = new SymbolIcon(Symbol.List);
                 this.SelectBottom.Label = str;
@@ -262,13 +276,17 @@ namespace Portable_Anymap_Viewer
             {
                 var loader = new ResourceLoader();
                 var str = loader.GetString("Select");
+                // Top
                 this.CreateFileTop.Visibility = Visibility.Visible;
                 this.CreateFolderTop.Visibility = Visibility.Visible;
+                this.ConvertTop.Visibility = Visibility.Collapsed;
                 this.DeleteTop.Visibility = Visibility.Collapsed;
                 this.SelectTop.Icon = new SymbolIcon(Symbol.Bullets);
                 this.SelectTop.Label = str;
+                // Bottom
                 this.CreateFileBottom.Visibility = Visibility.Visible;
                 this.CreateFolderBottom.Visibility = Visibility.Visible;
+                this.ConvertBottom.Visibility = Visibility.Collapsed;
                 this.DeleteBottom.Visibility = Visibility.Collapsed;
                 this.SelectBottom.Icon = new SymbolIcon(Symbol.Bullets);
                 this.SelectBottom.Label = str;
@@ -279,6 +297,11 @@ namespace Portable_Anymap_Viewer
         private async void Rate_Click(object sender, RoutedEventArgs e)
         {
             await Launcher.LaunchUriAsync(new Uri(string.Format("ms-windows-store:REVIEW?PFN={0}", Windows.ApplicationModel.Package.Current.Id.FamilyName)));
+        }
+
+        private void Donate_Click(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(DonatePage));
         }
 
         private void About_Click(object sender, RoutedEventArgs e)
@@ -297,16 +320,20 @@ namespace Portable_Anymap_Viewer
 
             this.CreateFileTop.Click -= this.CreateFile_Click;
             this.CreateFolderTop.Click -= this.CreateFolder_Click;
+            this.ConvertTop.Click -= this.Convert_Click;
             this.DeleteTop.Click -= this.Delete_Click;
             this.SelectTop.Click -= this.Select_Click;
             this.RateTop.Click -= this.Rate_Click;
+            this.DonateTop.Click -= this.Donate_Click;
             this.AboutTop.Click -= this.About_Click;
 
             this.CreateFileBottom.Click -= this.CreateFile_Click;
             this.CreateFolderBottom.Click -= this.CreateFolder_Click;
+            this.ConvertBottom.Click -= this.Convert_Click;
             this.DeleteBottom.Click -= this.Delete_Click;
             this.SelectBottom.Click -= this.Select_Click;
             this.RateBottom.Click -= this.Rate_Click;
+            this.DonateBottom.Click -= this.Donate_Click;
             this.AboutBottom.Click -= this.About_Click;
 
             this.MobileTrigger.Detach();
@@ -314,6 +341,11 @@ namespace Portable_Anymap_Viewer
 
             this.ExplorerItemList.Items.Clear();
             GC.Collect();
+        }
+
+        private void Convert_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

@@ -49,30 +49,30 @@
                       Grid.Row="1"/>
             <Popup x:Name="CreateFolderPopup" IsOpen="False" HorizontalAlignment="Right" HorizontalOffset="-300" VerticalOffset="60">
                 <StackPanel BorderBrush="{ThemeResource SystemAccentColor}" BorderThickness="1" Background="Black" Padding="5">
-                    <TextBox x:Name="CreateFolderPopupName" x:Uid="CreateFolderPopupName" Header="Foldername" Margin="0,0,0,10"/>
-                    <ComboBox x:Name="FoldernameCollisionCombo" x:Uid="ConverterNameCollisionCombo" Header="Name Collision Issue" Width="205" Margin="0,0,0,10">
-                        <ComboBoxItem x:Uid="ConverterUniqueComboItem" Content="Generate Unique Name" IsSelected="True"/>
-                        <ComboBoxItem x:Uid="ConverterReplaceComboItem" Content="Replace Existing"/>
-                        <ComboBoxItem x:Uid="ConverterSkipComboItem" Content="Skip"/>
+                    <TextBox x:Name="CreateFolderPopupName" x:Uid="TxtCreateFolderName" Margin="0,0,0,10"/>
+                    <ComboBox x:Name="FoldernameCollisionCombo" x:Uid="CmbNameCollision" Width="205" Margin="0,0,0,10">
+                        <ComboBoxItem x:Uid="CmbItmUnique" IsSelected="True"/>
+                        <ComboBoxItem x:Uid="CmbItmReplace"/>
+                        <ComboBoxItem x:Uid="CmbItmSkip"/>
                     </ComboBox>
-                    <Button x:Name="CreateFolderPopupButton" x:Uid="Create" Content="Create" HorizontalAlignment="Right" Click="CreateFolderPopupButton_Click"/>
+                    <Button x:Name="CreateFolderPopupButton" x:Uid="BtnCreate" HorizontalAlignment="Right" Click="CreateFolderPopupButton_Click"/>
                 </StackPanel>
             </Popup>
         <Popup x:Name="CreateFilePopup" IsOpen="False" HorizontalAlignment="Right" HorizontalOffset="-300" VerticalOffset="60">
             <StackPanel BorderBrush="{ThemeResource SystemAccentColor}" BorderThickness="1" Background="Black" Padding="5">
-                <ComboBox x:Name="FileTypeCombo" x:Uid="ConverterFileTypeCombo" Header="Format" Width="110" Margin="0,0,0,10" SelectionChanged="FileTypeCombo_SelectionChanged">
-                    <ComboBoxItem x:Name="BitmapComboItem" Content="Bitmap"/>
-                    <ComboBoxItem x:Name="GraymapComboItem" Content="Graymap"/>
-                    <ComboBoxItem x:Name="PixmapComboItem" Content="Pixmap" IsSelected="True"/>
+                <ComboBox x:Name="FileTypeCombo" x:Uid="CmbFileType" Width="110" Margin="0,0,0,10" SelectionChanged="FileTypeCombo_SelectionChanged">
+                    <ComboBoxItem x:Name="BitmapComboItem" x:Uid="CmbItmBitmap"/>
+                    <ComboBoxItem x:Name="GraymapComboItem" x:Uid="CmbItmGraymap"/>
+                    <ComboBoxItem x:Name="PixmapComboItem" x:Uid="CmbItmPixmap" IsSelected="True"/>
                 </ComboBox>
-                <TextBox x:Name="CreateFilePopupName" x:Uid="CreateFilePopupName" Header="Filename" Margin="0,0,0,10"/>
-                <ComboBox x:Name="FilenameCollisionCombo" x:Uid="ConverterNameCollisionCombo" Header="Name Collision Issue" Width="205" Margin="0,0,0,10">
-                    <ComboBoxItem x:Uid="ConverterUniqueComboItem" Content="Generate Unique Name" IsSelected="True"/>
-                    <ComboBoxItem x:Uid="ConverterReplaceComboItem" Content="Replace Existing"/>
-                    <ComboBoxItem x:Uid="ConverterSkipComboItem" Content="Skip"/>
+                <TextBox x:Name="CreateFilePopupName" x:Uid="TxtCreateFileName" Margin="0,0,0,10"/>
+                <ComboBox x:Name="FilenameCollisionCombo" x:Uid="CmbNameCollision" Width="205" Margin="0,0,0,10">
+                    <ComboBoxItem x:Uid="CmbItmUnique" IsSelected="True"/>
+                    <ComboBoxItem x:Uid="CmbItmReplace"/>
+                    <ComboBoxItem x:Uid="CmbItmSkip"/>
                 </ComboBox>
-                <ToggleSwitch x:Name="IsBinary" x:Uid="ConverterIsBinary" Header="Mode" OffContent="Text" OnContent="Binary" Margin="0,0,0,10"/>
-                <Button x:Name="CreateFilePopupButton" x:Uid="Create" Content="Create" HorizontalAlignment="Right" Click="CreateFilePopupButton_Click"/>
+                <ToggleSwitch x:Name="IsBinary" x:Uid="TglSwtConverterIsBinary" Margin="0,0,0,10"/>
+                <Button x:Name="CreateFilePopupButton" x:Uid="BtnCreate" HorizontalAlignment="Right" Click="CreateFilePopupButton_Click"/>
             </StackPanel>
         </Popup>
     </Grid>
@@ -82,13 +82,19 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="CreateFileTop" x:Uid="MainCreateFile" Icon="Add" Label="Create File" Click="CreateFile_Click"/>
-            <AppBarButton x:Name="CreateFolderTop" x:Uid="ExplorerCreateFolder" Icon="NewFolder" Label="Create Folder" Click="CreateFolder_Click"/>
-            <AppBarButton x:Name="DeleteTop" x:Uid="ExplorerDeleteSelected" Icon="Delete" Label="Delete Selected" Visibility="Collapsed" Click="Delete_Click"/>
-            <AppBarButton x:Name="SelectTop" x:Uid="ExplorerSelect" Icon="Bullets" Label="Select" Click="Select_Click"/>
+            <AppBarButton x:Name="CreateFileTop" x:Uid="AppBarBtnCreateFile" Icon="Add" Click="CreateFile_Click"/>
+            <AppBarButton x:Name="CreateFolderTop" x:Uid="AppBarBtnCreateFolder" Icon="NewFolder" Click="CreateFolder_Click"/>
+            <AppBarButton x:Name="ConvertTop" x:Uid="AppBarBtnConvert" Visibility="Collapsed" Click="Convert_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE2B0;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="DeleteTop" x:Uid="AppBarBtnDeleteSelected" Icon="Delete" Visibility="Collapsed" Click="Delete_Click"/>
+            <AppBarButton x:Name="SelectTop" x:Uid="AppBarBtnSelect" Icon="Bullets" Click="Select_Click"/>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="RateTop" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
-                <AppBarButton x:Name="AboutTop" x:Uid="MainAbout" Label="About" Click="About_Click"/>
+                <AppBarButton x:Name="RateTop" x:Uid="AppBarBtnRate" Click="Rate_Click"/>
+                <AppBarButton x:Name="DonateTop" x:Uid="AppBarBtnDonate" Click="Donate_Click"/>
+                <AppBarButton x:Name="AboutTop" x:Uid="AppBarBtnAbout" Click="About_Click"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.TopAppBar>
@@ -98,13 +104,19 @@
             <CommandBar.Background>
                 <SolidColorBrush Color="Black" Opacity="0.1"/>
             </CommandBar.Background>
-            <AppBarButton x:Name="CreateFileBottom" x:Uid="MainCreateFile" Icon="Add" Label="Create File" Click="CreateFile_Click"/>
-            <AppBarButton x:Name="CreateFolderBottom" x:Uid="ExplorerCreateFolder" Icon="NewFolder" Label="Create Folder" Click="CreateFolder_Click"/>
-            <AppBarButton x:Name="DeleteBottom" x:Uid="ExplorerDeleteSelected" Icon="Delete" Label="Delete Selected" Visibility="Collapsed" Click="Delete_Click"/>
-            <AppBarButton x:Name="SelectBottom" x:Uid="ExplorerSelect" Icon="Bullets" Label="Select" />
+            <AppBarButton x:Name="CreateFileBottom" x:Uid="AppBarBtnCreateFile" Icon="Add" Click="CreateFile_Click"/>
+            <AppBarButton x:Name="CreateFolderBottom" x:Uid="AppBarBtnCreateFolder" Icon="NewFolder" Click="CreateFolder_Click"/>
+            <AppBarButton x:Name="ConvertBottom" x:Uid="AppBarBtnConvert" Visibility="Collapsed" Click="Convert_Click">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE2B0;"/>
+                </AppBarButton.Icon>
+            </AppBarButton>
+            <AppBarButton x:Name="DeleteBottom" x:Uid="AppBarBtnDeleteSelected" Icon="Delete" Visibility="Collapsed" Click="Delete_Click"/>
+            <AppBarButton x:Name="SelectBottom" x:Uid="AppBarBtnSelect" Icon="Bullets"/>
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Name="RateBottom" x:Uid="MainRate" Label="Rate the App" Click="Rate_Click"/>
-                <AppBarButton x:Name="AboutBottom" x:Uid="MainAbout" Label="About" Click="About_Click"/>
+                <AppBarButton x:Name="RateBottom" x:Uid="AppBarBtnRate" Click="Rate_Click"/>
+                <AppBarButton x:Name="DonateBottom" x:Uid="AppBarBtnDonate" Click="Donate_Click"/>
+                <AppBarButton x:Name="AboutBottom" x:Uid="AppBarBtnAbout" Click="About_Click"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

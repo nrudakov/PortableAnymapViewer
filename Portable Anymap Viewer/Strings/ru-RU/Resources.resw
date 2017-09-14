@@ -1,0 +1,378 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppBarBtnAbout.Label" xml:space="preserve">
+    <value>О приложении</value>
+  </data>
+  <data name="AppBarBtnAddFolder.Label" xml:space="preserve">
+    <value>Добавить папку</value>
+  </data>
+  <data name="AppBarBtnCancel.Label" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="AppBarBtnCancel.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Отмена (Esc)</value>
+  </data>
+  <data name="AppBarBtnChangeFolder.Label" xml:space="preserve">
+    <value>Изменить выходную папку</value>
+  </data>
+  <data name="AppBarBtnConvert.Label" xml:space="preserve">
+    <value>Конвертировать</value>
+  </data>
+  <data name="AppBarBtnConvertToAnymap.Label" xml:space="preserve">
+    <value>Конвертировать в Anymap</value>
+  </data>
+  <data name="AppBarBtnCreateFile.Label" xml:space="preserve">
+    <value>Создать Anymap</value>
+  </data>
+  <data name="AppBarBtnCreateFolder.Label" xml:space="preserve">
+    <value>Создать папку</value>
+  </data>
+  <data name="AppBarBtnDelete.Label" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="AppBarBtnDeleteSelected.Label" xml:space="preserve">
+    <value>Удалить выбранные</value>
+  </data>
+  <data name="AppBarBtnDonate.Label" xml:space="preserve">
+    <value>Донат</value>
+  </data>
+  <data name="AppBarBtnEdit.Label" xml:space="preserve">
+    <value>Редактировать</value>
+  </data>
+  <data name="AppBarBtnOpenFile.Label" xml:space="preserve">
+    <value>Открыть Anymap</value>
+  </data>
+  <data name="AppBarBtnProperties.Label" xml:space="preserve">
+    <value>Свойства</value>
+  </data>
+  <data name="AppBarBtnRate.Label" xml:space="preserve">
+    <value>Оценить приложение</value>
+  </data>
+  <data name="AppBarBtnRemoveFolders.Label" xml:space="preserve">
+    <value>Удалить выбранные</value>
+  </data>
+  <data name="AppBarBtnSave.Label" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="AppBarBtnSave.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="AppBarBtnSaveAs.Label" xml:space="preserve">
+    <value>Сохранить как</value>
+  </data>
+  <data name="AppBarBtnSaveAs.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Сохранить как</value>
+  </data>
+  <data name="AppBarBtnSaveCopy.Label" xml:space="preserve">
+    <value>Сохранить копию</value>
+  </data>
+  <data name="AppBarBtnSaveCopy.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Сохранить копию (Ctrl +S)</value>
+  </data>
+  <data name="AppBarBtnSelect.Label" xml:space="preserve">
+    <value>Выбрать</value>
+  </data>
+  <data name="AppBarBtnSelectFolders.Label" xml:space="preserve">
+    <value>Выбрать папки</value>
+  </data>
+  <data name="AppBarBtnShare.Label" xml:space="preserve">
+    <value>Поделиться</value>
+  </data>
+  <data name="AppBarTglBtnCompare.Label" xml:space="preserve">
+    <value>Сравнить</value>
+  </data>
+  <data name="AppBarTglBtnCompare.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Сравнить (Ctrl + /)</value>
+  </data>
+  <data name="AppBarTglBtnInputMode.Label" xml:space="preserve">
+    <value>Перезаписывать</value>
+  </data>
+  <data name="AppBarTglBtnInputMode.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Режим ввода (Ins)</value>
+  </data>
+  <data name="AppBarTglBtnPreview.Label" xml:space="preserve">
+    <value>Предпросмотр</value>
+  </data>
+  <data name="AppBarTglBtnPreview.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Предпросмотр</value>
+  </data>
+  <data name="BtnBug.Content" xml:space="preserve">
+    <value>Сообщить об ошибке</value>
+  </data>
+  <data name="BtnCreate.Content" xml:space="preserve">
+    <value>Создать</value>
+  </data>
+  <data name="BtnFeedback.Content" xml:space="preserve">
+    <value>Отправить отзыв</value>
+  </data>
+  <data name="BtnPurchase.Content" xml:space="preserve">
+    <value>Купить</value>
+  </data>
+  <data name="CmbFileType.Header" xml:space="preserve">
+    <value>Формат</value>
+  </data>
+  <data name="CmbItmBitmap.Content" xml:space="preserve">
+    <value>Bitmap</value>
+  </data>
+  <data name="CmbItmGraymap.Content" xml:space="preserve">
+    <value>Graymap</value>
+  </data>
+  <data name="CmbItmPixmap.Content" xml:space="preserve">
+    <value>Pixmap</value>
+  </data>
+  <data name="CmbItmReplace.Content" xml:space="preserve">
+    <value>Заменить существующий</value>
+  </data>
+  <data name="CmbItmSkip.Content" xml:space="preserve">
+    <value>Пропустить</value>
+  </data>
+  <data name="CmbItmUnique.Content" xml:space="preserve">
+    <value>Сгенерировать уникальное имя</value>
+  </data>
+  <data name="CmbNameCollision.Header" xml:space="preserve">
+    <value>Конфликт имён</value>
+  </data>
+  <data name="DeleteDialogClose" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="DeleteDialogContent" xml:space="preserve">
+    <value>Вы уверены, что хотите удалить файл "{0}"?</value>
+  </data>
+  <data name="DeleteDialogSecondary" xml:space="preserve">
+    <value>Да</value>
+  </data>
+  <data name="DeleteDialogTitle" xml:space="preserve">
+    <value>Удаление файла</value>
+  </data>
+  <data name="LstProducts.Header" xml:space="preserve">
+    <value>Выберите вариант доанта, пожалуйста:</value>
+  </data>
+  <data name="PurchaseStatusAlreadyPurchased" xml:space="preserve">
+    <value>Вы уже сделали этот донат.</value>
+  </data>
+  <data name="PurchaseStatusNetworkError" xml:space="preserve">
+    <value>Донат не получился из-за ошибки в соединении.</value>
+  </data>
+  <data name="PurchaseStatusNotPurchased" xml:space="preserve">
+    <value>Донат отменен.</value>
+  </data>
+  <data name="PurchaseStatusServerError" xml:space="preserve">
+    <value>Донат не получился из-за ошибки на сревере.</value>
+  </data>
+  <data name="PurchaseStatusSucceeded" xml:space="preserve">
+    <value>Успешный донат, спасибо!</value>
+  </data>
+  <data name="PurchaseStatusUnknownError" xml:space="preserve">
+    <value>Донат не полуичился из-за неизвестной ошибки.</value>
+  </data>
+  <data name="TabHdrConverted.Label" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="TabHdrWaiting.Label" xml:space="preserve">
+    <value>Ожидают</value>
+  </data>
+  <data name="TglSwtConverterDepth8_16.Header" xml:space="preserve">
+    <value>Глубина</value>
+  </data>
+  <data name="TglSwtConverterDepth8_16.OffContent" xml:space="preserve">
+    <value>8-бит</value>
+  </data>
+  <data name="TglSwtConverterDepth8_16.OnContent" xml:space="preserve">
+    <value>16-бит</value>
+  </data>
+  <data name="TglSwtConverterIsBinary.Header" xml:space="preserve">
+    <value>Режим</value>
+  </data>
+  <data name="TglSwtConverterIsBinary.OffContent" xml:space="preserve">
+    <value>Текстовый</value>
+  </data>
+  <data name="TglSwtConverterIsBinary.OnContent" xml:space="preserve">
+    <value>Двоичный</value>
+  </data>
+  <data name="TxtCreateFileName.Header" xml:space="preserve">
+    <value>Имя файла</value>
+  </data>
+  <data name="TxtCreateFolderName.Header" xml:space="preserve">
+    <value>Имя папки</value>
+  </data>
+  <data name="TxtDepthHeader.Text" xml:space="preserve">
+    <value>Глубина:</value>
+  </data>
+  <data name="TxtDonateMotivationRun1.Text" xml:space="preserve">
+    <value>Лучший способ поблагодарить</value>
+  </data>
+  <data name="TxtDonateMotivationRun2.Text" xml:space="preserve">
+    <value>разработчика приложения —</value>
+  </data>
+  <data name="TxtDonateMotivationRun3.Text" xml:space="preserve">
+    <value>сделать донат! :)</value>
+  </data>
+  <data name="TxtFilenameHeader.Text" xml:space="preserve">
+    <value>Имя файла:</value>
+  </data>
+  <data name="TxtFolders.Text" xml:space="preserve">
+    <value>Папки</value>
+  </data>
+  <data name="TxtHeightHeader.Text" xml:space="preserve">
+    <value>Высота:</value>
+  </data>
+  <data name="TxtInstalledDate.Text" xml:space="preserve">
+    <value>Дата установки:</value>
+  </data>
+  <data name="TxtInstalledLocation.Text" xml:space="preserve">
+    <value>Расположение:</value>
+  </data>
+  <data name="TxtMaxPixelValue.Header" xml:space="preserve">
+    <value>Макс. значение (0–255)</value>
+  </data>
+  <data name="TxtMaxPixelValue16" xml:space="preserve">
+    <value>Макс. значение (0–65535)</value>
+  </data>
+  <data name="TxtMaxPixelValue8" xml:space="preserve">
+    <value>Макс. значение (0–255)</value>
+  </data>
+  <data name="TxtOutputFolderLabel.Text" xml:space="preserve">
+    <value>Выходная папка: </value>
+  </data>
+  <data name="TxtPublisher.Text" xml:space="preserve">
+    <value>Издатель:</value>
+  </data>
+  <data name="TxtThresholdLevel16.Header" xml:space="preserve">
+    <value>Порог 16-бит (0–65535)</value>
+  </data>
+  <data name="TxtThresholdLevel8.Header" xml:space="preserve">
+    <value>Порог 8-бит (0–255)</value>
+  </data>
+  <data name="TxtWidthHeader.Text" xml:space="preserve">
+    <value>Ширина:</value>
+  </data>
+  <data name="UnsavedDialogClose" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="UnsavedDialogContent" xml:space="preserve">
+    <value>Вы уверены, что хотите выйти?</value>
+  </data>
+  <data name="UnsavedDialogSecondary" xml:space="preserve">
+    <value>Да</value>
+  </data>
+  <data name="UnsavedDialogTitle" xml:space="preserve">
+    <value>Несохраненные изменения!</value>
+  </data>
+</root>

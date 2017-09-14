@@ -11,8 +11,8 @@
     <AssemblyName>Portable Anymap Viewer</AssemblyName>
     <DefaultLanguage>en-us</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
     <FileAlignment>512</FileAlignment>
@@ -57,6 +57,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -108,6 +109,7 @@
     <Content Include="Assets\consolab.ttf" />
     <None Include="Portable Anymap Viewer_StoreKey.pfx" />
     <None Include="project.json" />
+    <PRIResource Include="Strings\ru-RU\Resources.resw" />
     <PRIResource Include="Strings\en-US\Resources.resw" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +137,9 @@
     <Compile Include="ConverterPage.xaml.cs">
       <DependentUpon>ConverterPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DonatePage.xaml.cs">
+      <DependentUpon>DonatePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EditorPage.xaml.cs">
       <DependentUpon>EditorPage.xaml</DependentUpon>
     </Compile>
@@ -150,6 +155,7 @@
     <Compile Include="Models\AnymapProperties.cs" />
     <Compile Include="Models\DecodeResult.cs" />
     <Compile Include="Models\EditFileParams.cs" />
+    <Compile Include="Models\HistogramValue.cs" />
     <Compile Include="Models\ItemDetails.cs" />
     <Compile Include="Models\OpenFileParams.cs" />
     <Compile Include="Models\ViewInfo.cs" />
@@ -167,16 +173,25 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\File_ext_B.png" />
+    <Content Include="Assets\File_ext_B_.png" />
     <Content Include="Assets\File_ext_G.png" />
+    <Content Include="Assets\File_ext_G_.png" />
     <Content Include="Assets\File_ext_P.png" />
+    <Content Include="Assets\File_ext_P_.png" />
+    <Content Include="Assets\Logo-AppList.altform-unplated_targetsize-32.png" />
     <Content Include="Assets\Logo-AppList.scale-100.png" />
     <Content Include="Assets\Logo-AppList.scale-125.png" />
     <Content Include="Assets\Logo-AppList.scale-150.png" />
     <Content Include="Assets\Logo-AppList.scale-200.png" />
     <Content Include="Assets\Logo-AppList.scale-400.png" />
+    <Content Include="Assets\Logo-AppList.targetsize-16.png" />
     <Content Include="Assets\Logo-AppList.targetsize-16_altform-unplated.png" />
+    <Content Include="Assets\Logo-AppList.targetsize-24.png" />
     <Content Include="Assets\Logo-AppList.targetsize-24_altform-unplated.png" />
+    <Content Include="Assets\Logo-AppList.targetsize-256.png" />
     <Content Include="Assets\Logo-AppList.targetsize-256_altform-unplated.png" />
+    <Content Include="Assets\Logo-AppList.targetsize-32.png" />
+    <Content Include="Assets\Logo-AppList.targetsize-48.png" />
     <Content Include="Assets\Logo-AppList.targetsize-48_altform-unplated.png" />
     <Content Include="Assets\Logo-NoMargins.scale-100.png" />
     <Content Include="Assets\Logo-NoMargins.scale-125.png" />
@@ -245,6 +260,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="DonatePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="EditorPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -274,9 +293,6 @@
     <SDKReference Include="Microsoft.VCLibs, Version=14.0">
       <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
     </SDKReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MultilingualResources\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

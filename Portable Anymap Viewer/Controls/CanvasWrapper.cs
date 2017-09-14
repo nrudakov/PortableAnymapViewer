@@ -72,7 +72,7 @@ namespace Portable_Anymap_Viewer.Controls
                 this.UpdateManipulationMode();
                 this.GetCanvas().Invalidate();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 
             }

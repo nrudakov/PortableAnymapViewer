@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Portable_Anymap_Viewer.Models
 {
@@ -11,5 +12,11 @@ namespace Portable_Anymap_Viewer.Models
         public String Filename { get; set; }
         public Single CurrentZoom { get; set; }
         public Boolean DoubleBytesPerColor { get; set; }
+        public List<List<HistogramValue>> HistogramValues { get; set; }
+        public String Md5;
+        public String Sha1;
+        public String Sha256;
+        public String Sha384;
+        public String Sha512;
     }
 }
