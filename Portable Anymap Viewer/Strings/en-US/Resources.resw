@@ -382,7 +382,7 @@
     <value>No</value>
   </data>
   <data name="UnsavedDialogContent" xml:space="preserve">
-    <value>Are you shure to exit?</value>
+    <value>Are you sure you want to exit?</value>
   </data>
   <data name="UnsavedDialogSecondary" xml:space="preserve">
     <value>Yes</value>
